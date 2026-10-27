@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Create your free StarBook account and start booking celebrities today.">
+<title>Create Account - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<style>
+.auth-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:30px 20px}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:30px;width:100%;max-width:540px}
+.auth-logo{text-align:center;font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:6px}
+.premium-box{background:rgba(124,92,252,.08);border:1px solid rgba(124,92,252,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:14px}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:46px}
+.pw-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:50%;cursor:pointer;color:var(--text3);font-size:.9rem;line-height:1}
+.pw-wrap input.is-mismatch{border-color:var(--danger)}
+.pw-wrap input.is-match{border-color:var(--success)}
+.strength-bar{height:4px;background:var(--surface);border-radius:2px;margin-top:8px;overflow:hidden}
+.strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0}
+.form-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.form-group{margin-bottom:14px}
+.password-row .form-group{min-width:0}
+.pw-match{font-size:.75rem;margin-top:4px}
+@media(max-width:600px){.auth-wrap{min-height:auto;padding:28px 16px}.auth-card{padding:26px 22px}}
+@media(max-width:380px){.auth-wrap{padding:22px 12px}.auth-card{padding:22px 16px}.form-row{grid-template-columns:1fr}.identity-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div id="navPlaceholder"></div>
+<main>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">⭐<span style="color:var(--text)">Star</span>Book</div>
+    <h1 style="text-align:center;font-family:var(--font-head);font-size:1.6rem;font-weight:800;margin-bottom:4px">Create Your Account</h1>
+    <p style="text-align:center;color:var(--text3);font-size:.87rem;margin-bottom:18px">Create a free account to keep your bookings and fan cards together.</p>
+    <div id="regMsg" class="msg"></div>
+    <form id="regForm" onsubmit="doRegister(event)">
+      <div class="form-row identity-row">
+        <div class="form-group">
+          <label>Full Name <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="fullName" placeholder="Your full name" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label>Username <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="username" placeholder="e.g. cooluser123" required autocomplete="username" pattern="[a-zA-Z0-9_]{3,30}" title="3–30 characters, letters, numbers or underscores">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Email Address <span style="color:var(--danger)">*</span></label>
+          <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+          <small id="emailStatus" role="status" aria-live="polite" style="display:block;color:var(--text3);margin-top:6px;min-height:1.2em"></small>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+1 234 567 8900" autocomplete="tel">
+        </div>
+      </div>
+      <div class="form-row password-row">
+        <div class="form-group">
+          <label for="password">Password <span style="color:var(--danger)">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="password" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password" oninput="checkStrength(this.value);checkMatch()">
+            <button type="button" class="pw-toggle" aria-label="Show password" aria-pressed="false" onclick="togglePw('password', this)">👁</button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <div id="strengthLabel" style="font-size:.75rem;color:var(--text3);margin-top:4px"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password <span style="color:var(--danger)">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="confirmPassword" placeholder="Re-enter your password" required autocomplete="new-password" oninput="checkMatch()">
+            <button type="button" class="pw-toggle" aria-label="Show confirm password" aria-pressed="false" onclick="togglePw('confirmPassword', this)">👁</button>
+          </div>
+          <div id="matchMsg" class="pw-match" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>License Key <span style="color:var(--text3);font-weight:400">(Optional - unlocks Premium)</span></label>
+        <input type="text" id="licenseKey" placeholder="SB-VIP-XXXX-XXXX" oninput="validateLicense(this.value)" autocomplete="off">
+        <div id="licenseStatus" style="font-size:.8rem;margin-top:6px"></div>
+      </div>
+      <div id="premiumBox" class="premium-box" style="display:none">
+        <div style="font-weight:700;color:var(--accent2);margin-bottom:8px">🚀 Premium Access Unlocked!</div>
+        <div style="font-size:.82rem;color:var(--text2);display:flex;flex-direction:column;gap:5px">
+          <div>✓ Priority celebrity booking</div>
+          <div>✓ Exclusive celebrity access</div>
+          <div>✓ Advanced AI search</div>
+          <div>✓ Priority support (24hr vs 48hr)</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+          <input type="checkbox" id="agreeTerms" style="width:auto;margin-top:2px;accent-color:var(--gold)">
+          <span style="font-size:.85rem;color:var(--text2)">I agree to the <a href="/policies.html#terms" target="_blank" style="color:var(--gold)">Terms of Service</a> and <a href="/policies.html#privacy" target="_blank" style="color:var(--gold)">Privacy Policy</a></span>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-gold" style="width:100%;font-size:1rem;padding:14px" id="regBtn">Create Account →</button>
+    </form>
+    <section id="emailVerificationPanel" aria-labelledby="verificationTitle" style="display:none">
+      <h2 id="verificationTitle" style="font-family:var(--font-head);font-size:1.15rem;font-weight:800;margin-bottom:8px">Verify your email</h2>
+      <p style="color:var(--text2);font-size:.87rem;margin-bottom:18px">Enter the six-digit code sent to <strong id="verificationEmail"></strong>. The code expires after 10 minutes. A maximum of two codes can be sent per registration.</p>
+      <form id="emailVerificationForm" onsubmit="verifyRegistrationEmail(event)">
+        <div class="form-group">
+          <label for="verificationCode">Email verification code</label>
+          <input type="text" id="verificationCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required aria-describedby="verificationCodeHelp">
+          <small id="verificationCodeHelp" style="display:block;color:var(--text3);margin-top:6px">Never share this code with anyone.</small>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;font-size:1rem;padding:14px" id="verifyEmailBtn">Verify &amp; Create Account</button>
+      </form>
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <button type="button" class="btn btn-outline" id="resendCodeBtn" onclick="resendRegistrationCode()">Resend code</button>
+        <button type="button" class="btn btn-outline" id="changeDetailsBtn" onclick="changeRegistrationEmail()">Change details</button>
+      </div>
+      <p id="resendCountdown" role="status" aria-live="polite" style="font-size:.8rem;color:var(--text3);margin-top:10px"></p>
+    </section>
+    <p style="text-align:center;margin-top:20px;font-size:.87rem;color:var(--text3)">
+      Already have an account? <a href="/login.html" style="color:var(--gold);font-weight:600">Sign in →</a>
+    </p>
+  </div>
+</div>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script src="/assets/js/email-policy.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+if (Auth.isLoggedIn()) window.location.href = '/dashboard.html';
+let registrationVerificationId = null;
+let resendCountdownTimer = null;
+let registrationResendsRemaining = 1;
+fetch('/api/auth/features', { cache: 'no-store' }).then(async response => {
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Could not load registration settings.');
+  document.getElementById('regBtn').textContent = data.emailVerificationEnabled
+    ? 'Send verification code →'
+    : 'Create Account →';
+}).catch(error => console.error('[Registration] Could not load registration settings:', error.message));
+
+function updateEmailValidation() {
+  const input = document.getElementById('email');
+  const status = document.getElementById('emailStatus');
+  const result = StarBookEmailPolicy.validate(input.value);
+  input.setCustomValidity(result.complete && !result.valid ? result.message : '');
+  input.setAttribute('aria-invalid', String(result.complete && !result.valid));
+  if (!input.value.trim()) {
+    status.textContent = '';
+    status.style.color = 'var(--text3)';
+    return result;
+  }
+  if (result.valid) {
+    status.textContent = '✓ Email provider accepted.';
+    status.style.color = 'var(--success)';
+    return result;
+  }
+  status.textContent = result.message;
+  status.style.color = 'var(--danger)';
+  return result;
+}
+
+document.getElementById('email').addEventListener('input', updateEmailValidation);
+document.getElementById('email').addEventListener('blur', updateEmailValidation);
+
+function togglePw(id, button) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  const isVisible = inp.type === 'text';
+  button.setAttribute('aria-pressed', String(isVisible));
+  button.setAttribute('aria-label', `${isVisible ? 'Hide' : 'Show'} ${id === 'password' ? 'password' : 'confirm password'}`);
+}
+
+function checkMatch() {
+  const pw = document.getElementById('password').value;
+  const cpw = document.getElementById('confirmPassword').value;
+  const el = document.getElementById('matchMsg');
+  const confirm = document.getElementById('confirmPassword');
+  confirm.classList.toggle('is-mismatch', Boolean(cpw) && pw !== cpw);
+  confirm.classList.toggle('is-match', Boolean(cpw) && pw === cpw);
+  confirm.setAttribute('aria-invalid', String(Boolean(cpw) && pw !== cpw));
+  confirm.setCustomValidity(cpw && pw !== cpw ? 'Passwords do not match.' : '');
+  if (!cpw) { el.textContent = ''; return; }
+  if (pw === cpw) { el.textContent = '✓ Passwords match'; el.style.color = 'var(--success)'; }
+  else { el.textContent = '✗ Passwords do not match'; el.style.color = 'var(--danger)'; }
+}
+
+let licenseTimer;
+function checkStrength(pw) {
+  const fill = document.getElementById('strengthFill');
+  const lbl = document.getElementById('strengthLabel');
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^a-zA-Z0-9]/.test(pw)) score++;
+  const levels = [['',''],['Weak','var(--danger)'],['Fair','var(--warn)'],['Good','#22d3ee'],['Strong','var(--success)'],['Very Strong','var(--success)']];
+  const [label, color] = levels[score] || levels[0];
+  fill.style.width = (score * 20) + '%';
+  fill.style.background = color;
+  lbl.textContent = label;
+  lbl.style.color = color;
+}
+
+function validateLicense(key) {
+  clearTimeout(licenseTimer);
+  const status = document.getElementById('licenseStatus');
+  const premiumBox = document.getElementById('premiumBox');
+  if (!key.trim()) { status.textContent = ''; premiumBox.style.display = 'none'; return; }
+  status.innerHTML = '<span style="color:var(--text3)">Validating…</span>';
+  licenseTimer = setTimeout(async () => {
+    try {
+      const r = await fetch('/api/validate-license', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ licenseKey: key.trim() }) });
+      const d = await r.json();
+      if (r.ok && d.valid) {
+        status.innerHTML = '<span style="color:var(--success)">✓ Valid license key - Premium unlocked!</span>';
+        premiumBox.style.display = 'block';
+      } else {
+        status.innerHTML = '<span style="color:var(--danger)">✗ Invalid license key</span>';
+        premiumBox.style.display = 'none';
+      }
+    } catch { status.innerHTML = ''; }
+  }, 600);
+}
+
+async function doRegister(e) {
+  e.preventDefault();
+  const msg = document.getElementById('regMsg');
+  hideMsg(msg);
+  const emailValidation = updateEmailValidation();
+  if (!emailValidation.valid) {
+    showMsg(msg, emailValidation.message);
+    document.getElementById('email').focus();
+    return;
+  }
+  if (!document.getElementById('agreeTerms').checked) { showMsg(msg, 'Please accept the Terms of Service.'); return; }
+  const pw = document.getElementById('password').value;
+  const cpw = document.getElementById('confirmPassword').value;
+  if (pw !== cpw) { showMsg(msg, 'Passwords do not match. Please re-enter.'); return; }
+  const btn = document.getElementById('regBtn');
+  btn.innerHTML = '<span class="spinner"></span> Creating account…';
+  btn.disabled = true;
+  try {
+    const body = {
+      fullName: document.getElementById('fullName').value.trim(),
+      username: document.getElementById('username').value.trim().toLowerCase(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim() || null,
+      password: pw,
+      licenseKey: document.getElementById('licenseKey').value.trim() || null
+    };
+    const r = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message || 'Registration failed');
+    if (d.token && d.user) {
+      Auth.save(d.token, d.user);
+      showMsg(msg, d.message || 'Account created successfully.', 'success');
+      Toast.success('Welcome to StarBook!');
+      setTimeout(() => window.location.href = '/dashboard.html', 800);
+      return;
+    }
+    if (!d.verificationId) throw new Error('Registration did not return an account or verification session.');
+    registrationVerificationId = d.verificationId;
+    registrationResendsRemaining = Number.isInteger(d.resendsRemaining) ? d.resendsRemaining : 1;
+    document.getElementById('verificationEmail').textContent = body.email;
+    document.getElementById('regForm').style.display = 'none';
+    document.getElementById('emailVerificationPanel').style.display = 'block';
+    document.getElementById('verificationCode').focus();
+    showMsg(msg, d.message, 'success');
+    startResendCountdown(Number.isFinite(d.resendAfterSeconds) ? d.resendAfterSeconds : 60);
+  } catch(err) {
+    showMsg(msg, err.message || 'Registration failed. Please try again.');
+    btn.innerHTML = 'Create Account →';
+    btn.disabled = false;
+  }
+}
+
+function startResendCountdown(seconds) {
+  clearInterval(resendCountdownTimer);
+  const button = document.getElementById('resendCodeBtn');
+  const status = document.getElementById('resendCountdown');
+  let remaining = Math.max(0, Number(seconds) || 0);
+  button.disabled = remaining > 0 || registrationResendsRemaining <= 0;
+  const render = () => {
+    status.textContent = registrationResendsRemaining <= 0
+      ? 'The two-code limit has been reached. Start registration again after this code expires.'
+      : remaining > 0 ? `You can request another code in ${remaining} seconds.` : '';
+    button.disabled = remaining > 0 || registrationResendsRemaining <= 0;
+    if (remaining <= 0) clearInterval(resendCountdownTimer);
+    remaining -= 1;
+  };
+  render();
+  if (remaining > 0) resendCountdownTimer = setInterval(render, 1000);
+}
+
+async function resendRegistrationCode() {
+  if (!registrationVerificationId) return;
+  const button = document.getElementById('resendCodeBtn');
+  button.disabled = true;
+  try {
+    const response = await fetch('/api/auth/register/resend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ verificationId: registrationVerificationId })
+    });
+    const data = await response.json();
+    if (!response.ok && data.resendsRemaining === 0) {
+      registrationResendsRemaining = 0;
+      startResendCountdown(0);
+    }
+    if (!response.ok) throw new Error(data.message || 'Could not resend the code.');
+    registrationResendsRemaining = Number.isInteger(data.resendsRemaining) ? data.resendsRemaining : 0;
+    showMsg(document.getElementById('regMsg'), data.message, 'success');
+    startResendCountdown(data.resendAfterSeconds || 60);
+  } catch (error) {
+    showMsg(document.getElementById('regMsg'), error.message || 'Could not resend the code.');
+    button.disabled = false;
+  }
+}
+
+async function verifyRegistrationEmail(event) {
+  event.preventDefault();
+  const button = document.getElementById('verifyEmailBtn');
+  const code = document.getElementById('verificationCode').value.trim();
+  if (!registrationVerificationId || !/^\d{6}$/.test(code)) {
+    showMsg(document.getElementById('regMsg'), 'Enter the six-digit code from your email.');
+    return;
+  }
+  button.disabled = true;
+  button.innerHTML = '<span class="spinner"></span> Verifying…';
+  try {
+    const response = await fetch('/api/auth/register/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ verificationId: registrationVerificationId, code })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Email verification failed.');
+    Auth.save(data.token, data.user);
+    Toast.success('Email verified. Welcome to StarBook!');
+    setTimeout(() => window.location.href = '/dashboard.html', 800);
+  } catch (error) {
+    showMsg(document.getElementById('regMsg'), error.message || 'Email verification failed.');
+    button.textContent = 'Verify & Create Account';
+    button.disabled = false;
+  }
+}
+
+async function changeRegistrationEmail() {
+  const changeButton = document.getElementById('changeDetailsBtn');
+  changeButton.disabled = true;
+  try {
+    if (registrationVerificationId) {
+      const response = await fetch('/api/auth/register/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verificationId: registrationVerificationId })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Could not clear the pending verification.');
+    }
+    clearInterval(resendCountdownTimer);
+    registrationVerificationId = null;
+    document.getElementById('emailVerificationPanel').style.display = 'none';
+    document.getElementById('regForm').style.display = '';
+    document.getElementById('verificationCode').value = '';
+    hideMsg(document.getElementById('regMsg'));
+    const registerButton = document.getElementById('regBtn');
+    registerButton.textContent = 'Create Account →';
+    registerButton.disabled = false;
+  } catch (error) {
+    showMsg(document.getElementById('regMsg'), error.message || 'Could not clear the pending verification.');
+  } finally {
+    changeButton.disabled = false;
+  }
+}
+</script>
+</body>
+</html>

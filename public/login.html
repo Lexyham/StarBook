@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Sign in to your StarBook account to manage bookings, fan cards, and more.">
+<title>Sign In - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<style>
+.auth-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:440px}
+.auth-logo{text-align:center;font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:6px}
+.auth-logo span{color:var(--text)}
+.auth-title{text-align:center;font-family:var(--font-head);font-size:1.6rem;font-weight:800;margin-bottom:4px}
+.auth-sub{text-align:center;color:var(--text3);font-size:.87rem;margin-bottom:28px}
+.auth-card button:focus-visible,.auth-card a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:46px}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:.9rem}
+.support-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 14px;border:1px solid rgba(245,200,66,.35);border-radius:999px;color:var(--gold)!important;background:rgba(245,200,66,.06);font-weight:600;text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}
+.support-link:hover,.support-link:focus-visible{background:rgba(245,200,66,.14);border-color:var(--gold);box-shadow:0 0 18px rgba(245,200,66,.18);transform:translateY(-1px);outline:none}
+@media(max-width:600px){.auth-wrap{min-height:auto;padding:32px 16px}.auth-card{padding:28px 22px}}
+@media(max-width:360px){.auth-wrap{padding:24px 12px}.auth-card{padding:22px 16px}}
+</style>
+</head>
+<body>
+<div id="navPlaceholder"></div>
+<main>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">⭐<span>Star</span>Book</div>
+    <h1 class="auth-title">Welcome Back</h1>
+    <p class="auth-sub">Sign in to your account to continue</p>
+    <div id="loginMsg" class="msg"></div>
+    <form id="loginForm" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label for="identifier">Username or Email Address</label>
+        <input type="text" id="identifier" name="identifier" placeholder="Username or email" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password" name="password" placeholder="Your password" required autocomplete="current-password">
+          <button type="button" class="pw-toggle" onclick="togglePw('password')">👁</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-gold" style="width:100%;font-size:1rem;padding:14px;margin-top:4px" id="loginBtn">Sign In</button>
+    </form>
+    <p style="text-align:right;margin:8px 0 0;font-size:.82rem"><a href="/forgot-password.html" class="support-link">Forgot password?</a></p>
+    <p style="text-align:center;margin-top:20px;font-size:.87rem;color:var(--text3)">
+      Don't have an account? <a href="/register.html" style="color:var(--gold);font-weight:600">Create one free →</a>
+    </p>
+    <p style="text-align:center;margin-top:10px;font-size:.8rem">
+      <a href="/help.html" class="support-link">Need help? Contact support</a>
+    </p>
+  </div>
+</div>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+if (Auth.isLoggedIn()) { const redir = new URLSearchParams(location.search).get('redirect'); window.location.href = redir || '/dashboard.html'; }
+
+function togglePw(id) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  const identifier = document.getElementById('identifier').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('loginBtn');
+  const msg = document.getElementById('loginMsg');
+  hideMsg(msg);
+  btn.innerHTML = '<span class="spinner"></span> Signing in…';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, password })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message || 'Invalid credentials');
+    Auth.save(d.token, d.user);
+    Toast.success('Welcome back, ' + (d.user?.fullName||d.user?.username||'').split(' ')[0] + '!');
+    const redir = new URLSearchParams(location.search).get('redirect');
+    const destination = d.user?.userType === 'admin' ? '/dashboard.html' : redir || '/dashboard.html';
+    setTimeout(() => window.location.href = destination, 600);
+  } catch(err) {
+    showMsg(msg, err.message || 'Login failed. Please check your credentials.');
+    btn.innerHTML = 'Sign In';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>

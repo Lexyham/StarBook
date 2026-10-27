@@ -1,0 +1,46 @@
+services:
+  app:
+    build: .
+    container_name: starbook-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/starbook
+      - JWT_SECRET=${JWT_SECRET}
+      - BREVO_API_KEY=${BREVO_API_KEY}
+      - BREVO_SENDER_EMAIL=${BREVO_SENDER_EMAIL}
+      - BREVO_SENDER_NAME=${BREVO_SENDER_NAME}
+      - SITE_URL=${SITE_URL}
+    volumes:
+      - ./public/images:/app/public/images
+      - ./db:/app/db
+      - ./uploads:/app/uploads
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - starbook-net
+
+  mongo:
+    image: mongo:7
+    container_name: starbook-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - starbook-net
+
+volumes:
+  mongo-data:
+
+networks:
+  starbook-net:
+    driver: bridge

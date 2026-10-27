@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Book your favourite celebrity on StarBook with flexible payment options.">
+<title>Book a Celebrity - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<style>
+.booking-layout{display:grid;grid-template-columns:1fr 380px;gap:40px;padding:48px 0}
+.booking-form-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:28px}
+.booking-summary-card{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:24px;position:sticky;top:88px;height:fit-content}
+.booking-assurances{position:relative;isolation:isolate;overflow:hidden;margin-top:20px;padding:18px;border:1px solid rgba(245,200,66,.24);border-radius:16px;background:linear-gradient(145deg,rgba(245,200,66,.1),rgba(124,92,252,.07) 58%,rgba(15,15,24,.96));box-shadow:0 12px 30px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.07);transform-style:preserve-3d;animation:assuranceGlow 5s ease-in-out infinite}
+.booking-assurances::before{content:'';position:absolute;z-index:-1;top:-90px;right:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(245,200,66,.19),transparent 70%);pointer-events:none}
+.assurance-heading{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.assurance-mark{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border:1px solid rgba(245,200,66,.3);border-radius:11px;background:rgba(245,200,66,.12);color:var(--gold);font-size:1rem;box-shadow:0 0 18px rgba(245,200,66,.12)}
+.assurance-eyebrow{display:block;color:var(--gold);font-size:.64rem;font-weight:800;letter-spacing:.13em;line-height:1.2}
+.assurance-title{margin-top:3px;color:var(--text);font-family:var(--font-head);font-size:.92rem;font-weight:800;line-height:1.3}
+.assurance-list{display:grid;gap:9px}
+.assurance-item{display:grid;grid-template-columns:25px minmax(0,1fr);align-items:start;gap:10px;padding:10px;border:1px solid rgba(255,255,255,.065);border-radius:12px;background:rgba(10,10,15,.46);transition:transform .2s ease,border-color .2s ease,background .2s ease}
+.assurance-item:hover{transform:translateY(-2px) perspective(600px) rotateX(1deg);border-color:rgba(245,200,66,.24);background:rgba(10,10,15,.68)}
+.assurance-check{display:grid;place-items:center;width:24px;height:24px;border-radius:8px;background:rgba(34,197,94,.12);color:#6ee7a0;font-size:.75rem;font-weight:900;box-shadow:0 0 12px rgba(34,197,94,.1)}
+.assurance-item strong{display:block;color:var(--text);font-size:.78rem;font-weight:700;line-height:1.35}
+.assurance-item p{margin-top:3px;color:var(--text3);font-size:.7rem;line-height:1.5}
+@keyframes assuranceGlow{0%,100%{box-shadow:0 12px 30px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.07);transform:perspective(1100px) rotateX(0) rotateY(0) translateY(0)}50%{box-shadow:0 15px 34px rgba(0,0,0,.28),0 0 22px rgba(245,200,66,.09),inset 0 1px rgba(255,255,255,.1);transform:perspective(1100px) rotateX(.35deg) rotateY(-.5deg) translateY(-1px)}}
+.booking-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+.booking-detail-grid .form-group{min-width:0}
+.booking-extra-note{font-size:.76rem;color:var(--text3);margin:-6px 0 16px}
+.step-indicator{display:flex;gap:0;margin-bottom:32px}
+.step{flex:1;display:flex;align-items:center;font-size:.78rem;font-weight:600;color:var(--text3)}
+.step .step-num{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin-right:8px;flex-shrink:0;font-size:.75rem}
+.step.active .step-num,.step.done .step-num{border-color:var(--gold);background:var(--gold-glow)}
+.step.active{color:var(--gold)}
+.step.done .step-num{background:var(--gold);color:#0A0A0F}
+.step::after{content:'';flex:1;height:2px;background:var(--border);margin:0 8px}
+.step:last-child::after{display:none}
+.step.done::after{background:var(--gold)}
+.coin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.coin-option{padding:12px 8px;border:2px solid var(--border);border-radius:var(--r2);cursor:pointer;text-align:center;transition:.15s}
+.coin-option:hover{border-color:var(--border2)}
+.coin-option.selected{border-color:var(--gold);background:var(--gold-glow)}
+.coin-option .coin-sym{font-size:1.2rem;margin-bottom:4px}
+.coin-option .coin-name{font-size:.75rem;font-weight:600;color:var(--text2)}
+.wallet-display{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.wallet-addr{font-family:monospace;font-size:.78rem;color:var(--text2);word-break:break-all;flex:1}
+.copy-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:.78rem;flex-shrink:0;transition:.15s}
+.copy-btn:hover{background:var(--gold-glow);border-color:var(--gold);color:var(--gold)}
+.gift-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.gift-option{padding:12px;border:2px solid var(--border);border-radius:var(--r2);cursor:pointer;display:flex;align-items:center;gap:10px;transition:.15s;background:var(--bg2);color:var(--text);font-family:inherit;text-align:left;width:100%}
+.gift-option:hover{border-color:var(--border2)}
+.gift-option.selected{border-color:var(--gold);background:var(--gold-glow)}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:28px;text-align:center;cursor:pointer;transition:.15s;position:relative}
+.upload-zone:hover{border-color:var(--gold);background:var(--gold-glow)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-previews{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.upload-thumb{position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.upload-thumb img{width:100%;height:100%;object-fit:cover}
+.upload-thumb .remove-thumb{position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--danger);border:none;color:#fff;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.upload-zone.drag-over{border-color:var(--gold);background:var(--gold-glow);transform:scale(1.01)}
+@media(max-width:900px){.booking-layout{grid-template-columns:1fr}.booking-summary-card{position:static}}
+@media(max-width:480px){.coin-grid{grid-template-columns:repeat(2,1fr)}.gift-grid{grid-template-columns:1fr}.step .step-label{display:none}}
+@media(max-width:600px){.booking-layout{gap:20px;padding:24px 0}.booking-form-card,.booking-summary-card{padding:20px}.step-indicator{margin-bottom:24px}.step .step-num{margin-right:5px}.step::after{margin-inline:4px}.wallet-display{align-items:flex-start}.upload-zone{padding:20px 14px}}
+@media(max-width:600px){.booking-assurances{padding:15px;margin-top:16px}.assurance-list{gap:7px}.assurance-item{padding:9px;gap:8px}}
+@media(max-width:380px){.booking-detail-grid{grid-template-columns:1fr}}
+@media(min-width:375px) and (max-width:480px){.gift-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:360px){.booking-form-card,.booking-summary-card{padding:16px}.step .step-num{width:25px;height:25px}.coin-option{padding:10px 6px}.wallet-display{flex-direction:column}.copy-btn{align-self:flex-end}#step2>div:last-of-type .btn,#step3>div:last-of-type .btn{font-size:.88rem!important;padding-inline:8px!important;white-space:nowrap}}
+@media(orientation:landscape) and (max-height:500px){.booking-layout{padding-block:20px}.booking-summary-card{position:static}}
+@media(prefers-reduced-motion:reduce){.booking-assurances{animation:none}.assurance-item{transition:none}.assurance-item:hover{transform:none}}
+</style>
+<style>
+.new-payment-panel{padding:18px;border:1px solid var(--border);border-radius:14px;margin:12px 0 18px;background:linear-gradient(145deg,var(--bg2),var(--surface));box-shadow:0 12px 30px rgba(0,0,0,.12)}
+.new-payment-panel h4{font-weight:700;margin:0 0 8px}.new-payment-panel p{font-size:.84rem;color:var(--text2);margin:6px 0 12px;line-height:1.55}
+.payment-instructions{padding:12px;border-radius:8px;background:var(--surface2);overflow-wrap:anywhere;font-size:.88rem;line-height:1.8}
+.sandbox-warning{padding:10px;border-left:3px solid var(--gold);background:var(--surface2)}
+#payTabBar{display:flex;flex-wrap:wrap;gap:6px}#payTabBar .tab-btn{flex:1 1 130px;min-height:42px}
+</style></head>
+<body>
+<div id="navPlaceholder"></div>
+<main>
+<div class="container">
+  <div class="booking-layout">
+    <div>
+      <div class="booking-form-card" id="bookingForm">
+        <h1 style="font-family:var(--font-head);font-size:1.6rem;font-weight:800;margin-bottom:6px">Book a Celebrity</h1>
+        <p style="color:var(--text2);font-size:.88rem;margin-bottom:24px">Complete all steps to confirm your booking</p>
+        <div class="step-indicator" id="stepIndicator">
+          <div class="step active" data-step="1"><span class="step-num">1</span><span class="step-label">Select</span></div>
+          <div class="step" data-step="2"><span class="step-num">2</span><span class="step-label">Confirm</span></div>
+          <div class="step" data-step="3"><span class="step-num">3</span><span class="step-label">Payment</span></div>
+        </div>
+        <div id="step1" class="booking-step">
+          <h3 style="font-weight:700;margin-bottom:18px">📝 Event Details</h3>
+          <div class="form-group">
+            <label>Recipient Name <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="recipientName" placeholder="Who is this booking for?">
+          </div>
+          <div class="form-group">
+            <label for="eventType">Event Type <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="eventType" list="eventTypeOptions" placeholder="Choose or type an event type…" autocomplete="off" oninput="onEventTypeChange(this.value)">
+            <datalist id="eventTypeOptions">
+              <option value="Birthday Shoutout"></option><option value="Anniversary Message"></option>
+              <option value="Brand Promotion"></option><option value="Motivational Message"></option>
+              <option value="Virtual Event Appearance"></option><option value="Live Performance"></option>
+              <option value="Custom Video Message"></option><option value="Social Media Post"></option>
+            </datalist>
+          </div>
+          <div class="form-group" id="venueGroup" style="display:none">
+            <label>Venue / Location <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="venueAddress" placeholder="Full address or virtual meeting link (Zoom, Meet…)">
+          </div>
+          <div class="booking-detail-grid">
+            <div class="form-group">
+              <label for="eventAddress">Event Address</label>
+              <input type="text" id="eventAddress" autocomplete="street-address" placeholder="Street address or venue">
+            </div>
+            <div class="form-group">
+              <label for="eventCity">City / Region</label>
+              <input type="text" id="eventCity" list="eventCityOptions" autocomplete="address-level2" placeholder="City or region">
+              <datalist id="eventCityOptions"></datalist>
+            </div>
+            <div class="form-group">
+              <label for="eventCountry">Country</label>
+              <input type="text" id="eventCountry" list="eventCountryOptions" autocomplete="country-name" placeholder="Country">
+              <datalist id="eventCountryOptions"></datalist>
+            </div>
+            <div class="form-group">
+              <label for="nearestAirport">Nearby Airport</label>
+              <input type="text" id="nearestAirport" list="nearestAirportOptions" placeholder="Airport name or IATA code">
+              <datalist id="nearestAirportOptions"></datalist>
+            </div>
+            <div class="form-group">
+              <label for="eventTime">Event Start Time</label>
+              <input type="time" id="eventTime">
+            </div>
+            <div class="form-group">
+              <label for="eventTimezone">Time Zone</label>
+              <input type="text" id="eventTimezone" list="eventTimezoneOptions" placeholder="e.g. America/New_York">
+              <datalist id="eventTimezoneOptions"></datalist>
+            </div>
+          </div>
+          <p class="booking-extra-note">Location, airport, and time details are optional, but help us coordinate your request.</p>
+          <div class="form-group">
+            <label for="eventDate">Event Date <span style="color:var(--danger)">*</span></label>
+            <input type="date" id="eventDate" min="">
+          </div>
+          <div class="form-group">
+            <label for="instructions">Special Requests &amp; Context</label>
+            <textarea id="instructions" rows="4" placeholder="Include the occasion, audience, names or pronunciation notes, tone, language, and any other useful context…" style="resize:vertical"></textarea>
+          </div>
+          <div id="msgStep1" class="msg"></div>
+          <button class="btn btn-gold" style="width:100%;font-size:1rem;padding:14px" onclick="goStep(2)">Continue to Confirm →</button>
+        </div>
+        <div id="step3" class="booking-step" style="display:none">
+          <h3 style="font-weight:700;margin-bottom:6px">💳 Payment Method</h3>
+          <p style="color:var(--text2);font-size:.85rem;margin-bottom:20px">Choose a payment method below. Crypto and gift card submissions are reviewed by StarBook staff.</p>
+          <div style="padding:14px;border:1px solid var(--border);border-radius:12px;margin-bottom:16px">
+            <label for="bookingCurrency" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:8px">Display estimate in</label>
+            <select id="bookingCurrency" data-currency-select disabled style="width:100%;padding:10px;border-radius:8px;background:var(--surface);color:var(--text);border:1px solid var(--border)"><option>Loading currencies…</option></select>
+            <p style="margin:8px 0 0;font-size:.8rem;color:var(--text2)">Reference estimate: <strong id="bookingCurrencyEstimate">-</strong></p>
+            <p id="bookingCurrencyStatus" role="status" aria-live="polite" style="margin:5px 0 0;font-size:.72rem;color:var(--text3)"></p>
+          </div>
+          <div id="bookingPaymentBreakdown" style="padding:14px;border:1px solid var(--border);border-radius:12px;margin-bottom:16px" aria-live="polite">Loading order total…</div>
+          <div class="tab-bar" id="payTabBar">
+            <button class="tab-btn active" data-tab="crypto" onclick="setPayTab('crypto')">₿ Crypto</button>
+            <button class="tab-btn" data-tab="giftcard" onclick="setPayTab('giftcard')">🎁 Gift Card</button>
+            <button class="tab-btn" data-tab="bank_transfer" onclick="setPayTab('bank_transfer')">🏦 Bank Transfer</button>
+            <button class="tab-btn" data-tab="cashapp" onclick="setPayTab('cashapp')">💚 Cash App</button>
+            <button class="tab-btn" data-tab="paypal" onclick="setPayTab('paypal')">📱 Mobile Wallet</button>
+          </div>
+          <section id="bank_transferTab" class="new-payment-panel" style="display:none"><h4>Bank transfer</h4><div id="bankTransferDetails" class="payment-instructions">Loading transfer details…</div><button type="button" class="btn btn-outline" onclick="setPayTab('giftcard')">🎁 Pay with Gift Card</button> <button type="button" class="btn btn-outline" onclick="setPayTab('crypto')">₿ Pay with Crypto</button></section>
+          <section id="cashappTab" class="new-payment-panel" style="display:none"><h4>Cash App</h4><div id="cashAppDetails" class="payment-instructions">Loading Cash App details…</div><button type="button" class="btn btn-outline" onclick="setPayTab('giftcard')">🎁 Pay with Gift Card</button> <button type="button" class="btn btn-outline" onclick="setPayTab('crypto')">₿ Pay with Crypto</button></section>
+          <section id="paypalTab" class="new-payment-panel" style="display:none"><h4>Mobile Wallet</h4><div id="paypalDetails" class="payment-instructions">Loading wallet details…</div><button type="button" class="btn btn-outline" onclick="setPayTab('giftcard')">🎁 Pay with Gift Card</button> <button type="button" class="btn btn-outline" onclick="setPayTab('crypto')">₿ Pay with Crypto</button></section>
+          <div id="cryptoTab">
+            <h4 style="font-size:.9rem;font-weight:600;margin-bottom:10px">Select or Search Cryptocurrency</h4>
+            <div style="position:relative;margin-bottom:12px">
+              <input type="text" id="coinSearch" list="cryptoOptions" placeholder="🔍 Type a coin or choose one…" autocomplete="off" oninput="filterCoins(this.value)" style="font-size:.85rem">
+              <datalist id="cryptoOptions"></datalist>
+            </div>
+            <div class="coin-grid" id="coinGrid"></div>
+            <div class="wallet-display" id="walletDisplay" style="display:none">
+              <span class="wallet-addr" id="walletAddr"></span>
+              <button class="copy-btn" onclick="doCopy()">📋 Copy</button>
+            </div>
+            <p style="font-size:.8rem;color:var(--text3);margin-bottom:16px" id="walletWarning">⚠️ Order total: <strong style="color:var(--gold)" id="bookingAmountCrypto">-</strong>. Use your wallet's live quote to determine the crypto amount; StarBook does not calculate or process crypto payments. Verify the network before sending.</p>
+          </div>
+          <div id="giftcardTab" style="display:none">
+            <h4 style="font-size:.9rem;font-weight:600;margin-bottom:12px">Select or Type Gift Card Brand</h4>
+            <div class="gift-grid">
+              <button type="button" class="gift-option selected" data-brand="Razer Gold" onclick="selectGift(this,'Razer Gold')"><span style="font-size:1.4rem">🎮</span><span style="font-size:.85rem;font-weight:600">Razer Gold</span></button>
+              <button type="button" class="gift-option" data-brand="Apple iTunes" onclick="selectGift(this,'Apple iTunes')"><span style="font-size:1.4rem">🍎</span><span style="font-size:.85rem;font-weight:600">Apple iTunes</span></button>
+              <button type="button" class="gift-option" data-brand="Google Play" onclick="selectGift(this,'Google Play')"><span style="font-size:1.4rem">📱</span><span style="font-size:.85rem;font-weight:600">Google Play</span></button>
+              <button type="button" class="gift-option" data-brand="Amazon" onclick="selectGift(this,'Amazon')"><span style="font-size:1.4rem">📦</span><span style="font-size:.85rem;font-weight:600">Amazon</span></button>
+              <button type="button" class="gift-option" data-brand="Steam" onclick="selectGift(this,'Steam')"><span style="font-size:1.4rem">🎮</span><span style="font-size:.85rem;font-weight:600">Steam</span></button>
+            </div>
+            <div class="form-group">
+              <label for="giftCardBrandInput">Gift Card Brand</label>
+              <input type="text" id="giftCardBrandInput" list="giftCardBrandOptions" value="Razer Gold" placeholder="Choose or type the card brand…" autocomplete="off" oninput="selectGiftBrandInput(this.value)">
+              <datalist id="giftCardBrandOptions">
+                <option value="Razer Gold"></option><option value="Apple iTunes"></option><option value="Google Play"></option>
+                <option value="Amazon"></option><option value="Steam"></option>
+              </datalist>
+            </div>
+            <div id="gcCodesWrap">
+              <div class="form-group" style="margin-bottom:8px">
+                <label for="gcCodesInput">Gift Card Code(s) <span style="color:var(--danger)">*</span></label>
+                <textarea id="gcCodesInput" rows="4" placeholder="Enter one gift card code per line:&#10;1234567890766&#10;1234567890987&#10;23456yujhgtr4"></textarea>
+                <p class="booking-extra-note" style="margin:6px 0 0">Press Enter for each additional code. Keep each code on its own line.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Total Card Value (<span id="bookingGiftCurrency">USD</span>) <span style="color:var(--danger)">*</span></label>
+              <input type="number" id="gcValue" placeholder="e.g. 100" min="1" max="10000">
+            </div>
+          </div>
+          <div class="upload-zone" id="uploadZone" ondragover="e=>{e.preventDefault();e.stopPropagation();document.getElementById('uploadZone').classList.add('drag-over')}" ondragleave="document.getElementById('uploadZone').classList.remove('drag-over')" ondrop="handleDrop(event)">
+            <input type="file" id="proofFiles" accept="image/*,application/pdf" multiple onchange="handleUpload(event)">
+            <div style="font-size:1.5rem;margin-bottom:8px">📎</div>
+            <div style="font-weight:600;margin-bottom:4px">Upload Payment Proof</div>
+            <div style="font-size:.8rem;color:var(--text3)">Drag & drop or click · Images & PDF · Max 20 files</div>
+          </div>
+          <div class="upload-previews" id="uploadPreviews"></div>
+          <div id="msgStep3" class="msg" style="margin-top:12px"></div>
+          <div style="display:flex;gap:12px;margin-top:20px">
+            <button class="btn btn-outline" style="flex:1;padding:13px" onclick="goStep(2)">← Back</button>
+            <button class="btn btn-gold" id="submitBtn" style="flex:2;font-size:1rem;padding:13px" onclick="submitBooking()">🎬 Submit Booking</button>
+          </div>
+        </div>
+        <div id="step2" class="booking-step" style="display:none">
+          <h3 style="font-weight:700;margin-bottom:18px">✅ Review & Confirm</h3>
+          <div id="reviewSummary" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px"></div>
+          <div class="form-group" style="margin-bottom:16px">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
+              <input type="checkbox" id="agreeTerms" style="width:auto;margin-top:2px;accent-color:var(--gold)">
+              <span style="font-size:.85rem;color:var(--text2)">I agree to the <a href="/policies.html#terms" target="_blank" style="color:var(--gold)">Terms of Service</a> and understand that bookings are subject to admin review before confirmation.</span>
+            </label>
+          </div>
+          <div id="msgStep2" class="msg"></div>
+          <div style="display:flex;gap:12px">
+            <button class="btn btn-outline" style="flex:1;padding:13px" onclick="goStep(1)">← Back</button>
+            <button class="btn btn-gold" style="flex:2;font-size:1rem;padding:13px" onclick="goStep(3)">Continue to Payment →</button>
+          </div>
+        </div>
+        <div id="successStep" style="display:none;text-align:center;padding:40px 20px">
+          <span class="success-rocket" aria-hidden="true">🚀</span>
+          <div class="success-celebration" style="font-size:4rem;margin-bottom:16px" aria-hidden="true">🎉</div>
+          <h2 style="font-family:var(--font-head);font-size:1.8rem;margin-bottom:12px">Booking Submitted!</h2>
+          <p style="color:var(--text2);margin-bottom:8px">Your booking has been submitted for review. Admin will confirm within 1–24 hours.</p>
+          <p style="color:var(--text3);font-size:.85rem;margin-bottom:8px">You'll receive a notification on your dashboard once confirmed. Your official QR-verified event pass will become available after approval.</p>
+          <p id="successBookingReference" style="color:var(--gold);font-size:.78rem;font-family:monospace;overflow-wrap:anywhere;margin:0 auto 24px"></p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <a href="/dashboard.html" class="btn btn-gold">View My Bookings</a>
+            <a href="/celebrities.html" class="btn btn-outline">Browse More Stars</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="booking-summary-card" id="summaryCard">
+        <div class="skeleton" style="height:180px;border-radius:12px;margin-bottom:16px"></div>
+        <div class="skeleton" style="height:20px;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:16px;width:70%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script src="/assets/js/currency.js"></script>
+<script src="/assets/js/order-pricing.js"></script>
+<script src="/assets/js/payment-options.js"></script>
+<script src="/assets/js/location-suggestions.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+if (!Auth.isLoggedIn()) { window.location.href = '/login.html?redirect=/booking.html' + location.search; }
+
+document.getElementById('eventDate').min = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+const id = new URLSearchParams(location.search).get('id');
+let celeb = null;
+let payMethod = 'crypto';
+let orderFeeSettings = null;
+let orderFeeError = null;
+const COINS = [
+  { name:'Bitcoin',  key:'BTC', sym:'₿',  addr:'', label:'Bitcoin (BTC)' },
+  { name:'Ethereum', key:'ETH', sym:'Ξ',  addr:'', label:'Ethereum (ETH)' },
+  { name:'USDT',     key:'USDT',sym:'₮',  addr:'', label:'USDT (TRC20)' },
+  { name:'BNB',      key:'BNB', sym:'🔶', addr:'', label:'BNB (BSC)' },
+  { name:'XRP',      key:'XRP', sym:'✕',  addr:'', label:'XRP (Ripple)' },
+  { name:'Litecoin', key:'LTC', sym:'Ł',  addr:'', label:'Litecoin (LTC)' },
+  { name:'USDC',     key:'USDC',sym:'$',  addr:'', label:'USDC (ERC20)' },
+  { name:'Solana',   key:'SOL', sym:'◎',  addr:'', label:'Solana (SOL)' },
+  { name:'Dogecoin', key:'DOGE',sym:'Ð',  addr:'', label:'Dogecoin (DOGE)' },
+  { name:'TRON',     key:'TRX', sym:'T',  addr:'', label:'TRON (TRX)' },
+  { name:'Trust Wallet Token', key:'TWT', sym:'T', addr:'', label:'TWT (BSC)' },
+];
+let selCoin = COINS[0];
+let selGiftBrand = 'Razer Gold';
+let uploadedFiles = [];
+let currentStep = 1;
+
+document.getElementById('cryptoOptions').innerHTML = COINS.map(coin => `<option value="${coin.name} (${coin.key})"></option><option value="${coin.key}"></option>`).join('');
+
+async function loadCeleb() {
+  if (!id) { window.location.href = '/celebrities.html'; return; }
+  try {
+    const r = await fetch(`/api/celebrities/${encodeURIComponent(id)}`);
+    if (!r.ok) throw new Error('Could not find this celebrity.');
+    celeb = await r.json();
+    document.title = `Book ${celeb.name} - StarBook`;
+    const celebrityName = escapeHTML(celeb.name);
+    const celebrityImage = resolveImageSource(celeb.image, celeb.name, 400);
+    const fallbackImage = avatarFallback(celeb.name, 400);
+    document.getElementById('summaryCard').innerHTML = `
+      <img src="${escapeHTML(celebrityImage)}" alt="${celebrityName}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:16px" onerror="this.onerror=null;this.src='${fallbackImage}'">
+      <span class="badge badge-gold" style="margin-bottom:8px">${escapeHTML(celeb.category)}</span>
+      <h3 style="font-weight:700;font-size:1.1rem;margin-bottom:6px">${celebrityName}</h3>
+      <p style="color:var(--text3);font-size:.82rem;margin-bottom:16px">📍 ${escapeHTML(celeb.location||'Global')} · ⭐ ${escapeHTML(celeb.rating||4.5)}</p>
+      <hr class="divider">
+      <div id="bookingPriceBreakdown" style="margin-bottom:16px" aria-live="polite">Loading order total…</div>
+      <section class="booking-assurances" aria-label="Booking assurances">
+        <div class="assurance-heading">
+          <span class="assurance-mark" aria-hidden="true">✦</span>
+          <div><span class="assurance-eyebrow">STARBOOK PROMISE</span><h4 class="assurance-title">A booking experience you can trust</h4></div>
+        </div>
+        <div class="assurance-list">
+          <article class="assurance-item">
+            <span class="assurance-check" aria-hidden="true">✓</span>
+            <div><strong>14-day money-back guarantee</strong><p>For eligible bookings not delivered by the celebrity. Contact Support within 14 days of the scheduled date.</p></div>
+          </article>
+          <article class="assurance-item">
+            <span class="assurance-check" aria-hidden="true">✓</span>
+            <div><strong>Delivered within 24–72 hours</strong><p>We keep your booking moving and share status updates in your dashboard.</p></div>
+          </article>
+          <article class="assurance-item">
+            <span class="assurance-check" aria-hidden="true">✓</span>
+            <div><strong>Admin verified before delivery</strong><p>Booking details and submitted payment proof are reviewed before fulfillment.</p></div>
+          </article>
+        </div>
+      </section>
+      `;
+    renderBookingPricing();
+    if (celeb.available === false) {
+      document.getElementById('bookingForm').innerHTML = `
+        <span class="badge badge-danger" style="margin-bottom:12px">Currently unavailable</span>
+        <h1 style="font-family:var(--font-head);font-size:1.5rem;font-weight:800;margin-bottom:8px">Bookings are paused</h1>
+        <p style="color:var(--text2);margin-bottom:20px">${celebrityName} is not currently accepting bookings. Please browse other celebrities or check back later.</p>
+        <a href="/celebrities.html" class="btn btn-gold">Browse Celebrities</a>`;
+      return;
+    }
+    document.getElementById('bookingAmountCrypto').textContent = `${StarBookOrderPricing.formatUSD(bookingTotal())} equivalent`;
+    StarBookCurrency.update();
+  } catch { window.location.href = '/celebrities.html'; }
+}
+
+function bookingTotal() {
+  if (!celeb) return 0;
+  return orderFeeSettings
+    ? StarBookOrderPricing.calculate(celeb.price).totalAmount
+    : Number(celeb.price) || 0;
+}
+
+function bookingCurrency() {
+  return StarBookCurrency.currency();
+}
+
+function formatBookingAmount(amount) {
+  const currency = bookingCurrency();
+  const converted = StarBookCurrency.convert(amount, currency);
+  return converted === null
+    ? StarBookOrderPricing.formatUSD(amount)
+    : StarBookOrderPricing.formatCurrency(converted, currency);
+}
+
+function bookingTotalInSelectedCurrency() {
+  return bookingCurrency() === 'USD'
+    ? bookingTotal()
+    : StarBookCurrency.convert(bookingTotal(), bookingCurrency());
+}
+
+function renderBookingPricing() {
+  if (!celeb) return;
+  const amount = orderFeeSettings ? StarBookOrderPricing.calculate(celeb.price) : null;
+  ['bookingPriceBreakdown', 'bookingPaymentBreakdown'].forEach(id => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    if (amount) StarBookOrderPricing.renderBreakdown(container, celeb.price);
+    else container.textContent = orderFeeError ? `Order pricing is unavailable: ${orderFeeError}` : 'Loading order fee details…';
+  });
+  const cryptoAmount = document.getElementById('bookingAmountCrypto');
+  if (cryptoAmount) cryptoAmount.textContent = `${StarBookOrderPricing.formatUSD(bookingTotal())} equivalent`;
+  StarBookCurrency.update();
+  const giftCurrency = document.getElementById('bookingGiftCurrency');
+  if (giftCurrency) giftCurrency.textContent = bookingCurrency();
+}
+
+async function loadOrderFeeSettings() {
+  try {
+    orderFeeSettings = await StarBookOrderPricing.initialize();
+    renderBookingPricing();
+  } catch (error) {
+    orderFeeError = error.message;
+    ['bookingPriceBreakdown', 'bookingPaymentBreakdown'].forEach(id => {
+      const container = document.getElementById(id);
+      if (container) container.textContent = `Order pricing is unavailable: ${orderFeeError}`;
+    });
+  }
+}
+
+function setPayTab(tab) {
+  payMethod = tab;
+  document.querySelectorAll('#payTabBar .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  ['crypto','giftcard','bank_transfer','cashapp','paypal'].forEach(name => {
+    const panel = document.getElementById(`${name}Tab`);
+    if (panel) panel.style.display = name === tab ? 'block' : 'none';
+  });
+  const needsProof = ['crypto','giftcard'].includes(tab);
+  ['uploadZone','uploadPreviews'].forEach(id => { const element=document.getElementById(id); if(element) element.style.display=needsProof ? '' : 'none'; });
+  const submitButton = document.getElementById('submitBtn');
+  if (submitButton) submitButton.textContent = '🎬 Submit Booking';
+  if (tab === 'crypto') renderCoinGrid(COINS);
+}
+
+function renderCoinGrid(coins) {
+  const grid = document.getElementById('coinGrid');
+  const configured = coins.filter(coin => coin.addr);
+  if (!configured.length) { grid.innerHTML = '<div style="grid-column:1/-1;padding:12px;color:var(--text3);font-size:.85rem">No cryptocurrency wallets are configured. Choose Gift Card or contact support.</div>'; return; }
+  grid.innerHTML = configured.map(c => `<button type="button" class="coin-option ${selCoin.key===c.key?'selected':''}" aria-pressed="${selCoin.key===c.key}" onclick="pickCoin('${c.key}')"><span class="coin-sym">${c.sym}</span><span class="coin-name">${c.key}</span></button>`).join('');
+}
+
+function pickCoin(key) {
+  const c = COINS.find(x => x.key === key);
+  if (!c) return;
+  if (!c.addr) {
+    Toast.error(`${c.label} wallet address is not configured.`);
+    return;
+  }
+  selCoin = c;
+  const q = document.getElementById('coinSearch').value;
+  renderCoinGrid(q ? COINS.filter(x => x.name.toLowerCase().includes(q.toLowerCase()) || x.key.toLowerCase().includes(q.toLowerCase())) : COINS);
+  document.getElementById('walletAddr').textContent = c.addr;
+  document.getElementById('walletDisplay').style.display = 'flex';
+  document.getElementById('walletWarning').style.display = 'block';
+  document.getElementById('bookingAmountCrypto').textContent = `${StarBookOrderPricing.formatUSD(bookingTotal())} USD value · wallet conversion required (${c.key})`;
+}
+
+function filterCoins(q) {
+  const filtered = q ? COINS.filter(c => c.addr && (c.name.toLowerCase().includes(q.toLowerCase()) || c.key.toLowerCase().includes(q.toLowerCase()))) : COINS;
+  renderCoinGrid(filtered);
+}
+
+function selectCoin(el, name, sym, addr, label) {
+  selCoin = { name, sym, addr, label, key: name };
+  document.getElementById('walletAddr').textContent = addr;
+}
+
+function onEventTypeChange(val) {
+  const liveTypes = ['Virtual Event Appearance','Live Performance'];
+  const needsVenue = liveTypes.some(type => type.toLowerCase() === val.trim().toLowerCase());
+  document.getElementById('venueGroup').style.display = needsVenue ? 'block' : 'none';
+}
+
+function selectGift(el, brand) {
+  document.querySelectorAll('.gift-option').forEach(g => g.classList.remove('selected'));
+  el.classList.add('selected');
+  selGiftBrand = brand;
+  document.getElementById('giftCardBrandInput').value = brand;
+}
+
+function selectGiftBrandInput(value) {
+  selGiftBrand = value.trim();
+  document.querySelectorAll('.gift-option').forEach(option => option.classList.toggle('selected', option.dataset.brand.toLowerCase() === selGiftBrand.toLowerCase()));
+}
+
+function getGiftCardCodes() {
+  return document.getElementById('gcCodesInput').value.split(/\r?\n/).map(code => code.trim()).filter(Boolean);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  const files = [...(e.dataTransfer?.files || [])];
+  processFiles(files);
+}
+
+function processFiles(files) {
+  const allowed = files.filter(file => file.type.startsWith('image/') || file.type === 'application/pdf');
+  const supportedFiles = files.length - allowed.length;
+  const validFiles = allowed.filter(file => {
+    if (!file.size || file.size > 5 * 1024 * 1024) {
+      Toast.error(`${file.name || 'A selected file'} must be 5 MB or smaller`);
+      return false;
+    }
+    return true;
+  });
+  if (uploadedFiles.length + validFiles.length > 20) { Toast.error('Maximum 20 proof files allowed'); return; }
+  const currentBytes = uploadedFiles.reduce((total, file) => total + (file.size || 0), 0);
+  const newBytes = validFiles.reduce((total, file) => total + file.size, 0);
+  if (currentBytes + newBytes > 15 * 1024 * 1024) {
+    Toast.error('Payment proof files must total 15 MB or less');
+    return;
+  }
+  validFiles.forEach(file => {
+    const entry = { name: file.name, size: file.size, data: null, isPdf: file.type === 'application/pdf', pending: true };
+    uploadedFiles.push(entry);
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result !== 'string') {
+        uploadedFiles = uploadedFiles.filter(upload => upload !== entry);
+        Toast.error(`Could not read ${file.name}`);
+      } else {
+        entry.data = reader.result;
+        entry.pending = false;
+      }
+      renderThumbs();
+    };
+    reader.onerror = () => {
+      uploadedFiles = uploadedFiles.filter(upload => upload !== entry);
+      Toast.error(`Could not read ${file.name}`);
+      renderThumbs();
+    };
+    reader.readAsDataURL(file);
+  });
+  renderThumbs();
+  if (supportedFiles) Toast.error(`${supportedFiles} unsupported file(s) skipped`);
+}
+
+function doCopy() {
+  copyToClipboard(document.getElementById('walletAddr').textContent)
+    .then(() => Toast.success('Wallet address copied!'))
+    .catch(() => Toast.error('Copy failed - select manually'));
+}
+
+function handleUpload(e) {
+  processFiles([...e.target.files]);
+  e.target.value = '';
+}
+
+function renderThumbs() {
+  const wrap = document.getElementById('uploadPreviews');
+  wrap.replaceChildren(...uploadedFiles.map((file, index) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'upload-thumb';
+    thumb.title = file.name;
+    if (file.pending) {
+      thumb.textContent = 'Reading…';
+    } else if (file.isPdf) {
+      thumb.style.cssText = 'display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:1.4rem';
+      thumb.textContent = '📄';
+    } else {
+      const image = document.createElement('img');
+      image.src = file.data;
+      image.alt = file.name;
+      thumb.appendChild(image);
+    }
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'remove-thumb';
+    remove.textContent = '✕';
+    remove.setAttribute('aria-label', `Remove ${file.name}`);
+    remove.addEventListener('click', () => removeThumb(index));
+    thumb.appendChild(remove);
+    return thumb;
+  }));
+}
+
+function removeThumb(i) { uploadedFiles.splice(i, 1); renderThumbs(); }
+
+function goStep(n) {
+  if (n === 2) {
+    if (!document.getElementById('recipientName').value.trim()) { showMsg(document.getElementById('msgStep1'), 'Please enter the recipient name.'); return; }
+    const evtVal = document.getElementById('eventType').value.trim();
+    if (!evtVal) { showMsg(document.getElementById('msgStep1'), 'Please select an event type.'); return; }
+    const liveTypes = ['Virtual Event Appearance','Live Performance'];
+    if (liveTypes.some(type => type.toLowerCase() === evtVal.toLowerCase()) && !document.getElementById('venueAddress').value.trim()) { showMsg(document.getElementById('msgStep1'), 'Please enter the venue or meeting link.'); return; }
+    if (!document.getElementById('eventDate').value) { showMsg(document.getElementById('msgStep1'), 'Please select an event date.'); return; }
+    if (!orderFeeSettings) { showMsg(document.getElementById('msgStep1'), 'Order pricing is unavailable. Refresh this page before continuing.'); return; }
+    hideMsg(document.getElementById('msgStep1'));
+    buildReviewSummary();
+  }
+  if (n === 3) {
+    if (!document.getElementById('agreeTerms').checked) {
+      showMsg(document.getElementById('msgStep2'), 'Please accept the Terms of Service before continuing.');
+      return;
+    }
+    hideMsg(document.getElementById('msgStep2'));
+  }
+  currentStep = n;
+  document.querySelectorAll('.booking-step').forEach(s => s.style.display = 'none');
+  document.getElementById(`step${n}`).style.display = 'block';
+  if (n === 3) renderCoinGrid(COINS);
+  document.querySelectorAll('#stepIndicator .step').forEach(s => {
+    const sn = parseInt(s.dataset.step);
+    s.classList.toggle('active', sn === n);
+    s.classList.toggle('done', sn < n);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildReviewSummary() {
+  const revFinalEvent = document.getElementById('eventType').value.trim();
+  const orderAmounts = StarBookOrderPricing.calculate(celeb.price);
+  const payInfo = 'Choose a payment method in Step 3';
+  const currency = bookingCurrency();
+  const displayAmount = amount => {
+    const converted = StarBookCurrency.convert(amount, currency);
+    return converted === null ? StarBookOrderPricing.formatUSD(amount) : StarBookOrderPricing.formatCurrency(converted, currency);
+  };
+  const rows = [
+    ['Recipient',document.getElementById('recipientName').value],
+    ['Event Type',revFinalEvent],
+    ['Event Date',new Date(document.getElementById('eventDate').value+'T12:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})],
+    ['Payment',payInfo],
+    ['Base price',displayAmount(orderAmounts.baseAmount)],
+    [`StarBook service fee (${orderAmounts.serviceFeePercent}%)`,displayAmount(orderAmounts.serviceFeeAmount)],
+    [`Estimated tax (${orderAmounts.taxPercent}%)`,displayAmount(orderAmounts.taxAmount)],
+    [`Total due (${currency})`,displayAmount(orderAmounts.totalAmount)]
+  ];
+  [
+    ['Venue / Meeting Link','venueAddress'],['Street Address','eventAddress'],['City / Region','eventCity'],
+    ['Country','eventCountry'],['Nearby Airport','nearestAirport'],['Event Time','eventTime'],['Time Zone','eventTimezone'],
+    ['Special Requests','instructions']
+  ].forEach(([label,id]) => {
+    const value = document.getElementById(id).value.trim();
+    if (value) rows.splice(rows.length - 2, 0, [label, value]);
+  });
+  document.getElementById('reviewSummary').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <img src="${escapeHTML(resolveImageSource(celeb?.image,celeb?.name||'Star',56))}" alt="${escapeHTML(celeb?.name||'')}" style="width:56px;height:56px;border-radius:10px;object-fit:cover" onerror="this.onerror=null;this.src='${avatarFallback(celeb?.name||'Star',56)}'">
+      <div><div style="font-weight:700">${escapeHTML(celeb?.name)}</div><div style="font-size:.82rem;color:var(--text3)">${escapeHTML(celeb?.category)}</div></div>
+    </div>
+    ${rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem"><span style="color:var(--text2);flex-shrink:0">${escapeHTML(l)}</span><span style="font-weight:600;text-align:right;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHTML(v)}</span></div>`).join('')}`;
+}
+
+function validatePaymentDetails() {
+  const message = document.getElementById('msgStep3');
+  if (!orderFeeSettings) { showMsg(message, 'Order pricing is unavailable. Refresh this page before submitting.'); return false; }
+  if (['bank_transfer','cashapp','paypal'].includes(payMethod)) {
+    showMsg(message, 'This payment method is temporarily unavailable. Please choose Gift Card or Crypto.');
+    return false;
+  }
+  if (['crypto','giftcard'].includes(payMethod) && uploadedFiles.length === 0) {
+    showMsg(message, 'Upload your payment proof.');
+    return false;
+  }
+  if (uploadedFiles.some(file => file.pending || !file.data)) {
+    showMsg(message, 'Wait for all payment proof files to finish loading.');
+    return false;
+  }
+  if (payMethod === 'crypto' && (!selCoin.addr || !selCoin.key)) {
+    showMsg(message, 'Choose a configured cryptocurrency wallet before submitting.');
+    return false;
+  }
+  if (payMethod === 'giftcard') {
+    const codes = getGiftCardCodes();
+    if (!codes.length) { showMsg(message, 'Enter your gift card code.'); return false; }
+    if (!selGiftBrand) { showMsg(message, 'Please select or type a gift card brand.'); return false; }
+    if (!document.getElementById('gcValue').value) { showMsg(message, 'Please enter the total card value.'); return false; }
+    const value = Number(document.getElementById('gcValue').value);
+    const orderTotal = bookingTotalInSelectedCurrency();
+    if (orderTotal === null) { showMsg(message, 'The selected currency quote is unavailable. Choose USD or retry after rates load.'); return false; }
+    if (!Number.isFinite(value) || Math.round(value * 100) < Math.round(orderTotal * 100)) {
+      showMsg(message, `Gift card value must cover the ${formatBookingAmount(bookingTotal())} total, including the service fee.`);
+      return false;
+    }
+  }
+  return true;
+}
+
+async function submitBooking() {
+  if (!validatePaymentDetails()) return;
+  if (!document.getElementById('agreeTerms').checked) { showMsg(document.getElementById('msgStep3'), 'Please accept the Terms of Service.'); return; }
+  const btn = document.getElementById('submitBtn');
+  btn.innerHTML = '<span class="spinner"></span> Submitting…';
+  btn.disabled = true;
+  hideMsg(document.getElementById('msgStep3'));
+  const finalEventType = document.getElementById('eventType').value.trim();
+  const gcCodes = getGiftCardCodes();
+  const payload = {
+    celebrityId: id,
+    recipientName: document.getElementById('recipientName').value,
+    eventType: finalEventType,
+    eventDate: document.getElementById('eventDate').value,
+    venue: document.getElementById('venueAddress').value.trim() || undefined,
+    eventAddress: document.getElementById('eventAddress').value.trim() || undefined,
+    eventCity: document.getElementById('eventCity').value.trim() || undefined,
+    eventCountry: document.getElementById('eventCountry').value.trim() || undefined,
+    nearestAirport: document.getElementById('nearestAirport').value.trim() || undefined,
+    eventTime: document.getElementById('eventTime').value || undefined,
+    eventTimezone: document.getElementById('eventTimezone').value.trim() || undefined,
+    instructions: document.getElementById('instructions').value,
+    paymentMethod: payMethod,
+    currency: bookingCurrency(),
+    paymentProofFiles: uploadedFiles.map(file => file.data),
+    ...(payMethod==='crypto'
+      ? { cryptoCoin: selCoin.key, cryptoAddress: selCoin.addr }
+      : payMethod==='giftcard'
+        ? { giftCardBrand: selGiftBrand, giftCardCodes: gcCodes, giftCardCode: gcCodes[0]||'', giftCardValue: parseFloat(document.getElementById('gcValue').value)||0 }
+        : {}),
+  };
+  try {
+    const r = await Auth.fetch('/api/bookings', { method:'POST', body: JSON.stringify(payload) });
+    if (!r) throw new Error('Your session could not be verified. Please sign in again.');
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message||'Submission failed');
+    document.getElementById('successBookingReference').textContent = d.booking?.id
+      ? `BOOKING REFERENCE · ${d.booking.id}`
+      : '';
+    document.querySelectorAll('.booking-step').forEach(s=>s.style.display='none');
+    const successStep = document.getElementById('successStep');
+    successStep.style.display='block';
+    playSuccessRocket(successStep);
+    document.getElementById('stepIndicator').style.display='none';
+  } catch(e) {
+    showMsg(document.getElementById('msgStep3'), e.message||'Booking failed. Please try again.');
+    btn.innerHTML = '🎬 Submit Booking';
+    btn.disabled = false;
+  }
+}
+
+window.addEventListener('starbook-currency-change', renderBookingPricing);
+loadPaymentOptions();
+
+loadCeleb();
+loadOrderFeeSettings();
+StarBookCurrency.initialize({
+  selectId: 'bookingCurrency',
+  amountId: 'bookingCurrencyEstimate',
+  statusId: 'bookingCurrencyStatus',
+  getAmount: bookingTotal
+});
+renderChatbot();
+</script>
+</body>
+</html>

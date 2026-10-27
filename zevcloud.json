@@ -1,0 +1,31 @@
+{
+  "name": "starbook",
+  "type": "nodejs",
+  "entry": "server/server.js",
+  "nodeVersion": "20",
+  "buildCommand": "npm ci --omit=dev",
+  "startCommand": "node server/server.js",
+  "port": 3000,
+  "staticDir": "public",
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000",
+    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
+  },
+  "envSecrets": [
+    "MONGODB_URI",
+    "JWT_SECRET",
+    "BREVO_API_KEY",
+    "BREVO_SENDER_EMAIL",
+    "BREVO_SENDER_NAME",
+    "SITE_URL"
+  ],
+  "ignore": [
+    "node_modules",
+    ".git",
+    "*.log",
+    ".cache"
+  ],
+  "health": "/api/stats",
+  "postDeploy": "node scripts/migrate-json-to-mongodb.js"
+}

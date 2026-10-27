@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Browse celebrity profiles on StarBook. Filter by category, location, and price to find your perfect star.">
+<title>Browse Celebrities - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<link rel="stylesheet" href="/assets/css/home.css">
+<style>
+.filters-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:64px;z-index:100}
+.filters-inner{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.filter-select{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:8px 14px;color:var(--text);font-size:.84rem;cursor:pointer;max-width:180px}
+.filter-select:focus{border-color:var(--accent)}
+.search-input-wrap{position:relative;flex:1;min-width:220px;max-width:380px}
+.search-input-wrap input{padding-left:38px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.cat-pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cat-pills::-webkit-scrollbar{display:none}
+.cat-pill{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s;flex-shrink:0}
+.cat-pill:hover{border-color:var(--gold);color:var(--gold)}
+.cat-pill.active{background:var(--gold-glow);border-color:var(--gold);color:var(--gold)}
+.results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.pagination{display:flex;gap:8px;justify-content:center;margin-top:40px;flex-wrap:wrap}
+.page-btn{width:38px;height:38px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.page-btn:hover{border-color:var(--gold);color:var(--gold)}
+.page-btn.active{background:var(--gold);border-color:var(--gold);color:#0A0A0F;font-weight:700}
+.no-results{text-align:center;padding:80px 20px;color:var(--text3)}
+.no-results .icon{font-size:3rem;margin-bottom:16px}
+@media(max-width:600px){.filters-bar{top:64px;padding:12px 0}.filters-inner{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.search-input-wrap{grid-column:1/-1;min-width:0;max-width:none}.filter-select{width:100%;max-width:none;min-width:0;min-height:44px}.filters-inner input[type=range]{grid-column:1;min-width:0;width:100%!important}.filters-inner #priceLabel{grid-column:2;justify-self:end;white-space:normal!important;text-align:right;font-size:.78rem!important}.cat-pills{margin-inline:-4px;padding-inline:4px}.cat-pill{min-height:44px}.results-bar{margin-bottom:16px}.celeb-card-footer{align-items:stretch;flex-direction:column;gap:8px}.celeb-card-footer>div:last-child{width:100%}.celeb-card-footer .btn{width:100%;min-height:44px;padding:9px 8px!important;font-size:.78rem!important;white-space:nowrap}.no-results{padding:48px 16px}}
+@media(max-width:360px){.filter-select{font-size:.78rem;padding:8px 9px}.results-bar{align-items:flex-start}.pagination{gap:6px}.page-btn{width:44px;height:44px}}
+</style>
+</head>
+<body>
+<div id="navPlaceholder"></div>
+<div class="filters-bar">
+  <div class="container">
+    <div class="filters-inner" style="margin-bottom:12px">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="searchInput" placeholder="Search celebrities..." autocomplete="off">
+      </div>
+      <select id="sortSelect" class="filter-select"><option value="rating">Top Rated</option><option value="bookings">Most Booked</option><option value="price_asc">Price: Low to High</option><option value="price_desc">Price: High to Low</option><option value="name">Name A–Z</option></select>
+      <select id="locationSelect" class="filter-select"><option value="">All Locations</option><option>USA</option><option>UK</option><option>Nigeria</option><option>Brazil</option><option>France</option><option>Argentina</option><option>Global</option></select>
+      <input type="range" id="priceRange" min="0" max="10000" value="10000" step="100" style="width:140px;accent-color:var(--gold)" title="Max price">
+      <span id="priceLabel" style="font-size:.8rem;color:var(--text2);white-space:nowrap">Any price</span>
+    </div>
+    <div class="cat-pills" id="catPills">
+      <button class="cat-pill active" data-cat="">All Categories</button>
+      <button class="cat-pill" data-cat="Musician">🎵 Musicians</button>
+      <button class="cat-pill" data-cat="Actor">🎬 Actors</button>
+      <button class="cat-pill" data-cat="Footballer">⚽ Footballers</button>
+      <button class="cat-pill" data-cat="Athlete">🏅 Athletes</button>
+      <button class="cat-pill" data-cat="Comedian">😂 Comedians</button>
+      <button class="cat-pill" data-cat="TV Host">📺 TV Hosts</button>
+      <button class="cat-pill" data-cat="Influencer">📱 Influencers</button>
+      <button class="cat-pill" data-cat="DJ">🎧 DJs</button>
+      <button class="cat-pill" data-cat="Model">👗 Models</button>
+      <button class="cat-pill" data-cat="YouTuber">📺 YouTubers</button>
+      <button class="cat-pill" data-cat="Podcaster">🎙️ Podcasters</button>
+      <button class="cat-pill" data-cat="Streamer">🎮 Streamers</button>
+    </div>
+  </div>
+</div>
+<main>
+  <section style="padding:40px 0 72px">
+    <div class="container">
+      <div class="results-bar">
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:.8rem;color:var(--text3)">Page <strong id="pageInfo">1</strong></span>
+        </div>
+      </div>
+      <div class="celeb-grid" id="celebGrid"></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+
+let state = { page: 1, category: '', sort: 'rating', location: '', maxPrice: 10000, search: '', totalPages: 1 };
+let searchTimer;
+let celebrityRequestId = 0;
+
+const params = new URLSearchParams(location.search);
+if (params.get('category')) { state.category = params.get('category'); }
+if (params.get('sort')) state.sort = params.get('sort');
+if (params.get('search')) state.search = params.get('search').trim();
+document.getElementById('searchInput').value = state.search;
+document.getElementById('sortSelect').value = state.sort;
+
+async function loadCelebs() {
+  const requestId = ++celebrityRequestId;
+  const grid = document.getElementById('celebGrid');
+  const pageInfo = document.getElementById('pageInfo');
+  grid.innerHTML = Array(8).fill('<div class="celeb-card skeleton"></div>').join('');
+  const qs = new URLSearchParams({ page: state.page, limit: 16, sort: state.sort });
+  if (state.category) qs.set('category', state.category);
+  if (state.location) qs.set('location', state.location);
+  if (state.maxPrice < 10000) qs.set('maxPrice', state.maxPrice);
+  if (state.search) qs.set('search', state.search);
+  try {
+    const r = await fetch('/api/celebrities?' + qs);
+    if (!r.ok) throw new Error(`Celebrity search failed (${r.status})`);
+    const d = await r.json();
+    if (requestId !== celebrityRequestId) return;
+    const celebs = d.celebrities || [];
+    state.totalPages = d.pages || 1;
+    pageInfo.textContent = state.page;
+    grid.innerHTML = celebs.length
+      ? celebs.map(c => renderCelebCard(c)).join('')
+      : '<div class="no-results" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No celebrities found</h3><p>Try different filters or <a href="/celebrities.html" style="color:var(--gold)">clear all filters</a></p></div>';
+    renderPagination();
+  } catch(e) {
+    if (requestId !== celebrityRequestId) return;
+    grid.innerHTML = '<div class="no-results" style="grid-column:1/-1"><div class="icon">⚠️</div><h3>Failed to load</h3><p>Please refresh the page.</p></div>';
+  }
+}
+
+function renderPagination() {
+  const el = document.getElementById('pagination');
+  if (state.totalPages <= 1) { el.innerHTML = ''; return; }
+  let html = '';
+  if (state.page > 1) html += `<button class="page-btn" onclick="goPage(${state.page-1})">‹</button>`;
+  const start = Math.max(1, state.page - 2);
+  const end = Math.min(state.totalPages, state.page + 2);
+  for (let i = start; i <= end; i++) {
+    html += `<button class="page-btn ${i===state.page?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  if (state.page < state.totalPages) html += `<button class="page-btn" onclick="goPage(${state.page+1})">›</button>`;
+  el.innerHTML = html;
+}
+
+function goPage(n) { state.page = n; loadCelebs(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+document.querySelectorAll('.cat-pill').forEach(btn => {
+  if (btn.dataset.cat === state.category) { document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.category = btn.dataset.cat;
+    state.page = 1;
+    loadCelebs();
+  });
+});
+
+document.getElementById('sortSelect').addEventListener('change', e => { state.sort = e.target.value; state.page = 1; loadCelebs(); });
+document.getElementById('locationSelect').addEventListener('change', e => { state.location = e.target.value; state.page = 1; loadCelebs(); });
+document.getElementById('priceRange').addEventListener('input', e => {
+  state.maxPrice = parseInt(e.target.value);
+  updatePriceLabel();
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.page = 1; loadCelebs(); }, 500);
+});
+function updatePriceLabel() {
+  const label = document.getElementById('priceLabel');
+  if (state.maxPrice >= 10000) {
+    label.textContent = 'Any price';
+    return;
+  }
+  const currency = window.StarBookCurrency?.currency() || 'USD';
+  const amount = window.StarBookCurrency?.convert(state.maxPrice, currency);
+  label.textContent = amount === null || amount === undefined
+    ? `Up to $${state.maxPrice.toLocaleString()}`
+    : `Up to ${window.StarBookCurrency.format(amount, currency)}`;
+}
+window.addEventListener('starbook-currency-change', updatePriceLabel);
+document.getElementById('searchInput').addEventListener('input', e => {
+  state.search = e.target.value;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.page = 1; loadCelebs(); }, 400);
+});
+
+loadCelebs();
+renderChatbot();
+</script>
+</body>
+</html>

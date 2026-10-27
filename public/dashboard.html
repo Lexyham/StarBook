@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Manage your StarBook bookings, fan cards and profile from your personal dashboard.">
+<title>My Dashboard - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<link rel="stylesheet" href="/assets/css/fan-cards.css">
+<style>
+.dash-hero{background:var(--bg2);border-bottom:1px solid var(--border);padding:32px 0}
+.dash-hero-inner{display:flex;align-items:center;gap:20px}
+.dash-avatar{width:64px;height:64px;border-radius:50%;background:var(--surface);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--gold);flex-shrink:0;padding:0;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.dash-avatar:hover,.dash-avatar:focus-visible{transform:translateY(-2px) perspective(500px) rotateY(-8deg);box-shadow:0 0 20px rgba(245,200,66,.32),0 0 34px rgba(124,92,252,.16);outline:2px solid var(--gold);outline-offset:3px}
+.dash-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.dash-name{display:inline-block;transform-origin:left center;animation:dashboardWelcomeGlow 3.4s ease-in-out infinite}
+@keyframes dashboardWelcomeGlow{0%,100%{transform:perspective(700px) rotateY(-2deg) translateZ(0);text-shadow:0 0 5px rgba(245,200,66,.2)}50%{transform:perspective(700px) rotateY(2deg) translateZ(3px);text-shadow:0 0 10px rgba(245,200,66,.45),0 0 22px rgba(124,92,252,.2)}}
+.overview-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:28px}
+.overview-summary-card{min-width:0;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px}
+.overview-summary-card h2{font-size:1.05rem;font-weight:700;margin-bottom:14px}
+.overview-counts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.overview-count{min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px}
+.overview-count strong{display:block;color:var(--gold);font-family:var(--font-head);font-size:1.15rem;line-height:1.2}
+.overview-count span{display:block;margin-top:4px;color:var(--text3);font-size:.7rem;overflow-wrap:anywhere}
+@media(prefers-reduced-motion:reduce){.dash-name{animation:none}}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:32px 0}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px}
+.stat-num{font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--gold)}
+.stat-lbl{font-size:.8rem;color:var(--text3);margin-top:4px}
+.data-table{width:100%;min-width:620px;border-collapse:collapse}
+.data-table th{text-align:left;padding:12px 16px;font-size:.78rem;font-weight:600;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em}
+.data-table td{padding:13px 16px;font-size:.87rem;border-bottom:1px solid var(--border);color:var(--text2)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface)}
+.fancard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:16px}
+.fancard-entry{min-width:0}
+.fan-card-view{width:100%;margin-top:10px}
+.fan-card-modal-template{margin-bottom:20px}
+.fan-card-benefits{display:grid;gap:7px;margin:10px 0 0;padding:0;list-style:none}
+.fan-card-benefits li{position:relative;padding-left:20px;color:var(--text2);font-size:.82rem;line-height:1.5}
+.fan-card-benefits li::before{position:absolute;left:0;color:var(--success);font-weight:800;content:'✓'}
+.notif-item{display:flex;align-items:flex-start;gap:14px;padding:16px;border-bottom:1px solid var(--border);transition:.15s}
+.notif-item:hover{background:var(--surface)}
+.notif-item.unread{border-left:3px solid var(--gold)}
+.notif-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--gold);color:#000;font-size:.65rem;font-weight:800;border-radius:20px;min-width:18px;height:18px;padding:0 5px;margin-left:6px;line-height:1}
+.notif-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:var(--surface)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative}
+.booking-detail-modal{max-width:760px;padding:0;overflow:hidden}
+.detail-modal-head{position:relative;padding:22px 28px;border-bottom:1px solid var(--border);background:linear-gradient(120deg,rgba(245,200,66,.07),rgba(124,92,252,.06))}
+.detail-modal-head h3{font-family:var(--font-head);font-size:1.2rem;font-weight:800;padding-right:44px}
+.detail-modal-body{padding:24px 28px;max-height:calc(90vh - 76px);overflow-y:auto}
+.detail-hero{display:flex;align-items:center;gap:16px;padding:16px;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.detail-hero-img{width:76px;height:76px;object-fit:cover;border-radius:12px;border:1px solid var(--border2);background:var(--bg2);flex-shrink:0}
+.detail-hero-title{font-family:var(--font-head);font-size:1rem;font-weight:800;margin-bottom:5px}
+.detail-hero-sub{color:var(--text3);font-size:.8rem}
+.detail-section-title{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin:20px 0 10px}
+.detail-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.detail-info{min-width:0;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:11px}
+.detail-info-label{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.detail-info-value{font-size:.85rem;color:var(--text);line-height:1.5;overflow-wrap:anywhere;white-space:pre-wrap}
+.booking-ticket-preview{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;margin:20px 0;padding:18px;border:1px solid rgba(245,200,66,.3);border-radius:16px;background:radial-gradient(ellipse at 0 0,rgba(245,200,66,.1),transparent 55%),linear-gradient(130deg,#171525,#101421)}
+.booking-ticket-preview h4{font-family:var(--font-head);font-size:1rem;margin:4px 0}
+.booking-ticket-preview p{margin:0;color:var(--text2);font-size:.8rem;line-height:1.5}
+.booking-ticket-qr{width:96px;height:96px;padding:6px;border-radius:10px;background:#fff}
+.booking-ticket-qr img{width:100%;height:100%;image-rendering:pixelated}
+.booking-ticket-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.booking-ticket-actions .btn{font-size:.76rem;padding:8px 12px}
+.booking-pending-note{margin:20px 0;padding:15px;border:1px solid rgba(245,158,11,.25);border-radius:12px;background:rgba(245,158,11,.07);color:#fcd34d;font-size:.84rem;line-height:1.55}
+.detail-proof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.detail-proof{display:block;overflow:hidden;border-radius:10px;border:1px solid var(--border)}
+.detail-proof img{display:block;width:100%;height:120px;object-fit:cover}
+.fan-card-physical{display:block;width:100%;max-height:340px;object-fit:contain;margin-bottom:20px;border:1px solid var(--border2);border-radius:14px;background:var(--surface)}
+.modal-close-btn{position:absolute;top:16px;right:16px;background:var(--surface);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;color:var(--text2);font-size:1rem}
+.status-pending{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.3);padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.status-approved{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.3);padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.status-rejected{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.3);padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+@media(max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr)}.fancard-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat-card{padding:14px}.stat-num{font-size:1.5rem}.fancard-grid{grid-template-columns:1fr}.quick-actions-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px!important}.data-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}.dash-hero-inner{display:grid;grid-template-columns:54px minmax(0,1fr);gap:12px}.dash-hero-inner>div:nth-child(2){min-width:0}.dash-hero-actions{grid-column:1/-1;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important;width:100%;margin-left:0!important}.dash-hero-actions .btn{min-width:0;min-height:44px;white-space:nowrap;font-size:.78rem!important;padding:9px 6px!important}.dash-hero-actions .btn:last-child{grid-column:1/-1}.dash-avatar{width:54px;height:54px}.dash-name{font-size:1.15rem!important;line-height:1.2}.overview-summary-grid{grid-template-columns:1fr;gap:12px}.overview-summary-card{padding:14px}.overview-counts{gap:6px}.overview-count{padding:8px}.overview-count strong{font-size:1.05rem}.overview-count span{font-size:.67rem}}
+@media(max-width:600px){.detail-modal-head{padding:18px 18px}.detail-modal-body{padding:16px 18px}.detail-hero{padding:12px;gap:12px}.detail-hero-img{width:62px;height:62px}}
+@media(max-width:360px){.stat-grid{gap:8px}.stat-card{padding:12px}.quick-actions-grid{grid-template-columns:1fr}.dash-hero-actions{gap:6px!important}.dash-hero-actions .btn{font-size:.76rem!important;padding:9px 8px!important}.data-table th,.data-table td{padding:10px 12px}}
+@media(max-width:400px){.detail-info-grid{grid-template-columns:1fr}.detail-modal-head h3{font-size:1.05rem}.detail-hero{align-items:flex-start}}
+@media(max-width:480px){.booking-ticket-preview{grid-template-columns:minmax(0,1fr);padding:14px}.booking-ticket-qr{width:84px;height:84px}.booking-ticket-actions .btn{min-height:42px}}
+</style>
+</head>
+<body>
+<div id="navPlaceholder"></div>
+<main>
+  <div class="dash-hero">
+    <div class="container">
+      <div class="dash-hero-inner">
+        <button type="button" class="dash-avatar" id="dashAvatar" aria-label="Open your profile" aria-expanded="false" title="Open your profile"></button>
+        <div>
+          <h1 class="dash-name" style="font-family:var(--font-head);font-size:1.5rem;font-weight:800" id="dashName">Welcome back!</h1>
+          <p style="color:var(--text3);font-size:.87rem" id="dashMember"></p>
+        </div>
+        <div class="dash-hero-actions" style="margin-left:auto;display:flex;gap:10px;flex-wrap:wrap">
+          <a href="/celebrities.html" class="btn btn-gold" style="font-size:.88rem;padding:10px 20px">Book a Celebrity</a>
+          <a href="/fancard.html" class="btn btn-outline" style="font-size:.88rem;padding:10px 20px">Get Fan Card</a>
+          <button type="button" class="btn btn-outline" data-logout style="font-size:.88rem;padding:10px 20px;border-color:rgba(239,68,68,.4);color:#ef4444">Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:80px">
+    <div class="stat-grid" id="statGrid">
+      <div class="stat-card skeleton" style="height:90px"></div>
+      <div class="stat-card skeleton" style="height:90px"></div>
+      <div class="stat-card skeleton" style="height:90px"></div>
+      <div class="stat-card skeleton" style="height:90px"></div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="bookings">Bookings</button>
+      <button class="tab-btn" data-tab="fancards">Fan Cards</button>
+    </div>
+    <div class="tab-content active" data-tab="overview" style="padding-top:24px">
+      <div class="overview-summary-grid">
+        <section class="overview-summary-card">
+          <h2>Booking Overview</h2>
+          <div class="overview-counts" id="bookingOverviewCounts"><div class="overview-count"><strong>-</strong><span>Loading</span></div></div>
+        </section>
+        <section class="overview-summary-card">
+          <h2>Fan Card Overview</h2>
+          <div class="overview-counts" id="fanCardOverviewCounts"><div class="overview-count"><strong>-</strong><span>Loading</span></div></div>
+        </section>
+      </div>
+      <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Recent Activitys</h2>
+      <div class="data-table-wrap" style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow-x:auto">
+        <table class="data-table"><thead><tr><th>Celebrity</th><th>Event</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody id="recentBookingsTbody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <div style="margin-top:32px">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Recent Fan Cards</h2>
+        <div id="overviewFancards" class="fancard-grid"><p style="color:var(--text3)">Loading…</p></div>
+      </div>
+      <div style="margin-top:32px">
+        <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">Quick Actions</h2>
+        <div class="grid-3 quick-actions-grid" style="gap:16px">
+          <a href="/celebrities.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;text-decoration:none;display:block;transition:.15s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:1.8rem;margin-bottom:8px">🎬</div><div style="font-weight:600;margin-bottom:4px">Book a Celebrity</div><div style="font-size:.82rem;color:var(--text3)">Browse celebrity profiles</div></a>
+          <a href="/fancard.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;text-decoration:none;display:block;transition:.15s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:1.8rem;margin-bottom:8px">🪪</div><div style="font-weight:600;margin-bottom:4px">Get Fan Card</div><div style="font-size:.82rem;color:var(--text3)">Iron-plate membership card</div></a>
+          <a href="/help.html" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;text-decoration:none;display:block;transition:.15s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:1.8rem;margin-bottom:8px">💬</div><div style="font-weight:600;margin-bottom:4px">Get Support</div><div style="font-size:.82rem;color:var(--text3)">Help center &amp; live chat</div></a>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" data-tab="bookings" style="padding-top:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h2 style="font-size:1.1rem;font-weight:700">My Bookings</h2>
+      </div>
+      <div class="data-table-wrap" style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow-x:auto">
+        <table class="data-table"><thead><tr><th>Celebrity</th><th>Event Type</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="allBookingsTbody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-content" data-tab="fancards" style="padding-top:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h2 style="font-size:1.1rem;font-weight:700">My Fan Cards</h2>
+        <a href="/fancard.html" class="btn btn-gold" style="font-size:.85rem;padding:8px 18px">+ Order Card</a>
+      </div>
+      <div class="fancard-grid" id="fancardsGrid"><p style="color:var(--text3)">Loading…</p></div>
+    </div>
+    <div class="tab-content" data-tab="profile" style="padding-top:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px">
+        <h2 style="font-size:1.1rem;font-weight:700">Your Profile</h2>
+        <button type="button" class="btn btn-outline" id="profileBackButton" style="font-size:.82rem;padding:8px 14px">← Back to Overview</button>
+      </div>
+      <div class="grid-2" style="gap:32px;align-items:start">
+        <div>
+          <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Edit Profile</h2>
+          <div id="profileMsg" class="msg"></div>
+          <form id="profileForm" onsubmit="saveProfile(event)">
+            <div class="form-group"><label>Full Name</label><input type="text" id="pFullName" placeholder="Your full name"></div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="pEmail" readonly style="opacity:.6;cursor:not-allowed" title="Email cannot be changed"></div>
+            <div class="form-group"><label>Phone Number</label><input type="tel" id="pPhone" placeholder="+1 234 567 8900"></div>
+            <div class="form-group"><label>Country</label>
+              <select id="pCountry" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:10px 14px;color:var(--text);width:100%">
+                <option value="">Select country</option>
+                <option>United States</option><option>United Kingdom</option><option>Nigeria</option><option>Canada</option><option>Australia</option><option>Brazil</option><option>France</option><option>Germany</option><option>India</option><option>South Africa</option><option>Other</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-gold" id="saveProfileBtn" style="padding:11px 28px">Save Changes</button>
+          </form>
+          <section style="margin-top:26px;padding:18px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
+            <h2 style="font-size:1rem;font-weight:700;margin-bottom:8px">License Access</h2>
+            <div id="licenseInfo" style="font-size:.84rem;color:var(--text2);margin-bottom:14px">Loading license status…</div>
+            <div id="licenseMsg" class="msg"></div>
+            <form id="licenseForm" onsubmit="applyLicense(event)">
+              <div class="form-group"><label for="licenseKeyInput">Activate or change license</label><input type="text" id="licenseKeyInput" placeholder="Enter your license key" autocomplete="off" required></div>
+              <button type="submit" class="btn btn-outline" id="applyLicenseBtn" style="padding:10px 20px">Apply License</button>
+            </form>
+          </section>
+        </div>
+        <div>
+          <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:20px">Change Password</h2>
+          <div id="pwMsg" class="msg"></div>
+          <form id="pwForm" onsubmit="changePassword(event)">
+            <div class="form-group"><label>Current Password</label><input type="password" id="pwCurrent" placeholder="Current password"></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="pwNew" placeholder="Min. 6 characters" minlength="6"></div>
+            <div class="form-group"><label>Confirm Password</label><input type="password" id="pwConfirm" placeholder="Repeat new password"></div>
+            <button type="submit" class="btn btn-outline" id="savePwBtn" style="padding:11px 28px">Update Password</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<div class="modal-overlay" id="fancardModal">
+  <div class="modal-box">
+    <button class="modal-close-btn" onclick="closeFancardModal()">✕</button>
+    <h3 id="fancardModalTitle" style="font-family:var(--font-head);font-size:1.2rem;font-weight:800;margin-bottom:20px">Fan Card Details</h3>
+    <div id="fancardModalContent"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal-box booking-detail-modal">
+    <div class="detail-modal-head">
+      <button class="modal-close-btn" onclick="closeModal()" aria-label="Close booking details">✕</button>
+      <h3 id="bookingModalTitle">Booking Details</h3>
+    </div>
+    <div class="detail-modal-body" id="modalContent"></div>
+  </div>
+</div>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script src="/assets/js/fan-card-templates.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+requireAuth('/login.html?redirect=/dashboard.html');
+const user = Auth.user();
+const bookingRecords = new Map();
+const fanCardRecords = new Map();
+const firstName = (user?.fullName||user?.username||'').split(' ')[0];
+document.getElementById('dashName').textContent = 'Welcome back, ' + firstName + '!';
+document.getElementById('dashMember').textContent = (user?.userType==='vip'||user?.userType==='premium') ? '⭐ Premium Member' : 'StarBook Member';
+const av = document.getElementById('dashAvatar');
+const avatarInitial = (user?.fullName||user?.username||'U').charAt(0).toUpperCase();
+const avatarUrl = user?.avatar || user?.profilePicture || user?.profileImage;
+if (typeof avatarUrl === 'string' && /^(https?:\/\/|\/|data:image\/(?:png|jpeg|webp|gif);base64,)/i.test(avatarUrl)) {
+  const avatarImage = document.createElement('img');
+  avatarImage.src = avatarUrl;
+  avatarImage.alt = '';
+  avatarImage.addEventListener('error', () => { av.textContent = avatarInitial; }, { once: true });
+  av.appendChild(avatarImage);
+} else {
+  av.textContent = avatarInitial;
+}
+initTabs();
+
+function showDashboardView(view) {
+  document.querySelectorAll('.tab-content').forEach(panel => panel.classList.toggle('active', panel.dataset.tab === view));
+  document.querySelectorAll('.tab-btn').forEach(button => button.classList.toggle('active', button.dataset.tab === view));
+  av.setAttribute('aria-expanded', String(view === 'profile'));
+}
+const dashboardSocket = typeof window.io === 'function'
+  ? window.io({ auth: { token: Auth.token() } })
+  : null;
+if (dashboardSocket) window.starbookNotificationSocket = dashboardSocket;
+dashboardSocket?.on('booking-update', async update => {
+  const state = await loadDash();
+  if (!update?.bookingId || !state?.bookings) return;
+  const booking = bookingRecords.get(String(update.bookingId));
+  if (booking && document.getElementById('bookingModal').classList.contains('open'))
+    openBooking(booking);
+});
+function refreshDashboardNotifications() {
+  loadDash();
+  window.dispatchEvent(new Event('starbook-notification-change'));
+}
+['notification', 'notification-update', 'notification-delete'].forEach(eventName =>
+  dashboardSocket?.on(eventName, refreshDashboardNotifications)
+);
+['booking-delete', 'fancard-update', 'fancard-delete'].forEach(eventName =>
+  dashboardSocket?.on(eventName, refreshDashboardNotifications)
+);
+av.addEventListener('click', () => {
+  showDashboardView(document.querySelector('.tab-content[data-tab="profile"]').classList.contains('active') ? 'overview' : 'profile');
+});
+document.getElementById('profileBackButton').addEventListener('click', () => showDashboardView('overview'));
+document.querySelectorAll('.tab-btn').forEach(button => button.addEventListener('click', () => av.setAttribute('aria-expanded', 'false')));
+
+async function loadDash() {
+  try {
+    const [bkRes, fcRes, ntRes, licenseRes] = await Promise.allSettled([
+      Auth.fetch('/api/bookings'),
+      Auth.fetch('/api/fancards/mine'),
+      Auth.fetch('/api/notifications/mine'),
+      Auth.fetch('/api/users/me/license')
+    ]);
+    const bookings = bkRes.status==='fulfilled' ? (await bkRes.value.json()) : [];
+    const fancards = fcRes.status==='fulfilled' ? (await fcRes.value.json()) : [];
+    const notifs = ntRes.status==='fulfilled' ? (await ntRes.value.json()) : [];
+    const bkArr = Array.isArray(bookings) ? bookings : (bookings.bookings||[]);
+    const fcArr = Array.isArray(fancards) ? fancards : (fancards.fancards||[]);
+    const ntArr = Array.isArray(notifs) ? notifs : (notifs.notifications||[]);
+    if (licenseRes.status === 'fulfilled' && licenseRes.value?.ok) {
+      renderLicenseStatus(await licenseRes.value.json());
+    } else {
+      document.getElementById('licenseInfo').textContent = 'Unable to load license status. Please refresh and try again.';
+    }
+    const unread = ntArr.filter(n=>!n.read).length;
+    document.getElementById('statGrid').innerHTML = `
+      <div class="stat-card"><div class="stat-num">${bkArr.length}</div><div class="stat-lbl">Total Bookings</div></div>
+      <div class="stat-card"><div class="stat-num">${fcArr.length}</div><div class="stat-lbl">Fan Cards</div></div>
+      <div class="stat-card"><div class="stat-num">${bkArr.filter(b=>['approved','confirmed'].includes(String(b.status||'').toLowerCase())).length}</div><div class="stat-lbl">Confirmed</div></div>
+      <div class="stat-card"><div class="stat-num">${unread}</div><div class="stat-lbl">Unread Alerts</div></div>`;
+    renderOverviewCounts('bookingOverviewCounts', bkArr, 'booking');
+    renderOverviewCounts('fanCardOverviewCounts', fcArr, 'fancard');
+    renderRecentBookings(bkArr.slice(0,5), 'recentBookingsTbody');
+    renderAllBookings(bkArr);
+    renderFancards(fcArr, 'fancardsGrid');
+    renderFancards(fcArr.slice(0,3), 'overviewFancards');
+    prefillProfile();
+    return { bookings: bkArr };
+  } catch(e) {
+    document.getElementById('statGrid').innerHTML = `<div class="stat-card"><div class="stat-num">-</div><div class="stat-lbl">Could not load stats</div></div>`;
+    return null;
+  }
+}
+
+function renderOverviewCounts(containerId, items, kind) {
+  const container = document.getElementById(containerId);
+  const count = statuses => items.filter(item => statuses.includes(String(item.status || '').toLowerCase())).length;
+  const confirmedStatuses = kind === 'booking' ? ['approved', 'confirmed'] : ['approved'];
+  const pendingStatuses = kind === 'booking' ? ['pending', 'payment_submitted'] : ['pending'];
+  const confirmedLabel = kind === 'booking' ? 'Confirmed' : 'Approved';
+  container.innerHTML = `
+    <div class="overview-count"><strong>${items.length}</strong><span>Total</span></div>
+    <div class="overview-count"><strong>${count(confirmedStatuses)}</strong><span>${confirmedLabel}</span></div>
+    <div class="overview-count"><strong>${count(pendingStatuses)}</strong><span>${kind === 'booking' ? 'Pending / Review' : 'Pending'}</span></div>
+    <div class="overview-count"><strong>${count(['rejected'])}</strong><span>Rejected</span></div>`;
+}
+
+function statusBadge(status) {
+  const normalized = String(status || 'pending').trim().toLowerCase().replace(/[_-]+/g, ' ') || 'pending';
+  const className = ['approved', 'confirmed', 'completed', 'delivered'].includes(normalized)
+    ? 'status-approved'
+    : ['rejected', 'cancelled', 'failed'].includes(normalized) ? 'status-rejected' : 'status-pending';
+  const label = normalized.replace(/\b[a-z]/g, letter => letter.toUpperCase());
+  return `<span class="${className}">${escapeHTML(label)}</span>`;
+}
+
+function bookingStatusBadge(status) {
+  const normalized = String(status || 'pending').trim().toLowerCase().replace(/[_-]+/g, ' ') || 'pending';
+  if (normalized === 'confirmed')
+    return '<span class="status-approved">Confirmed</span>';
+  if (normalized === 'payment submitted')
+    return '<span class="status-pending">Payment Submitted</span>';
+  return statusBadge(normalized);
+}
+
+function renderRecentBookings(arr, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  if (!arr.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">No bookings yet. <a href="/celebrities.html" style="color:var(--gold)">Book now →</a></td></tr>'; return; }
+  tbody.innerHTML = arr.map(renderBookingRow).join('');
+}
+
+function renderAllBookings(arr) {
+  const tbody = document.getElementById('allBookingsTbody');
+  if (!arr.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">No bookings yet. <a href="/celebrities.html" style="color:var(--gold)">Book now →</a></td></tr>'; return; }
+  tbody.innerHTML = arr.map(renderBookingRow).join('');
+}
+
+function renderBookingRow(booking) {
+  const id = String(booking.id || booking._id || '');
+  bookingRecords.set(id, booking);
+  return `<tr>
+    <td><strong>${escapeHTML(booking.celebrityName||booking.celebrity||'-')}</strong></td>
+    <td>${escapeHTML(booking.eventType||'-')}</td>
+    <td>${booking.eventDate?escapeHTML(new Date(booking.eventDate).toLocaleDateString()):'-'}</td>
+    <td>${bookingStatusBadge(booking.status)}</td>
+    <td><button type="button" class="btn btn-outline" data-booking-id="${escapeHTML(id)}" style="font-size:.75rem;padding:4px 12px">View</button></td>
+  </tr>`;
+}
+
+function formatOrderCurrency(value, currency = 'USD') {
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return '-';
+  try {
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+  } catch {
+    return `${amount.toLocaleString()} ${currency}`;
+  }
+}
+
+['recentBookingsTbody','allBookingsTbody'].forEach(id => {
+  document.getElementById(id).addEventListener('click', event => {
+    const button = event.target.closest('[data-booking-id]');
+    if (button) openBooking(bookingRecords.get(button.dataset.bookingId));
+  });
+});
+['fancardsGrid','overviewFancards'].forEach(id => {
+  document.getElementById(id).addEventListener('click', event => {
+    const card = event.target.closest('[data-fancard-id]');
+    if (card) openFancard(fanCardRecords.get(card.dataset.fancardId));
+  });
+});
+
+function renderFancards(arr, gridId) {
+  const grid = document.getElementById(gridId||'fancardsGrid');
+  if (!arr.length) {
+    if (gridId==='overviewFancards') { grid.innerHTML = '<div style="grid-column:1/-1;color:var(--text3);font-size:.87rem">No fan cards yet. <a href="/fancard.html" style="color:var(--gold)">Order one →</a></div>'; return; }
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3)"><p>No fan cards yet.</p><a href="/fancard.html" class="btn btn-gold" style="margin-top:16px;display:inline-block">Order Your First Card →</a></div>'; return;
+  }
+  grid.replaceChildren(...arr.map(fc=>{
+    const tier = fanCardTier(fc);
+    const id = String(fc.id || fc._id || fc.fanId || '');
+    fanCardRecords.set(id, fc);
+    const entry = document.createElement('article');
+    entry.className = 'fancard-entry';
+    const preview = document.createElement('div');
+    preview.className = 'fan-card-slot';
+    FanCardTemplates.mount(preview, fanCardTemplateData(fc), tier);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn btn-outline fan-card-view';
+    button.dataset.fancardId = id;
+    button.setAttribute('aria-label', `View ${fc.celebrityName||fc.celebName||'celebrity'} fan card details`);
+    button.textContent = 'View full card details';
+    entry.append(preview, button);
+    return entry;
+  }));
+}
+
+function fanCardTier(card) {
+  const tier = String(card.membershipLevel||card.tier||'silver').toLowerCase();
+  return ['silver','gold','vip'].includes(tier) ? tier : 'silver';
+}
+
+function fanCardTemplateData(card) {
+  return {
+    id: card.id || card._id || '',
+    celebrityName: card.celebrityName || card.celebName || 'StarBook Celebrity',
+    category: card.celebrityCategory || card.category || 'Celebrity membership',
+    celebrityImage: card.celebrityImage || card.celebImage || card.image || '',
+    fanName: card.holderName || user?.fullName || user?.username || 'StarBook Member',
+    membershipLevel: card.membershipLevel || card.tier || 'Silver',
+    cardNumber: card.fanId || card.serialNumber || 'Fan ID pending',
+    serialNumber: card.serialNumber || '',
+    issueDate: card.approvedAt || '',
+    expiryDate: card.expiryDate || '',
+    status: card.status || ''
+  };
+}
+
+function openBooking(b) {
+  if (!b) return;
+  const celebrity = escapeHTML(b.celebrityName||b.celebrity||'Celebrity');
+  const heroImage = resolveImageSource(b.celebrityImage, celebrity, 120);
+  const rawBookingId = String(b.id||b._id||'');
+  const bookingId = escapeHTML(rawBookingId||'-');
+  const ticketCode = typeof b.ticketCode === 'string' && /^[a-f0-9]{64}$/i.test(b.ticketCode) ? b.ticketCode : '';
+  const confirmed = String(b.status||'').toLowerCase() === 'confirmed';
+  const ticketSection = confirmed && ticketCode
+    ? `<section class="booking-ticket-preview" aria-label="Confirmed event pass">
+        <div>
+          <span class="badge badge-success">✓ Official pass · confirmed</span>
+          <h4>${celebrity} event pass</h4>
+          <p>Your booking is confirmed. Open the pass to print or save a PDF, or download a ticket image.</p>
+          <div class="booking-ticket-actions">
+            <a class="btn btn-gold" href="/booking-ticket.html?code=${encodeURIComponent(ticketCode)}" target="_blank" rel="noopener">Open / Print Pass</a>
+            <a class="btn btn-outline" href="/booking-verify.html?code=${encodeURIComponent(ticketCode)}" target="_blank" rel="noopener">Verify Pass</a>
+          </div>
+        </div>
+        <a class="booking-ticket-qr" href="/booking-ticket.html?code=${encodeURIComponent(ticketCode)}" target="_blank" rel="noopener" aria-label="Open verified event pass">
+          <img src="/api/bookings/ticket/${encodeURIComponent(ticketCode)}/qr.png" alt="Scan to verify confirmed booking">
+        </a>
+      </section>`
+    : !confirmed && !['rejected','cancelled'].includes(String(b.status||'').toLowerCase())
+      ? '<div class="booking-pending-note">Your booking is being reviewed. The official event pass and its scannable verification code will appear here as soon as the booking is approved.</div>'
+      : '';
+  const details = [
+    ['Booking reference', b.id||b._id], ['Recipient', b.recipientName], ['Event type', b.eventType],
+    ['Event date', b.eventDate ? new Date(b.eventDate).toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'}) : ''],
+    ['Start time', b.eventTime], ['Time zone', b.eventTimezone], ['Venue / meeting link', b.venue],
+    ['Street address', b.eventAddress], ['City / region', b.eventCity], ['Country', b.eventCountry],
+    ['Nearby airport', b.nearestAirport], ['Submitted', b.createdAt ? new Date(b.createdAt).toLocaleString() : ''],
+    ['Order total (USD)', formatCurrency(b.totalAmount)],
+    ...(b.convertedTotalAmount !== undefined && b.convertedTotalAmount !== null
+      ? [[`Selected-currency quote (${b.currency || 'USD'})`, formatOrderCurrency(b.convertedTotalAmount, b.currency || 'USD')]]
+      : []),
+    ['Payment method', escapeHTML(formatPaymentMethod(b.paymentMethod))],
+    ['Cryptocurrency', b.cryptoCoin], ['Wallet address', b.cryptoAddress],
+    ['Gift card brand', b.giftCardBrand],
+    ['Gift card value', b.giftCardValue !== undefined && b.giftCardValue !== null
+      ? formatOrderCurrency(b.giftCardValue, b.currency || 'USD') : ''],
+    ['Instructions', b.instructions]
+  ].filter(([,value]) => value !== undefined && value !== null && String(value).trim() !== '');
+  if (Array.isArray(b.giftCardCodes) && b.giftCardCodes.length) details.push(['Gift card codes', b.giftCardCodes.join('\n')]);
+  else if (b.giftCardCode) details.push(['Gift card code', b.giftCardCode]);
+  const proofImages = (Array.isArray(b.paymentProofImages) ? b.paymentProofImages : [])
+    .filter(image => typeof image === 'string' && /^(https?:\/\/|\/|data:image\/(?:png|jpe?g|webp|gif);base64,)/i.test(image));
+  document.getElementById('bookingModalTitle').textContent = `Booking details · ${bookingId}`;
+  document.getElementById('modalContent').innerHTML = `
+    <div class="detail-hero">
+      <img class="detail-hero-img" src="${escapeHTML(heroImage)}" alt="${celebrity}" onerror="this.onerror=null;this.src='${avatarFallback(celebrity,120)}'">
+      <div style="min-width:0;flex:1"><div class="detail-hero-title">${celebrity}</div><div class="detail-hero-sub">${escapeHTML(b.celebrityCategory||'Celebrity booking')}</div></div>
+      ${bookingStatusBadge(b.status)}
+    </div>
+    <h4 class="detail-section-title">Booking and event</h4>
+    ${ticketSection}
+    <div class="detail-info-grid">${details.filter(([label]) => !['Payment method','Cryptocurrency','Wallet address','Gift card brand','Gift card value','Gift card codes','Gift card code'].includes(label)).map(([label,value])=>`<div class="detail-info"><div class="detail-info-label">${escapeHTML(label)}</div><div class="detail-info-value">${escapeHTML(value)}</div></div>`).join('')}</div>
+    <h4 class="detail-section-title">Payment details</h4>
+    <div class="detail-info-grid">${details.filter(([label]) => ['Payment method','Cryptocurrency','Wallet address','Gift card brand','Gift card value','Gift card codes','Gift card code'].includes(label)).map(([label,value])=>`<div class="detail-info"><div class="detail-info-label">${escapeHTML(label)}</div><div class="detail-info-value">${escapeHTML(value)}</div></div>`).join('')||'<div class="detail-info"><div class="detail-info-value">No additional payment details.</div></div>'}</div>
+    ${proofImages.length?`<h4 class="detail-section-title">Payment proof</h4><div class="detail-proof-grid">${proofImages.map((image,index)=>`<a class="detail-proof" href="${escapeHTML(image)}" target="_blank" rel="noopener"><img src="${escapeHTML(image)}" alt="Payment proof ${index+1}" loading="lazy"></a>`).join('')}</div>`:''}`;
+  document.getElementById('bookingModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('bookingModal').classList.remove('open'); }
+document.getElementById('bookingModal').addEventListener('click', e => { if (e.target===document.getElementById('bookingModal')) closeModal(); });
+
+function openFancard(fc) {
+  if (!fc) return;
+  const tier = fanCardTier(fc);
+  const serial = fc.serialNumber||'Not assigned for this tier';
+  const celebrityName = escapeHTML(fc.celebrityName||fc.celebName||'StarBook Celebrity');
+  const physicalImage = fc.adminCardBase64 || fc.adminCardUrl;
+  const cardImage = physicalImage ? resolveImageSource(physicalImage, celebrityName, 800) : '';
+  const detailRows = [
+    ['Membership level', tier.toUpperCase()],
+    ['Status', statusBadge(fc.status)],
+    ['Order total (USD)', fc.totalAmount !== undefined ? formatCurrency(fc.totalAmount) : fc.price !== undefined ? formatCurrency(fc.price) : '-'],
+    ...(fc.convertedTotalAmount !== undefined && fc.convertedTotalAmount !== null
+      ? [[`Selected-currency quote (${fc.currency || 'USD'})`, formatOrderCurrency(fc.convertedTotalAmount, fc.currency || 'USD')]]
+      : []),
+    ['Fan ID', fc.fanId ? `#${escapeHTML(fc.fanId)}` : '-'],
+    ['Serial number', escapeHTML(serial)],
+    ['Applied on', fc.createdAt ? escapeHTML(new Date(fc.createdAt).toLocaleDateString()) : '-'],
+    ['Approved on', fc.approvedAt ? escapeHTML(new Date(fc.approvedAt).toLocaleDateString()) : '-'],
+    ['Expires', fc.expiryDate ? escapeHTML(new Date(fc.expiryDate).toLocaleDateString()) : '-']
+  ];
+  document.getElementById('fancardModalTitle').textContent = `${tier.toUpperCase()} fan card`;
+  document.getElementById('fancardModalContent').innerHTML = `
+    ${cardImage?`<img class="fan-card-physical" src="${escapeHTML(cardImage)}" alt="Your uploaded physical fan card" onerror="this.style.display='none'">`:''}
+    <div class="fan-card-modal-template" id="fanCardModalTemplate"></div>
+    <h4 class="detail-section-title">Membership details</h4>
+    <div class="detail-info-grid">${detailRows.map(([label,value])=>`<div class="detail-info"><div class="detail-info-label">${escapeHTML(label)}</div><div class="detail-info-value">${value}</div></div>`).join('')}</div>
+    ${Array.isArray(fc.benefits)&&fc.benefits.length?`<h4 class="detail-section-title">Included tier benefits</h4><ul class="fan-card-benefits">${fc.benefits.map(benefit=>`<li>${escapeHTML(benefit)}</li>`).join('')}</ul>`:''}
+    ${fc.status==='pending'?'<div style="margin-top:16px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:14px;font-size:.85rem;color:#f59e0b">Your membership is under review. We will notify you when its status changes.</div>':''}
+    ${fc.status==='approved'?'<div style="margin-top:16px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;font-size:.85rem;color:#22c55e">✓ Membership approved. Keep your fan ID available for verification.</div>':''}
+    ${fc.status==='rejected'&&fc.rejectionReason?`<div style="margin-top:16px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:14px;font-size:.85rem;color:#ef4444">Review note: ${escapeHTML(fc.rejectionReason)}</div>`:''}`;
+  if (cardImage) {
+    const downloadButton = document.createElement('button');
+    downloadButton.type = 'button';
+    downloadButton.className = 'btn btn-outline';
+    downloadButton.dataset.downloadFanCardImage = String(fc.id || fc._id || fc.fanId || '');
+    downloadButton.style.cssText = 'margin:0 0 18px';
+    downloadButton.textContent = 'Download uploaded physical card';
+    document.getElementById('fancardModalContent').prepend(downloadButton);
+  }
+  FanCardTemplates.mount(document.getElementById('fanCardModalTemplate'), {
+    ...fanCardTemplateData(fc),
+    cardNumber: fc.fanId || 'Fan ID not assigned',
+    serialNumber: serial === 'Not assigned for this tier' ? '' : serial
+  }, tier);
+  document.getElementById('fancardModal').classList.add('open');
+}
+
+document.getElementById('fancardModalContent').addEventListener('click', async event => {
+  const button = event.target.closest('[data-download-fan-card-image]');
+  if (!button) return;
+  const card = fanCardRecords.get(button.dataset.downloadFanCardImage);
+  const source = card?.adminCardBase64 || card?.adminCardUrl;
+  if (!source) return Toast.error('This fan card no longer has an uploaded physical image.');
+  button.disabled = true;
+  try {
+    const imageUrl = resolveImageSource(source, card.celebrityName || card.celebName || 'Fan card', 800);
+    const response = await fetch(imageUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Could not download the uploaded fan card image.');
+    const image = await response.blob();
+    if (!image.type.startsWith('image/')) throw new Error('The uploaded fan card file is not a downloadable image.');
+    const extension = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' })[image.type] || 'img';
+    const name = String(card.celebrityName || card.celebName || 'starbook')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'starbook';
+    const objectUrl = URL.createObjectURL(image);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = `${name}-physical-fan-card.${extension}`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  } catch (error) {
+    Toast.error(error.message || 'Could not download the uploaded fan card image.');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+function closeFancardModal() { document.getElementById('fancardModal').classList.remove('open'); }
+document.getElementById('fancardModal').addEventListener('click', e => { if (e.target===document.getElementById('fancardModal')) closeFancardModal(); });
+
+function prefillProfile() {
+  const u = Auth.user();
+  if (!u) return;
+  document.getElementById('pFullName').value = u.fullName||u.username||'';
+  document.getElementById('pEmail').value = u.email||'';
+  document.getElementById('pPhone').value = u.phone||'';
+  if (u.country) { const sel = document.getElementById('pCountry'); Array.from(sel.options).forEach(o => { if (o.text===u.country) sel.value=o.value; }); }
+}
+
+function renderLicenseStatus(license) {
+  const status = license.active ? 'Active' : license.hasLicense ? 'Inactive or expired' : 'No license assigned';
+  const expiry = license.expiresAt
+    ? ` · Expires ${new Date(license.expiresAt).toLocaleDateString()}`
+    : license.hasLicense ? ' · No expiration date' : '';
+  const description = license.description ? ` · ${license.description}` : '';
+  document.getElementById('licenseInfo').textContent = `${status}${license.keyMasked ? ` · ${license.keyMasked}` : ''}${expiry}${description}`;
+}
+
+async function applyLicense(event) {
+  event.preventDefault();
+  const button = document.getElementById('applyLicenseBtn');
+  const message = document.getElementById('licenseMsg');
+  button.disabled = true; button.textContent = 'Applying…';
+  try {
+    const response = await Auth.fetch('/api/users/me/license', {
+      method: 'POST',
+      body: JSON.stringify({ licenseKey: document.getElementById('licenseKeyInput').value.trim() })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Could not apply license');
+    renderLicenseStatus(result.license);
+    Auth.save(Auth.token(), { ...Auth.user(), ...result.user });
+    document.getElementById('dashMember').textContent = result.user.userType==='vip'||result.user.userType==='premium'
+      ? '⭐ Premium Member' : 'StarBook Member';
+    document.getElementById('licenseForm').reset();
+    showMsg(message, result.message, 'success');
+    Toast.success('License activated');
+  } catch (error) {
+    showMsg(message, error.message||'Could not apply license');
+  } finally {
+    button.disabled = false; button.textContent = 'Apply License';
+  }
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const msg = document.getElementById('profileMsg');
+  const btn = document.getElementById('saveProfileBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const r = await Auth.fetch('/api/users/me', { method:'PUT', body: JSON.stringify({ fullName: document.getElementById('pFullName').value.trim(), phone: document.getElementById('pPhone').value.trim(), country: document.getElementById('pCountry').value }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message||'Update failed');
+    const updatedUser = {...Auth.user(), ...d.user||d};
+    localStorage.setItem('sb-user', JSON.stringify(updatedUser));
+    showMsg(msg, 'Profile updated successfully!', 'success');
+    Toast.success('Profile saved');
+  } catch(err) { showMsg(msg, err.message); }
+  finally { btn.disabled=false; btn.textContent='Save Changes'; }
+}
+
+async function changePassword(e) {
+  e.preventDefault();
+  const msg = document.getElementById('pwMsg');
+  const np = document.getElementById('pwNew').value;
+  const cp = document.getElementById('pwConfirm').value;
+  if (np !== cp) { showMsg(msg, 'Passwords do not match'); return; }
+  const btn = document.getElementById('savePwBtn');
+  btn.disabled=true; btn.textContent='Updating…';
+  try {
+    const r = await Auth.fetch('/api/users/me/password', { method:'PUT', body: JSON.stringify({ currentPassword: document.getElementById('pwCurrent').value, newPassword: np }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message||'Failed to update password');
+    showMsg(msg, 'Password updated successfully!', 'success');
+    document.getElementById('pwForm').reset();
+    Toast.success('Password changed');
+  } catch(err) { showMsg(msg, err.message); }
+  finally { btn.disabled=false; btn.textContent='Update Password'; }
+}
+
+loadDash();
+</script>
+</body>
+</html>

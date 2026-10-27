@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Verify your StarBook email</title>
+</head>
+<body style="margin:0;background:#080a10;color:#f5f2e9;font-family:Arial,Helvetica,sans-serif">
+  <div style="max-width:600px;margin:32px auto;padding:0 16px">
+    <div style="overflow:hidden;border:1px solid #3b3424;border-radius:20px;background:#111522">
+      <div style="padding:26px 32px;border-bottom:1px solid #292b34;background:linear-gradient(120deg,#19172a,#101421)">
+        <div style="font-size:13px;font-weight:800;letter-spacing:5px;color:#f7d477">STARBOOK</div>
+        <p style="margin:16px 0 0;color:#b6b7c2;font-size:13px">A little closer to your favorite stars.</p>
+      </div>
+      <div style="padding:32px">
+        <p style="margin:0 0 10px;color:#f7d477;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase">Email verification</p>
+        <h1 style="margin:0 0 16px;font-size:26px;line-height:1.25;color:#fff">Welcome, {{fullName}}</h1>
+        <p style="margin:0;color:#c4c6d0;font-size:15px;line-height:1.7">Enter this one-time code to verify your email address and finish creating your account.</p>
+        <div style="margin:26px 0;padding:20px;border:1px solid #57482b;border-radius:14px;background:#171625;text-align:center">
+          <div style="color:#a2a8ba;font-size:11px;font-weight:700;letter-spacing:2px">YOUR VERIFICATION CODE</div>
+          <div style="margin-top:12px;color:#f7d477;font-size:36px;font-weight:800;letter-spacing:10px">{{code}}</div>
+        </div>
+        <p style="margin:0;color:#a2a8ba;font-size:13px;line-height:1.7">This code expires in {{expiresMinutes}} minutes. StarBook will never ask you to share it with anyone. If you did not create an account, you can ignore this email.</p>
+      </div>
+      <div style="padding:18px 32px;border-top:1px solid #292b34;color:#777e90;font-size:11px">© {{year}} StarBook. This is an account-security message.</div>
+    </div>
+  </div>
+</body>
+</html>

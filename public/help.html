@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="StarBook Help Center - payment guides, FAQs, refund policy and contact support.">
+<title>Help & Support - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<style>
+.help-hero{background:linear-gradient(135deg,rgba(124,92,252,.08) 0%,rgba(245,200,66,.04) 100%);padding:64px 0 48px;text-align:center}
+.help-search-wrap{position:relative;max-width:520px;margin:24px auto 0}
+.help-search-wrap input{padding:14px 20px 14px 50px;font-size:1rem;border-radius:40px}
+.help-search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:1.1rem;pointer-events:none}
+.help-search-results{display:grid;gap:10px;margin:14px auto 0;max-width:680px;text-align:left}
+.help-search-status{color:var(--text2);font-size:.82rem;text-align:left}
+.help-search-result{padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--bg2)}
+.help-search-result strong{display:block;color:var(--text);font-size:.9rem;margin-bottom:5px}
+.help-search-result p{color:var(--text2);font-size:.82rem;line-height:1.6;margin:0}
+.help-quick-link{font:inherit;cursor:pointer}
+.guide-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:24px}
+.guide-step{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--border)}
+.guide-step:last-child{border-bottom:none}
+.guide-step[hidden]{display:none!important}
+.guide-step:not(.is-current):not(.is-unlocked){display:none!important}
+.guide-step.is-collapsed .guide-step-body{display:none}
+.guide-num{width:34px;height:34px;border-radius:50%;background:var(--gold-glow);border:1.5px solid var(--gold);color:var(--gold);font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;padding:0;cursor:pointer;font-family:var(--font-body)}
+.guide-num:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.guide-num:disabled{cursor:default;opacity:.75}
+.guide-progress{font-size:.78rem;color:var(--text3);margin:0 0 8px}
+.guide-step-body{flex:1;min-width:0}
+.guide-step.is-current .guide-num{box-shadow:0 0 14px rgba(245,200,66,.25)}
+.faq-item[hidden]{display:none}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-item summary{padding:18px 0;cursor:pointer;font-weight:600;font-size:.95rem;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'＋';color:var(--gold);font-size:1.2rem;transition:.2s;flex-shrink:0}
+.faq-item[open] summary::after{content:'－'}
+.faq-body{padding-bottom:18px;color:var(--text2);font-size:.9rem;line-height:1.75}
+.contact-form{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:600px}
+.section-divider{height:1px;background:var(--border);margin:60px 0}
+.highlight-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.8rem;color:var(--text2);margin:4px}
+@media(max-width:600px){.help-hero{padding:44px 0 32px}.help-content{padding:36px 16px 48px!important}.guide-card{padding:20px}.contact-form{padding:22px}.section-divider{margin:32px 0}.guide-step{gap:12px}.faq-item summary{gap:12px}.highlight-pill{min-height:44px}}
+@media(max-width:360px){.guide-card{padding:16px}.contact-form{padding:16px}.guide-num{width:30px;height:30px}.highlight-pill{font-size:.74rem;padding:6px 10px}}
+</style>
+</head>
+<body>
+<div id="navPlaceholder"></div>
+<main>
+  <div class="help-hero">
+    <div class="container">
+      <h1 style="font-family:var(--font-head);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900">Help &amp; Support Center</h1>
+      <p style="color:var(--text2);margin-top:10px">Find answers, payment guides and contact our team.</p>
+      <div class="help-search-wrap">
+        <span class="help-search-icon">🔍</span>
+        <input type="search" id="faqSearch" placeholder="Search help topics…" oninput="filterFaq(this.value)" aria-label="Search help topics">
+      </div>
+      <div id="helpSearchResults" class="help-search-results" role="region" aria-live="polite" aria-label="Help search results" hidden></div>
+      <div style="margin-top:20px">
+        <button type="button" class="highlight-pill help-quick-link" data-help-search="payment">💳 Payment Guide</button>
+        <button type="button" class="highlight-pill help-quick-link" data-help-search="refund">📦 Refund Policy</button>
+        <button type="button" class="highlight-pill help-quick-link" data-help-search="fan card">🪪 Fan Cards</button>
+        <button type="button" class="highlight-pill help-quick-link" data-help-search="book a celebrity">📅 Booking Help</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container help-content" style="padding:60px 20px 80px">
+    <div style="max-width:860px;margin:0 auto">
+
+      <h2 id="payment-guides" style="font-family:var(--font-head);font-size:1.5rem;font-weight:800;margin-bottom:24px">Payment Guides</h2>
+      <div class="tab-bar" style="margin-bottom:24px">
+        <button class="tab-btn active" data-tab="crypto-guide">Crypto Payment</button>
+        <button class="tab-btn" data-tab="giftcard-guide">Gift Card Payment</button>
+      </div>
+
+      <div class="tab-content active" data-tab="crypto-guide">
+        <div class="guide-card">
+          <h3 style="font-weight:700;margin-bottom:6px;color:var(--gold)">Paying with Cryptocurrency</h3>
+          <p style="font-size:.85rem;color:var(--text3);margin-bottom:20px">We accept BTC, ETH, USDT (TRC20), BNB, and XRP. Follow these steps exactly.</p>
+          <div class="guide-step is-current"><div class="guide-num">1</div><div><strong>Choose your coin</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Select your preferred cryptocurrency on the payment step. We recommend USDT (TRC20) for the fastest confirmation times and lowest fees.</p></div></div>
+          <div class="guide-step"><div class="guide-num">2</div><div><strong>Copy the wallet address</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Click the "Copy" button next to the wallet address. Never type wallet addresses by hand - one wrong character and funds are lost permanently.</p></div></div>
+          <div class="guide-step"><div class="guide-num">3</div><div><strong>Send the exact amount</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Open your crypto wallet app and send the exact amount shown. Do not subtract any fees - ensure the full amount arrives on our end.</p></div></div>
+          <div class="guide-step"><div class="guide-num">4</div><div><strong>Upload payment proof</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Take a screenshot of your transaction confirmation (showing TX hash, amount, and destination address) and upload it on the booking form.</p></div></div>
+          <div class="guide-step"><div class="guide-num">5</div><div><strong>Wait for confirmation</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Bitcoin takes 1–3 confirmations (~30 min), ETH and USDT take 1 confirmation (~5 min), BNB takes under 2 minutes. You'll receive an email once approved.</p></div></div>
+        </div>
+      </div>
+
+      <div class="tab-content" data-tab="giftcard-guide">
+        <div class="guide-card">
+          <h3 style="font-weight:700;margin-bottom:6px;color:var(--gold)">Paying with Gift Cards</h3>
+          <p style="font-size:.85rem;color:var(--text3);margin-bottom:20px">We accept Razer Gold, iTunes, Google Play, Steam, and Amazon gift cards.</p>
+          <div class="guide-step is-current"><div class="guide-num">1</div><div><strong>Buy a gift card</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Purchase a gift card from an authorized retailer (Walmart, Best Buy, GameStop, Amazon, or the card's official app/website). Physical or digital codes both work.</p></div></div>
+          <div class="guide-step"><div class="guide-num">2</div><div><strong>Select card brand</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">On the payment tab, choose the Gift Card option, then select your card brand from the dropdown (Razer Gold, iTunes, Google Play, Steam, or Amazon).</p></div></div>
+          <div class="guide-step"><div class="guide-num">3</div><div><strong>Enter the card code</strong><p style="color:var(--text2);font-size:.88ken;margin-top:4px">Enter the full redemption code exactly as printed on the card. Include all dashes (e.g. XXXX-XXXX-XXXX-XXXX). Do not redeem the code in the card's own app first.</p></div></div>
+          <div class="guide-step"><div class="guide-num">4</div><div><strong>Enter the card value</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Enter the full USD face value of the card. The card must cover the full booking amount. We do not accept partial-value cards.</p></div></div>
+          <div class="guide-step"><div class="guide-num">5</div><div><strong>Await verification</strong><p style="color:var(--text2);font-size:.88rem;margin-top:4px">Our team verifies gift card codes within 2–4 hours. Once verified, your booking is confirmed and you'll receive a confirmation email.</p></div></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h2 style="font-family:var(--font-head);font-size:1.5rem;font-weight:800;margin-bottom:24px">Frequently Asked Questions</h2>
+      <div id="faq-section"></div>
+      <div id="faqList">
+        <details class="faq-item" id="booking" data-topic="booking"><summary>How do I book a celebrity?</summary><div class="faq-body">Browse our celebrity roster on the <a href="/celebrities.html" style="color:var(--gold)">Celebrities</a> page, click on a celebrity's profile, and click "Book Now". Follow the steps in order: 1. Select event details, 2. Confirm your request and accept the Terms of Service, then 3. choose a payment method and submit. Our team reviews submitted bookings within 24–48 hours.</div></details>
+        <details class="faq-item"><summary>What payment methods do you accept?</summary><div class="faq-body">Currently available for checkout: cryptocurrency and gift cards, subject to the configured options shown on the payment screen. Gift card and crypto submissions are reviewed manually by StarBook staff. Card checkout. Bank Transfer and CashApp are unavailable due to maintenance; Mobile Wallet services (PayPal, Paystack, and Flutterwave) are also under maintenance. Only use wallet addresses currently displayed in checkout.</div></details>
+        <details class="faq-item" id="refund" data-topic="refund"><summary>What is your refund policy?</summary><div class="faq-body">We offer a 14-day money-back guarantee on all approved bookings if the celebrity fails to deliver. Refund requests must be submitted via our contact form within 14 days of your booking's scheduled date. Refunds are processed back in the original payment currency within 3–5 business days. Note: pending or rejected bookings where payment proof was not verified are not eligible.</div></details>
+        <details class="faq-item" data-topic="fancard"><summary>How do celebrity fan cards work?</summary><div class="faq-body">Fan cards are personalized membership cards featuring your name, your favourite celebrity, a unique fan ID number, and a QR code. They come in three tiers - Silver ($29), Gold ($59), and VIP ($99) - each with increasing premium features. Cards ship worldwide within 5–10 business days after order approval. You can order a fan card from any celebrity's profile page or the <a href="/fancard.html" style="color:var(--gold)">Fan Card</a> page.</div></details>
+        <details class="faq-item"><summary>How long does a booking take to be confirmed?</summary><div class="faq-body">After you submit a booking with payment proof, our team reviews it within 24–48 hours on business days. Crypto payments with clear transaction screenshots are typically faster (4–8 hours). Gift card verifications take 2–4 hours. You'll receive an email notification when your booking is approved or if we need additional information.</div></details>
+        <details class="faq-item"><summary>What happens after my booking is approved?</summary><div class="faq-body">Once approved, the celebrity will reach out via the contact method associated with your booking (typically email) within 3–5 business days to coordinate the event. For video messages and shoutouts, delivery is usually within 7 days. For live events or appearances, details will be arranged directly.</div></details>
+        <details class="faq-item"><summary>How do I create an account?</summary><div class="faq-body">Click "Register" in the navigation bar. Enter your full name, username, email address, and a password of at least 6 characters. Optionally enter a license key to unlock Premium access. Accept the Terms of Service and click "Create Free Account". You'll be logged in immediately.</div></details>
+        <details class="faq-item"><summary>What is a license key and how do I get one?</summary><div class="faq-body">A license key unlocks Premium features on your account, including priority celebrity access, advanced AI search, and priority support. License keys are distributed through official StarBook promotions, partnerships, and VIP packages. If you have a key, enter it during registration or contact support to apply it to an existing account.</div></details>
+        <details class="faq-item"><summary>Can I book a celebrity for a private event?</summary><div class="faq-body">Yes. Select "Private Event" as the event type when booking. Describe the event in the instructions field. Private events (birthdays, corporate events, weddings) are reviewed case-by-case by the celebrity's team. Pricing for private appearances starts at the celebrity's listed rate; large events may be quoted separately.</div></details>
+        <details class="faq-item"><summary>Is my personal information secure?</summary><div class="faq-body">Yes. We use JWT-based authentication, and your password is bcrypt-hashed and never stored in plain text. We do not store full payment card numbers. All API communication uses HTTPS. For full details, see our <a href="/policies.html#privacy" style="color:var(--gold)">Privacy Policy</a>.</div></details>
+      </div>
+
+      <div class="section-divider"></div>
+      <h2 id="contact" style="font-family:var(--font-head);font-size:1.5rem;font-weight:800;margin-bottom:8px">Contact Support</h2>
+      <p style="color:var(--text2);margin-bottom:28px">Couldn't find what you need? We typically respond within 24 hours.</p>
+      <div class="contact-form">
+        <div id="contactMsg" class="msg"></div>
+        <form id="contactForm" onsubmit="submitContact(event)">
+          <div class="grid-2" style="gap:16px">
+            <div class="form-group"><label>Your Name</label><input type="text" id="cName" placeholder="Full name" required></div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="cEmail" placeholder="you@example.com" required></div>
+          </div>
+          <div class="form-group"><label for="cSubject">Subject</label>
+            <select id="cSubject" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);padding:10px 14px;color:var(--text);width:100%;font-family:var(--font-body)" required onchange="toggleOtherField(this.value)">
+              <option value="">Select a topic…</option>
+              <option>Booking Issue</option>
+              <option>Payment Problem</option>
+              <option>Account Help</option>
+              <option>Fan Card Order</option>
+              <option>Refund Request</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group" id="otherSubjectGroup" style="display:none">
+            <label for="cOtherSubject">Please specify</label>
+            <input type="text" id="cOtherSubject" placeholder="Describe your topic…" maxlength="100">
+          </div>
+          <div class="form-group"><label>Message</label><textarea id="cMessage" rows="5" placeholder="Describe your issue in detail…" required style="resize:vertical"></textarea></div>
+          <button type="submit" class="btn btn-gold" id="contactBtn" style="padding:12px 28px">Send Message →</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+initializePaymentGuides();
+document.querySelectorAll('.help-quick-link').forEach(button => {
+  button.addEventListener('click', () => {
+    const search = document.getElementById('faqSearch');
+    search.value = button.dataset.helpSearch;
+    filterFaq(search.value);
+    search.focus({ preventScroll: true });
+    document.getElementById('helpSearchResults').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+});
+
+if (Auth.isLoggedIn()) {
+  const u = Auth.user();
+  document.getElementById('cName').value = u?.fullName||u?.username||'';
+  document.getElementById('cEmail').value = u?.email||'';
+}
+
+function toggleOtherField(val) {
+  const isOther = val === 'Other';
+  const group = document.getElementById('otherSubjectGroup');
+  const input = document.getElementById('cOtherSubject');
+  group.style.display = isOther ? '' : 'none';
+  group.setAttribute('aria-hidden', String(!isOther));
+  input.required = isOther;
+  if (isOther) input.focus();
+  else input.value = '';
+}
+
+function filterFaq(q) {
+  const results = document.getElementById('helpSearchResults');
+  const term = q.trim().toLowerCase();
+  const words = term.split(/\s+/).filter(Boolean);
+  if (!term) {
+    results.hidden = true;
+    results.replaceChildren();
+    document.querySelectorAll('.faq-item').forEach(item => { item.hidden = false; });
+    return;
+  }
+
+  const entries = [
+    ...[...document.querySelectorAll('.faq-item')].map(item => ({
+      title: item.querySelector('summary').textContent.trim(),
+      answer: item.querySelector('.faq-body').textContent.trim(),
+      keywords: item.textContent.toLowerCase(),
+      type: 'Frequently asked question'
+    })),
+    ...[...document.querySelectorAll('.tab-content[data-tab$="-guide"] .guide-card')].map(card => {
+      const title = card.querySelector('h3').textContent.trim();
+      const answer = card.querySelector(':scope > p').textContent.trim();
+      return {
+        title: `Payment Guide: ${title}`,
+        answer,
+        keywords: `payment guide ${card.textContent}`.toLowerCase(),
+        type: 'Payment guide'
+      };
+    }),
+    ...[...document.querySelectorAll('.guide-step')].map(step => ({
+      title: `${step.closest('.tab-content').querySelector('h3').textContent.trim()}: ${step.querySelector('strong').textContent.trim()}`,
+      answer: step.querySelector('p').textContent.trim(),
+      keywords: `payment guide ${step.closest('.guide-card').textContent} ${step.textContent}`.toLowerCase(),
+      type: 'Payment guide'
+    }))
+  ];
+  const matches = entries
+    .map(entry => ({ ...entry, score: words.reduce((score, word) => score + (entry.title.toLowerCase().includes(word) ? 3 : entry.keywords.includes(word) ? 1 : 0), 0) }))
+    .filter(entry => entry.score === words.length * 3 || words.every(word => entry.keywords.includes(word)))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8);
+
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const isMatch = matches.some(match => match.type === 'Frequently asked question' && match.title === item.querySelector('summary').textContent.trim());
+    item.hidden = !isMatch;
+    if (isMatch) item.open = true;
+    else item.open = false;
+  });
+
+  results.replaceChildren();
+  const status = document.createElement('p');
+  status.className = 'help-search-status';
+  status.textContent = matches.length ? `${matches.length} helpful ${matches.length === 1 ? 'answer' : 'answers'} found` : 'No matching answers yet. Try “booking”, “refund”, “fan card”, “crypto”, or “gift card”.';
+  results.appendChild(status);
+  matches.forEach(match => {
+    const card = document.createElement('article');
+    card.className = 'help-search-result';
+    const source = document.createElement('span');
+    source.style.cssText = 'display:block;color:var(--gold);font-size:.7rem;font-weight:700;margin-bottom:4px';
+    source.textContent = match.type;
+    const title = document.createElement('strong');
+    title.textContent = match.title;
+    const answer = document.createElement('p');
+    answer.textContent = match.answer;
+    card.append(source, title, answer);
+    results.appendChild(card);
+  });
+  results.hidden = false;
+}
+
+function initializePaymentGuides() {
+  document.querySelectorAll('.tab-content[data-tab$="-guide"] .guide-card').forEach(card => {
+    const steps = [...card.querySelectorAll('.guide-step')];
+    const progress = document.createElement('p');
+    progress.className = 'guide-progress';
+    progress.setAttribute('role', 'status');
+    card.insertBefore(progress, steps[0]);
+    let current = 0;
+
+    const update = () => {
+      progress.textContent = current === steps.length - 1
+        ? `Step ${current + 1} of ${steps.length} · Final step`
+        : `Step ${current + 1} of ${steps.length} · Select the number to continue`;
+      steps.forEach((step, index) => {
+        step.hidden = index > current;
+        step.classList.toggle('is-current', index === current);
+        step.classList.toggle('is-unlocked', index < current);
+        step.classList.toggle('is-collapsed', index < current && !step.classList.contains('is-expanded'));
+        const number = step.querySelector('.guide-num');
+        const title = step.querySelector('strong').textContent.trim();
+        number.disabled = index === current && current === steps.length - 1;
+        number.setAttribute('aria-label', `Step ${index + 1}: ${title}${index === current && index < steps.length - 1 ? '. Activate to continue' : ''}`);
+        number.setAttribute('aria-current', index === current ? 'step' : 'false');
+      });
+    };
+
+    steps.forEach((step, index) => {
+      const number = step.querySelector('.guide-num');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = number.className;
+      button.textContent = number.textContent;
+      number.replaceWith(button);
+      step.classList.add('guide-step');
+      step.querySelector(':scope > div:last-child').classList.add('guide-step-body');
+      button.addEventListener('click', () => {
+        if (index === current && index < steps.length - 1) {
+          current += 1;
+          update();
+          return;
+        }
+        if (index < current) {
+          step.classList.toggle('is-expanded');
+          update();
+        }
+      });
+    });
+    update();
+  });
+}
+
+async function submitContact(e) {
+  e.preventDefault();
+  const msg = document.getElementById('contactMsg');
+  const btn = document.getElementById('contactBtn');
+  btn.innerHTML = '<span class="spinner"></span> Sending…';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById('cName').value.trim(),
+        email: document.getElementById('cEmail').value.trim(),
+        subject: document.getElementById('cSubject').value === 'Other' ? (document.getElementById('cOtherSubject').value.trim() || 'Other') : document.getElementById('cSubject').value,
+        message: document.getElementById('cMessage').value.trim()
+      })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message || 'Send failed');
+    showMsg(msg, '✓ Message sent! We\'ll reply within 24 hours.', 'success');
+    document.getElementById('contactForm').reset();
+    toggleOtherField(document.getElementById('cSubject').value);
+    if (Auth.isLoggedIn()) {
+      const u = Auth.user();
+      document.getElementById('cName').value = u?.fullName||u?.username||'';
+      document.getElementById('cEmail').value = u?.email||'';
+    }
+  } catch(err) {
+    showMsg(msg, err.message || 'Failed to send. Please email us directly.');
+  } finally {
+    btn.innerHTML = 'Send Message →';
+    btn.disabled = false;
+  }
+}
+
+renderChatbot();
+</script>
+</body>
+</html>

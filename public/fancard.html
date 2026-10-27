@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Order your personalized celebrity membership card on StarBook. Iron-plate quality, lifetime keepsake.">
+<title>Get Fan Card - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<link rel="stylesheet" href="/assets/css/fan-cards.css">
+<style>
+.fc-hero{padding:56px 0 40px;text-align:center;background:linear-gradient(180deg,rgba(124,92,252,.05) 0%,transparent 100%)}
+.step-indicator{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:40px;overflow-x:auto;padding:0 20px}
+.step-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--text3);transition:.3s;flex-shrink:0}
+.step-dot.active{border-color:var(--gold);background:var(--gold);color:#0A0A0F}
+.step-dot.done{border-color:var(--success);background:rgba(34,197,94,.1);color:var(--success)}
+.step-line{width:60px;height:2px;background:var(--border);transition:.3s;flex-shrink:0}
+.step-line.done{background:var(--success)}
+.step-label{font-size:.72rem;color:var(--text3);text-align:center;margin-top:6px;white-space:nowrap}
+.tier-card{border:2px solid var(--border);border-radius:18px;padding:24px;cursor:pointer;transition:.2s;position:relative}
+.tier-card:hover{border-color:var(--gold);background:rgba(245,200,66,.03)}
+.tier-card.selected{border-color:var(--gold);background:rgba(245,200,66,.06)}
+.tier-card.selected::after{content:'✓';position:absolute;top:12px;right:12px;width:24px;height:24px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#0A0A0F}
+.tier-includes{margin-bottom:2px;padding:8px 9px;border:1px solid rgba(245,200,66,.18);border-radius:9px;background:rgba(245,200,66,.07);color:var(--gold);font-size:.76rem;font-weight:700;line-height:1.4}
+.fan-card-preview-slot{width:100%;max-width:520px;margin:0 auto}
+.fan-card-preview-note{min-height:2.4em;font-size:.72rem;color:var(--text3);text-align:center;margin:10px 0 0;line-height:1.5}
+.tier-benefit-list{display:grid;gap:8px;margin:14px 0 0;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+.tier-benefit-list h3{font-size:.86rem;color:var(--text);margin-bottom:2px}
+.tier-benefit-list ul{list-style:none;padding:0;display:grid;gap:6px}
+.tier-benefit-list li{display:flex;gap:8px;color:var(--text2);font-size:.78rem;line-height:1.45}
+.tier-benefit-list li::before{content:'✓';color:var(--success);font-weight:800}
+.fc-proof-zone{position:relative;display:grid;place-items:center;gap:5px;min-height:132px;padding:20px;border:2px dashed rgba(245,200,66,.35);border-radius:14px;background:linear-gradient(140deg,rgba(245,200,66,.055),rgba(124,92,252,.045));text-align:center;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.fc-proof-zone:hover,.fc-proof-zone.drag-over{border-color:var(--gold);background:rgba(245,200,66,.1);transform:translateY(-1px)}
+.fc-proof-zone input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.fc-proof-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:9px;margin-top:12px}
+.fc-proof-thumb{position:relative;aspect-ratio:1;border:1px solid var(--border2);border-radius:10px;overflow:hidden;background:var(--bg3)}
+.fc-proof-thumb img{width:100%;height:100%;object-fit:cover}
+.fc-proof-thumb button{position:absolute;top:4px;right:4px;width:23px;height:23px;border:1px solid rgba(255,255,255,.4);border-radius:50%;background:rgba(10,10,15,.85);color:#fff;font-size:.75rem;cursor:pointer}
+.fc-crypto-picker{margin-bottom:14px}
+.payment-tab{padding:8px 24px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-size:.88rem;font-weight:600;transition:.15s}
+.payment-tab.active{border-color:var(--gold);background:rgba(245,200,66,.07);color:var(--gold)}
+.payment-tab:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.payment-panel{padding:18px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,var(--bg2),var(--surface));box-shadow:0 12px 30px rgba(0,0,0,.12)}
+.maintenance-panel{border-color:rgba(245,158,11,.35);background:linear-gradient(145deg,rgba(245,158,11,.08),var(--bg2) 65%)}
+.wallet-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;cursor:pointer;transition:.15s}
+.wallet-row:hover,.wallet-row.active{border-color:var(--gold);background:rgba(245,200,66,.04)}
+#celebDropdown{background:#000!important;color:#fff}
+#celebDropdown *{color:#fff!important}
+@media(max-width:700px){.fc-two-col{flex-direction:column}.fc-two-col>*{width:100%;min-width:0!important}.step-line{width:30px}}
+@media(max-width:600px){.fc-hero{padding:40px 0 28px}.step-indicator{margin-bottom:28px;padding-inline:0}.step-label{font-size:.66rem}.tier-card{padding:20px}.payment-tab{padding:8px 16px}.wallet-row{align-items:flex-start;flex-wrap:wrap}}
+@media(max-width:360px){.step-line{width:18px}.step-label{font-size:.6rem}.step-dot{width:28px;height:28px}.tier-card{padding:16px}}
+</style>
+</head>
+<body>
+<div id="navPlaceholder"></div>
+<main>
+  <div class="fc-hero">
+    <div class="container">
+      <h1 style="font-family:var(--font-head);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;margin-bottom:12px">Your Celebrity Fan Card</h1>
+      <p style="color:var(--text2);max-width:560px;margin:0 auto 32px">Iron-plate quality membership card. Your name, your idol, your keepsake - forever.</p>
+      <div class="step-indicator" id="stepIndicator">
+        <div><div class="step-dot active" id="sd1">1</div><div class="step-label">Celebrity</div></div>
+        <div class="step-line" id="sl1"></div>
+        <div><div class="step-dot" id="sd2">2</div><div class="step-label">Tier</div></div>
+        <div class="step-line" id="sl2"></div>
+        <div><div class="step-dot" id="sd3">3</div><div class="step-label">Preview</div></div>
+        <div class="step-line" id="sl3"></div>
+        <div><div class="step-dot" id="sd4">4</div><div class="step-label">Payment</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:80px">
+    <div id="fcMsg" class="msg" style="max-width:640px;margin:0 auto 20px"></div>
+    <div id="step1" class="fc-step" style="max-width:640px;margin:0 auto">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:20px">Step 1: Choose Your Celebrity</h2>
+      <div class="form-group" style="position:relative">
+        <label>Search Celebrity</label>
+        <input type="text" id="celebSearch" placeholder="Type celebrity name…" autocomplete="off" oninput="searchCelebs(this.value)">
+        <div id="celebDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);z-index:100;max-height:240px;overflow-y:auto;margin-top:4px"></div>
+      </div>
+      <div id="selectedCeleb" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;margin-top:-4px;margin-bottom:20px">
+        <img id="scImg" src="" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)">
+        <div><div id="scName" style="font-weight:700"></div><div id="scCat" style="font-size:.8rem;color:var(--text3)"></div></div>
+        <button onclick="clearCeleb()" style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.1rem">✕</button>
+      </div>
+      <button class="btn btn-gold" style="width:100%;padding:13px" onclick="goStep(2)">Continue →</button>
+    </div>
+    <div id="step2" class="fc-step" style="display:none;max-width:720px;margin:0 auto">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:20px">Step 2: Select Your Tier</h2>
+      <div class="grid-3" style="gap:16px">
+        <div class="tier-card" onclick="selectTier('Silver',29,this)">
+          <div style="font-size:1.8rem;margin-bottom:8px">🥈</div>
+          <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:800;margin-bottom:2px">Silver</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-bottom:10px">Entry fan membership</div>
+          <div style="font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:14px"><span data-price-usd="29">$29</span> <small style="font-size:.72rem;color:var(--text3)">base</small></div>
+          <ul style="list-style:none;padding:0;font-size:.82rem;color:var(--text2);display:flex;flex-direction:column;gap:7px">
+            <li>✓ Personalized Silver membership card</li>
+            <li>✓ Unique fan ID number</li>
+            <li>✓ Scannable card-verification QR</li>
+            <li>✓ Public membership status and expiry</li>
+            <li>✓ 12-month membership after approval</li>
+          </ul>
+        </div>
+        <div class="tier-card" onclick="selectTier('Gold',59,this)" style="position:relative">
+          <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0A0A0F;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:20px;white-space:nowrap">MOST POPULAR</div>
+          <div style="font-size:1.8rem;margin-bottom:8px">🥇</div>
+          <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:800;margin-bottom:2px">Gold</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-bottom:10px">Collector's edition</div>
+          <div style="font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:14px"><span data-price-usd="59">$59</span> <small style="font-size:.72rem;color:var(--text3)">base</small></div>
+          <ul style="list-style:none;padding:0;font-size:.82rem;color:var(--text2);display:flex;flex-direction:column;gap:7px">
+            <li class="tier-includes">✓ Everything in Silver, plus:</li>
+            <li>✓ Gold metallic card design</li>
+            <li>✓ Unique fan ID and serial number</li>
+            <li>✓ QR-linked public verification</li>
+            <li>✓ Printable verification certificate</li>
+            <li>✓ Priority admin review queue</li>
+          </ul>
+        </div>
+        <div class="tier-card" onclick="selectTier('VIP',99,this)">
+          <div style="font-size:1.8rem;margin-bottom:8px">💎</div>
+          <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:800;margin-bottom:2px">VIP Diamond</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-bottom:10px">Ultimate fan experience</div>
+          <div style="font-size:1.5rem;font-weight:800;color:var(--gold);margin-bottom:14px"><span data-price-usd="99">$99</span> <small style="font-size:.72rem;color:var(--text3)">base</small></div>
+          <ul style="list-style:none;padding:0;font-size:.82rem;color:var(--text2);display:flex;flex-direction:column;gap:7px">
+            <li class="tier-includes">✓ Everything in Silver &amp; Gold, plus:</li>
+            <li>✓ VIP diamond card design</li>
+            <li>✓ Unique VIP serial number</li>
+            <li>✓ VIP mark on public verification page</li>
+            <li>✓ Printable verification certificate</li>
+            <li>✓ Highest-priority admin review queue</li>
+            <li>✓ Copy-ready link for optional NFC tag programming</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin:16px 0 0;font-size:.8rem;color:var(--text3)">A 7.5% StarBook service fee and a flat 5% estimated tax are added at checkout. The estimated tax is calculated on the base price; actual tax may vary by location.</p>
+      <div style="display:flex;gap:12px;margin-top:28px">
+        <button class="btn btn-outline" style="padding:12px 24px" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-gold" style="flex:1;padding:12px" onclick="goStep(3)">Preview My Card →</button>
+      </div>
+    </div>
+    <div id="step3" class="fc-step" style="display:none;max-width:720px;margin:0 auto">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:24px">Step 3: Card Preview</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:24px;align-items:start">
+        <div style="min-width:0">
+          <div id="cardPreviewSlot" class="fan-card-preview-slot" aria-live="polite"></div>
+          <p id="previewQrNote" class="fan-card-preview-note">This is a design preview. A scannable QR appears after the server accepts your application.</p>
+          <div class="tier-benefit-list"><h3 id="previewBenefitsTitle">Included with your card</h3><ul id="previewBenefits"></ul></div>
+        </div>
+        <div style="min-width:0">
+          <h3 style="font-size:.95rem;font-weight:700;margin-bottom:14px">Order Summary</h3>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;font-size:.87rem">
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="color:var(--text2)">Celebrity</span><span id="sumCeleb" style="font-weight:600">-</span></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:10px"><span style="color:var(--text2)">Tier</span><span id="sumTier" style="font-weight:600">-</span></div>
+            <div id="fanCardPreviewBreakdown" style="margin-top:12px" aria-live="polite">Select a tier to see the total.</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:28px">
+        <button class="btn btn-outline" style="padding:12px 24px" onclick="goStep(2)">← Back</button>
+        <button class="btn btn-gold" style="flex:1;padding:12px" onclick="goStep(4)">Proceed to Payment →</button>
+      </div>
+    </div>
+    <div id="step4" class="fc-step" style="display:none;max-width:640px;margin:0 auto">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:20px">Step 4: Payment</h2>
+      <div class="payment-panel" style="margin-bottom:16px">
+        <label for="fanCardCurrency" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:8px">Display estimate in</label>
+        <select id="fanCardCurrency" data-currency-select disabled style="width:100%;padding:10px;border-radius:8px;background:var(--surface);color:var(--text);border:1px solid var(--border)"><option>Loading currencies…</option></select>
+        <p style="margin:8px 0 0;font-size:.8rem;color:var(--text2)">Reference estimate: <strong id="fanCardCurrencyEstimate">-</strong></p>
+        <p id="fanCardCurrencyStatus" role="status" aria-live="polite" style="margin:5px 0 0;font-size:.72rem;color:var(--text3)"></p>
+      </div>
+      <div id="fanCardPaymentBreakdown" class="payment-panel" style="margin-bottom:16px" aria-live="polite">Select a tier to see the total.</div>
+      <div id="fanCardPaymentTabs" style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="payment-tab active" onclick="switchPayTab('crypto',this)">Crypto</button>
+        <button class="payment-tab" onclick="switchPayTab('giftcard',this)">Gift Card</button>
+        <button class="payment-tab" onclick="switchPayTab('bank_transfer',this)">🏦 Bank Transfer</button>
+        <button class="payment-tab" onclick="switchPayTab('cashapp',this)">💚 Cash App</button>
+        <button class="payment-tab" onclick="switchPayTab('paypal',this)">📱 Mobile Wallet</button>
+      </div>
+      <div id="cryptoTab" class="payment-panel">
+        <p style="font-size:.85rem;color:var(--text2);margin-bottom:16px">Choose a supported cryptocurrency. The order total is shown in USD; use your wallet’s live conversion when sending.</p>
+        <div class="fc-crypto-picker">
+          <label for="cryptoCoinInput">Select or type a cryptocurrency</label>
+          <input id="cryptoCoinInput" list="cryptoCoinOptions" placeholder="Search or select BTC, ETH, USDT…" autocomplete="off" oninput="selectCoinInput(this.value)">
+          <datalist id="cryptoCoinOptions"></datalist>
+        </div>
+        <div id="cryptoDetail" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:20px;margin-top:12px">
+          <div style="font-size:.75rem;color:var(--text3);margin-bottom:6px">WALLET ADDRESS</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <code id="walletAddr" style="flex:1;font-size:.8rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;word-break:break-all"></code>
+            <button onclick="copyToClipboard(document.getElementById('walletAddr').textContent);Toast.success('Copied!')" class="btn btn-outline" style="padding:8px 14px;font-size:.8rem;flex-shrink:0">Copy</button>
+          </div>
+          <div style="font-size:.75rem;color:var(--text3);margin-top:14px;margin-bottom:6px">ORDER TOTAL (USD)</div>
+          <div style="font-family:var(--font-head);font-size:1.3rem;font-weight:800;color:var(--gold)" id="cryptoAmt">-</div>
+          <p style="font-size:.75rem;color:var(--text3);margin-top:5px">Use your wallet’s current exchange quote to send the USD-equivalent amount. StarBook does not display a stale crypto conversion.</p>
+        </div>
+      </div>
+      <div id="giftcardTab" class="payment-panel" style="display:none">
+        <p style="font-size:.85rem;color:var(--text2);margin-bottom:16px">Enter a valid gift card code. We accept Razer Gold, iTunes, Google Play, Steam, and Amazon cards.</p>
+        <div class="form-group"><label for="gcBrand">Gift Card Brand</label>
+          <input id="gcBrand" list="gcBrandOptions" placeholder="Type or select a brand…" autocomplete="off">
+          <datalist id="gcBrandOptions"><option value="Razer Gold"></option><option value="iTunes"></option><option value="Google Play"></option><option value="Steam"></option><option value="Amazon"></option></datalist>
+        </div>
+        <div class="form-group"><label for="gcCode">Gift Card Code(s)</label><textarea id="gcCode" rows="4" maxlength="20000" placeholder="Enter one code per line:&#10;1234567890766&#10;1234567890987&#10;23456yYTRESR4"></textarea><small style="display:block;color:var(--text3);font-size:.72rem;margin-top:5px">Press Enter after each code. Use one line per card.</small></div>
+        <div class="form-group"><label for="gcValue">Total Gift Card Value (<span id="fcGiftCurrency">USD</span>)</label><input type="number" id="gcValue" placeholder="Enter combined card value" min="1" step="0.01"></div>
+      </div>
+      <div class="form-group" style="margin-top:20px">
+        <label for="fcProofFiles">Payment Proof <span style="color:var(--danger)">*</span></label>
+        <div id="fanCardMaintenanceTab" class="payment-panel maintenance-panel" style="display:none"></div>
+      <label class="fc-proof-zone" id="fcProofZone">
+          <input type="file" id="fcProofFiles" accept="image/*" multiple onchange="handleFanCardProofFiles(this.files)">
+          <span aria-hidden="true" style="font-size:1.6rem">📸</span>
+          <strong style="font-size:.88rem">Upload or drop payment screenshots</strong>
+          <span style="font-size:.74rem;color:var(--text3)">Required before you can submit · up to 20 images</span>
+          <span id="fcProofCount" style="font-size:.74rem;color:var(--gold)">0 of 20 images</span>
+        </label>
+        <div id="fcProofPreview" class="fc-proof-preview"></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:24px">
+        <button class="btn btn-outline" style="padding:12px 24px" onclick="goStep(3)">← Back</button>
+        <button class="btn btn-gold" style="flex:1;padding:12px" id="submitFcBtn" onclick="submitFancard()">Order Fan Card →</button>
+      </div>
+    </div>
+    <div id="step5" class="fc-step" style="display:none;text-align:center;padding:60px 20px;max-width:480px;margin:0 auto">
+      <span class="success-rocket" aria-hidden="true">🚀</span>
+      <div class="success-celebration" style="font-size:4rem;margin-bottom:16px" aria-hidden="true">🎉</div>
+      <h2 style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;margin-bottom:12px">Order Placed!</h2>
+      <p style="color:var(--text2);margin-bottom:28px">Your order and payment proof are submitted for admin review. Follow its real status from your dashboard; membership validity begins after approval.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="/dashboard.html#fancards" class="btn btn-gold" style="padding:12px 24px">View My Cards</a>
+        <a href="/celebrities.html" class="btn btn-outline" style="padding:12px 24px">Browse More</a>
+      </div>
+    </div>
+  </div>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script src="/assets/js/fan-card-templates.js"></script>
+<script src="/assets/js/currency.js"></script>
+<script src="/assets/js/order-pricing.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+requireAuth('/login.html?redirect=/fancard.html');
+const user = Auth.user();
+const tierBenefits = {
+  Silver: [
+    'Personalized Silver membership card',
+    'Unique fan ID number',
+    'Scannable public card-verification page',
+    '12-month membership validity after approval'
+  ],
+  Gold: [
+    'Personalized Silver membership card',
+    'Unique fan ID number',
+    'Scannable public card-verification page',
+    '12-month membership validity after approval',
+    'Gold metallic card design',
+    'Unique serial number',
+    'Printable verification certificate',
+    'Priority admin review queue'
+  ],
+  VIP: [
+    'Personalized Silver membership card',
+    'Unique fan ID number',
+    'Scannable public card-verification page',
+    '12-month membership validity after approval',
+    'Gold metallic card design',
+    'Unique serial number',
+    'Printable verification certificate',
+    'VIP diamond card design and verification mark',
+    'Highest-priority admin review queue',
+    'Copy-ready verification link for optional NFC tag programming'
+  ]
+};
+function createFanCardReference() {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = [...bytes].map(value => value.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+}
+const state = {
+  id: createFanCardReference(),
+  celeb: null,
+  submittedCard: null,
+  tier: null,
+  tierPrice: 0,
+  step: 1,
+  payTab: 'crypto',
+  cryptoCoin: null,
+  paymentProofImages: [],
+  orderFeeSettings: null,
+  orderFeeError: null
+};
+const presetCeleb = new URLSearchParams(location.search).get('celebrity');
+if (presetCeleb) loadPresetCeleb(presetCeleb);
+
+const wallets = {
+  BTC: { name: 'Bitcoin', addr: '' },
+  ETH: { name: 'Ethereum', addr: '' },
+  USDT: { name: 'Tether (TRC20)', addr: '' },
+  BNB: { name: 'BNB Chain', addr: '' },
+  XRP: { name: 'XRP', addr: '' },
+  USDC: { name: 'USD Coin', addr: '' },
+  SOL: { name: 'Solana', addr: '' },
+  DOGE: { name: 'Dogecoin', addr: '' },
+  TRX: { name: 'TRON', addr: '' },
+  TWT: { name: 'Trust Wallet Token (BSC)', addr: '' }
+};
+async function loadFanCardPaymentOptions() {
+  const detail = document.getElementById('cryptoDetail');
+  try {
+    const response = await fetch('/api/payment-options', { cache: 'no-store' });
+    const options = await response.json();
+    if (!response.ok) throw new Error(options.message || 'Payment configuration could not be loaded.');
+    Object.entries(wallets).forEach(([coin, wallet]) => {
+      wallet.addr = typeof options.wallets?.[coin] === 'string' ? options.wallets[coin].trim() : '';
+    });
+    document.getElementById('cryptoCoinOptions').innerHTML = Object.entries(wallets)
+      .filter(([, wallet]) => wallet.addr)
+      .map(([coin, wallet]) => `<option value="${coin}" label="${wallet.name}"></option><option value="${wallet.name}" label="${coin}"></option>`)
+      .join('');
+    if (!Object.values(wallets).some(wallet => wallet.addr)) {
+      detail.style.display = 'block';
+      detail.textContent = 'No cryptocurrency wallets are configured. Choose Gift Card or contact support.';
+    }
+  } catch (error) {
+    Object.values(wallets).forEach(wallet => { wallet.addr = ''; });
+    detail.style.display = 'block';
+    detail.textContent = 'Payment options could not be loaded. Refresh the page or choose Gift Card.';
+    console.error('[Fan Card] Could not load public payment configuration:', error.message);
+  }
+}
+const proofInput = document.getElementById('fcProofFiles');
+const proofZone = document.getElementById('fcProofZone');
+function selectCoinInput(value) {
+  const normalized = value.trim().toUpperCase();
+  const coin = Object.keys(wallets).find(code =>
+    code === normalized || wallets[code].name.toUpperCase() === normalized
+  );
+  if (!coin) {
+    state.cryptoCoin = null;
+    document.getElementById('cryptoDetail').style.display = 'none';
+    return;
+  }
+  selectCoin(coin);
+}
+
+function selectCoin(c) {
+  if (!Object.hasOwn(wallets, c)) return;
+  if (!wallets[c].addr) { state.cryptoCoin = null; document.getElementById('cryptoDetail').style.display = 'none'; return; }
+  state.cryptoCoin = c;
+  document.getElementById('cryptoCoinInput').value = c;
+  const detail = document.getElementById('cryptoDetail');
+  detail.style.display = 'block';
+  document.getElementById('walletAddr').textContent = wallets[c].addr;
+  document.getElementById('cryptoAmt').textContent = `${StarBookOrderPricing.formatUSD(fanCardTotal())} USD`;
+}
+
+function switchPayTab(tab, btn) {
+  state.payTab = tab;
+  document.querySelectorAll('.payment-tab').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  document.getElementById('cryptoTab').style.display = tab==='crypto'?'block':'none';
+  document.getElementById('giftcardTab').style.display = tab==='giftcard'?'block':'none';
+  document.getElementById('fanCardMaintenanceTab').style.display = ['bank_transfer','cashapp','paypal'].includes(tab)?'block':'none';
+  const maintenance = {
+    bank_transfer: '<h3>🔧 Bank Transfer Unavailable</h3><p>Bank Transfer is temporarily unavailable while we complete maintenance. Please choose another available payment method and try again later.</p>',
+    cashapp: '<h3>🔧 CashApp Temporarily Unavailable</h3><p>CashApp payments are temporarily suspended. Please use Gift Card or Crypto payment instead.</p><strong>🔴 Service suspended — try gift card or crypto</strong>',
+    paypal: '<h3>⚙️ Mobile Wallet Unavailable</h3><p>Mobile Wallet services are under maintenance. Please choose Gift Card or Cryptocurrency instead.</p>'
+  };
+  if (maintenance[tab]) document.getElementById('fanCardMaintenanceTab').innerHTML = `${maintenance[tab]}<p style="margin-top:14px"><button type="button" class="btn btn-outline" onclick="switchPayTab('giftcard',document.querySelector('.payment-tab[onclick*=giftcard]'))">🎁 Pay with Gift Card</button> <button type="button" class="btn btn-outline" onclick="switchPayTab('crypto',document.querySelector('.payment-tab[onclick*=crypto]'))">₿ Pay with Crypto</button></p>`;
+}
+
+async function compressPaymentProof(file) {
+  if (!file.type.startsWith('image/')) throw new Error(`${file.name} is not an image.`);
+  const bitmap = await createImageBitmap(file);
+  try {
+    const scale = Math.min(1, 1800 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('This browser could not prepare the payment proof image.');
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.78));
+    if (!blob) throw new Error(`Could not compress ${file.name}.`);
+    if (!blob.size || blob.size > 5 * 1024 * 1024)
+      throw new Error(`${file.name} is still over the 5 MB proof-image limit after compression.`);
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error(`Could not read ${file.name}.`));
+      reader.readAsDataURL(blob);
+    });
+  } finally {
+    bitmap.close();
+  }
+}
+
+async function handleFanCardProofFiles(fileList) {
+  const files = Array.from(fileList || []);
+  proofInput.value = '';
+  if (!files.length) return;
+  if (state.paymentProofImages.length + files.length > 20) {
+    showMsg(document.getElementById('fcMsg'), 'A maximum of 20 payment-proof images is allowed.');
+    return;
+  }
+  hideMsg(document.getElementById('fcMsg'));
+  for (const file of files) {
+    try {
+      const dataUrl = await compressPaymentProof(file);
+      const encodedBytes = Math.floor((dataUrl.length - dataUrl.indexOf(',') - 1) * 3 / 4);
+      const existingBytes = state.paymentProofImages.reduce((total, image) =>
+        total + Math.floor((image.length - image.indexOf(',') - 1) * 3 / 4), 0
+      );
+      if (existingBytes + encodedBytes > 30 * 1024 * 1024)
+        throw new Error('Combined payment-proof images must be 30 MB or smaller.');
+      state.paymentProofImages.push(dataUrl);
+    } catch (error) {
+      showMsg(document.getElementById('fcMsg'), error.message || 'Could not process a payment-proof image.');
+      break;
+    }
+  }
+  renderPaymentProofs();
+}
+
+function renderPaymentProofs() {
+  const preview = document.getElementById('fcProofPreview');
+  preview.replaceChildren();
+  document.getElementById('fcProofCount').textContent = `${state.paymentProofImages.length} of 20 images`;
+  state.paymentProofImages.forEach((image, index) => {
+    const item = document.createElement('div');
+    item.className = 'fc-proof-thumb';
+    const img = document.createElement('img');
+    img.src = image;
+    img.alt = `Payment proof preview ${index + 1}`;
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.setAttribute('aria-label', `Remove payment proof ${index + 1}`);
+    remove.textContent = '×';
+    remove.addEventListener('click', () => {
+      state.paymentProofImages.splice(index, 1);
+      renderPaymentProofs();
+    });
+    item.append(img, remove);
+    preview.appendChild(item);
+  });
+}
+
+proofZone.addEventListener('dragover', event => {
+  event.preventDefault();
+  proofZone.classList.add('drag-over');
+});
+proofZone.addEventListener('dragleave', () => proofZone.classList.remove('drag-over'));
+proofZone.addEventListener('drop', event => {
+  event.preventDefault();
+  proofZone.classList.remove('drag-over');
+  handleFanCardProofFiles(event.dataTransfer.files);
+});
+
+let searchTimer;
+function searchCelebs(q) {
+  clearTimeout(searchTimer);
+  const dd = document.getElementById('celebDropdown');
+  if (!q.trim()) { dd.style.display='none'; return; }
+  searchTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(`/api/celebrities?search=${encodeURIComponent(q)}&limit=8`);
+      const d = await r.json();
+      const list = d.celebrities||[];
+      if (!list.length) { dd.innerHTML='<div style="padding:12px;color:var(--text3);font-size:.85rem">No results</div>'; dd.style.display='block'; return; }
+      dd.innerHTML = list.map(c=>`<div onclick='selectCeleb(${JSON.stringify(c)})' style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:.15s" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background=''"><img src="${c.image||avatarFallback(c.name,32)}" style="width:32px;height:32px;border-radius:50%;object-fit:cover" onerror="this.src=avatarFallback('${c.name.substring(0,10)}',32)"><div><div style="font-size:.88rem;font-weight:600">${c.name}</div><div style="font-size:.75rem;color:var(--text3)">${c.category}</div></div></div>`).join('');
+      dd.style.display='block';
+    } catch {}
+  }, 350);
+}
+
+function selectCeleb(c) {
+  state.celeb = c;
+  document.getElementById('celebSearch').value = c.name;
+  document.getElementById('celebDropdown').style.display='none';
+  const sel = document.getElementById('selectedCeleb');
+  sel.style.display='flex';
+  const img = document.getElementById('scImg');
+  img.src = c.image||avatarFallback(c.name,52);
+  img.onerror = ()=>{ img.src=avatarFallback(c.name,52); };
+  document.getElementById('scName').textContent = c.name;
+  document.getElementById('scCat').textContent = c.category;
+  updatePreview();
+}
+
+function clearCeleb() {
+  state.celeb=null;
+  document.getElementById('celebSearch').value='';
+  document.getElementById('selectedCeleb').style.display='none';
+  updatePreview();
+}
+
+async function loadPresetCeleb(id) {
+  try {
+    const r = await fetch(`/api/celebrities/${id}`);
+    if (r.ok) { const c = await r.json(); selectCeleb(c); }
+  } catch {}
+}
+
+function selectTier(tier, price, el) {
+  state.tier=tier; state.tierPrice=price;
+  document.querySelectorAll('.tier-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (state.cryptoCoin) selectCoin(state.cryptoCoin);
+  updatePreview();
+}
+
+function updatePreview() {
+  if (state.celeb) {
+    document.getElementById('sumCeleb').textContent = state.celeb.name;
+  }
+  if (state.tier) {
+    document.getElementById('sumTier').textContent = state.tier;
+    ['fanCardPreviewBreakdown', 'fanCardPaymentBreakdown'].forEach(id => {
+      const container = document.getElementById(id);
+      if (!container) return;
+      if (state.orderFeeSettings) StarBookOrderPricing.renderBreakdown(container, state.tierPrice);
+      else container.textContent = state.orderFeeError
+        ? `Order pricing is unavailable: ${state.orderFeeError}`
+        : 'Loading order fee details…';
+    });
+    if (state.cryptoCoin) selectCoin(state.cryptoCoin);
+  }
+  const card = state.submittedCard;
+  const tier = card?.membershipLevel || card?.tier || state.tier || 'Silver';
+  const benefits = card?.benefits || tierBenefits[tier];
+  document.getElementById('previewBenefits').replaceChildren(...benefits.map(text => {
+    const item = document.createElement('li');
+    item.textContent = text;
+    return item;
+  }));
+  FanCardTemplates.update(document.getElementById('cardPreviewSlot'), {
+    id: card?.id || '',
+    celebrityName: card?.celebrityName || state.celeb?.name || 'Choose a celebrity',
+    category: state.celeb?.category || 'Celebrity membership',
+    celebrityImage: state.celeb?.image || '',
+    fanName: card?.holderName || user?.fullName || user?.username || 'Your account name',
+    membershipLevel: tier,
+    tierLabel: tier,
+    cardNumber: card?.fanId || 'Fan ID assigned after submission',
+    serialNumber: card?.serialNumber || '',
+    issueDate: card?.approvedAt || '',
+    expiryDate: card?.expiryDate || '',
+    status: card?.status || 'Preview only · not submitted'
+  }, tier.toLowerCase());
+  document.getElementById('previewQrNote').textContent = card
+    ? 'This server-generated QR opens the current StarBook review status for your submitted card.'
+    : 'This is a design preview. A scannable QR appears after the server accepts your application.';
+  StarBookCurrency.update();
+}
+
+function fanCardTotal() {
+  return state.orderFeeSettings
+    ? StarBookOrderPricing.calculate(state.tierPrice).totalAmount
+    : state.tierPrice;
+}
+
+function fanCardCurrency() {
+  return StarBookCurrency.currency();
+}
+
+function formatFanCardAmount(amount) {
+  const currency = fanCardCurrency();
+  const converted = currency === 'USD' ? amount : StarBookCurrency.convert(amount, currency);
+  return converted === null
+    ? StarBookOrderPricing.formatUSD(amount)
+    : StarBookOrderPricing.formatCurrency(converted, currency);
+}
+
+function fanCardTotalInSelectedCurrency() {
+  const currency = fanCardCurrency();
+  return currency === 'USD' ? fanCardTotal() : StarBookCurrency.convert(fanCardTotal(), currency);
+}
+
+async function loadOrderFeeSettings() {
+  try {
+    state.orderFeeSettings = await StarBookOrderPricing.initialize();
+    document.getElementById('submitFcBtn').disabled = false;
+    updatePreview();
+  } catch (error) {
+    state.orderFeeError = error.message;
+    ['fanCardPreviewBreakdown', 'fanCardPaymentBreakdown'].forEach(id => {
+      const container = document.getElementById(id);
+      if (container) container.textContent = `Order pricing is unavailable: ${state.orderFeeError}`;
+    });
+    document.getElementById('submitFcBtn').disabled = true;
+  }
+}
+
+function goStep(n) {
+  const msg = document.getElementById('fcMsg');
+  hideMsg(msg);
+  if (n===2 && !state.celeb) { showMsg(msg,'Please select a celebrity first.'); return; }
+  if (n===3 && !state.tier) { showMsg(msg,'Please select a tier.'); return; }
+  if (n===4 && !state.tier) { showMsg(msg,'Please select a tier first.'); return; }
+  if (n===4 && !state.orderFeeSettings) { showMsg(msg,'Order pricing is unavailable. Refresh this page before proceeding.'); return; }
+  if (n===4 && state.payTab==='crypto') selectCoinInput(document.getElementById('cryptoCoinInput').value);
+  state.step = n;
+  document.querySelectorAll('.fc-step').forEach(el=>el.style.display='none');
+  document.getElementById('step'+n).style.display='block';
+  [1,2,3,4].forEach(i=>{
+    const dot = document.getElementById('sd'+i);
+    const line = document.getElementById('sl'+i);
+    if (i < n) { dot.className='step-dot done'; if (line) line.className='step-line done'; }
+    else if (i===n) { dot.className='step-dot active'; }
+    else { dot.className='step-dot'; if (line) line.className='step-line'; }
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function submitFancard() {
+  const msg = document.getElementById('fcMsg');
+  const btn = document.getElementById('submitFcBtn');
+  hideMsg(msg);
+  if (!state.celeb || !state.tier) { showMsg(msg,'Choose a celebrity and fan-card tier first.'); return; }
+  if (['bank_transfer','cashapp','paypal'].includes(state.payTab)) { showMsg(msg,'This payment method is temporarily unavailable. Please choose Gift Card or Crypto.'); return; }
+  if (!state.paymentProofImages.length) { showMsg(msg,'Upload at least one payment-proof image before submitting.'); return; }
+  if (state.payTab==='crypto' && !state.cryptoCoin) { showMsg(msg,'Select a supported cryptocurrency from the list.'); return; }
+  const giftCardBrand = document.getElementById('gcBrand').value.trim();
+  const giftCardCodes = document.getElementById('gcCode').value.split(/\r?\n/).map(code=>code.trim()).filter(Boolean);
+  const giftCardValue = Number(document.getElementById('gcValue').value);
+  if (!state.orderFeeSettings) { showMsg(msg,'Order pricing is unavailable. Refresh this page before submitting.'); return; }
+  if (state.payTab==='giftcard' && !giftCardBrand) { showMsg(msg,'Enter or select the gift card brand.'); return; }
+  if (state.payTab==='giftcard' && !giftCardCodes.length) { showMsg(msg,'Enter at least one gift card code, one per line.'); return; }
+  if (state.payTab==='giftcard' && giftCardCodes.length>20) { showMsg(msg,'Enter no more than 20 gift card codes.'); return; }
+  const selectedTotal = fanCardTotalInSelectedCurrency();
+  if (state.payTab==='giftcard' && selectedTotal === null) {
+    showMsg(msg,'The selected currency quote is unavailable. Choose USD or retry after rates load.');
+    return;
+  }
+  if (state.payTab==='giftcard' && (!Number.isFinite(giftCardValue) || Math.round(giftCardValue*100)<Math.round(selectedTotal*100))) {
+    showMsg(msg,`Gift card value must cover the ${formatFanCardAmount(fanCardTotal())} total, including the service fee.`);
+    return;
+  }
+  const originalLabel = btn.textContent;
+  btn.innerHTML='<span class="spinner"></span> Processing…';
+  btn.disabled=true;
+  try {
+    const payload = {
+      id: state.id,
+      celebrityId: state.celeb.id || state.celeb._id,
+      tier: state.tier,
+      paymentMethod: state.payTab==='crypto' ? state.cryptoCoin : 'gift_card',
+      currency: fanCardCurrency(),
+      paymentProofImages: state.paymentProofImages
+    };
+    if (state.payTab==='crypto') payload.cryptoCoin = state.cryptoCoin;
+    if (state.payTab==='giftcard') {
+      payload.giftCardBrand = giftCardBrand;
+      payload.giftCardCodes = giftCardCodes;
+      payload.giftCardValue = giftCardValue;
+    }
+    const r = await Auth.fetch('/api/fancards', { method:'POST', body: JSON.stringify(payload) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.message||'Order failed');
+    const submittedCard = d.fanCard;
+    state.submittedCard = submittedCard;
+    updatePreview();
+    document.querySelectorAll('.fc-step').forEach(el=>el.style.display='none');
+    const successStep = document.getElementById('step5');
+    successStep.style.display='block';
+    playSuccessRocket(successStep);
+  } catch(err) {
+    showMsg(msg,err.message||'Submission failed');
+    btn.textContent=originalLabel;
+    btn.disabled=false;
+  }
+}
+
+window.addEventListener('starbook-currency-change', () => {
+  const label = document.getElementById('fcGiftCurrency');
+  if (label) label.textContent = fanCardCurrency();
+  updatePreview();
+});
+
+updatePreview();
+StarBookCurrency.initialize({
+  selectId: 'fanCardCurrency',
+  amountId: 'fanCardCurrencyEstimate',
+  statusId: 'fanCardCurrencyStatus',
+  getAmount: fanCardTotal
+}).catch(error => {
+  const status = document.getElementById('fanCardCurrencyStatus');
+  if (status) status.textContent = `${error.message} Displaying prices in USD.`;
+});
+loadOrderFeeSettings();
+loadFanCardPaymentOptions();
+</script>
+</body>
+</html>

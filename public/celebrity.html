@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Book your favourite celebrity on StarBook. View full profile, services, reviews and pricing.">
+<title>Celebrity Profile - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<link rel="stylesheet" href="/assets/css/home.css">
+<style>
+.celeb-hero{display:grid;grid-template-columns:minmax(280px,370px) minmax(0,1fr);gap:clamp(24px,4vw,52px);padding:34px 0 52px;align-items:start}
+.celeb-photo-wrap{position:sticky;top:88px;padding:12px;background:linear-gradient(150deg,rgba(245,200,66,.13),rgba(124,92,252,.13) 55%,var(--bg2));border:1px solid var(--border2);border-radius:24px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.celeb-photo{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 30%;border-radius:16px;background:var(--bg3);box-shadow:inset 0 0 0 1px var(--border)}
+.celeb-photo-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 6px 3px;color:var(--text2);font-size:.78rem}
+.celeb-photo-caption strong{color:var(--text);font-size:.85rem}
+.celeb-profile-info{min-width:0;padding:clamp(4px,1.5vw,18px) 0}
+.celeb-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.celeb-name{font-family:var(--font-head);font-size:clamp(2rem,4.2vw,3.2rem);font-weight:900;line-height:1.06;letter-spacing:-.035em;margin-bottom:16px}
+.celeb-meta-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:22px 0 16px}
+.celeb-meta-item{display:grid;gap:6px;min-width:0;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;font-size:.76rem;color:var(--text3)}
+.celeb-meta-item strong{color:var(--text);font-size:.88rem;overflow-wrap:anywhere}
+.celeb-rating{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px 14px;background:linear-gradient(90deg,rgba(245,200,66,.09),transparent);border-left:2px solid var(--gold);border-radius:0 12px 12px 0}
+.celeb-bio{color:var(--text2);line-height:1.75;font-size:.94rem;margin:0 0 24px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:16px}
+.celeb-languages{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 24px}
+.celeb-language{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 10px;font-size:.76rem;color:var(--text2)}
+.celeb-services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:28px}
+.service-item{background:linear-gradient(145deg,var(--surface),rgba(124,92,252,.035));border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px;font-size:.85rem;line-height:1.5}
+.booking-card{background:linear-gradient(145deg,var(--surface),var(--bg2));border:1px solid var(--border2);border-radius:18px;padding:24px;position:sticky;top:88px;box-shadow:0 16px 42px rgba(0,0,0,.2)}
+.booking-card-price{font-family:var(--font-head);font-size:2.1rem;font-weight:800;color:var(--gold);margin-bottom:4px}
+.celeb-tabs{margin-top:44px;padding:22px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:18px}
+.celeb-tabs .tab-bar{margin-bottom:16px}
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.exp-item{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.exp-item:last-child{border-bottom:none}
+.similar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+@media(max-width:900px){.celeb-hero{grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:24px}.celeb-meta-row{grid-template-columns:repeat(2,minmax(0,1fr))}.celeb-services{grid-template-columns:1fr}.booking-card{position:static}.similar-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.celeb-hero{grid-template-columns:1fr;gap:22px;padding:20px 0 34px}.celeb-photo-wrap{position:static;max-width:440px;width:100%;margin:0 auto}.celeb-photo{aspect-ratio:4/3}.celeb-profile-info{padding:0}.celeb-services{grid-template-columns:repeat(2,minmax(0,1fr))}.celeb-tabs{margin-top:28px;padding:16px}.celeb-bio{padding:15px}.celeb-meta-row{margin:16px 0 12px}}
+@media(max-width:420px){.similar-grid{grid-template-columns:1fr 1fr;gap:10px}.celeb-services{grid-template-columns:1fr}.celeb-meta-row{gap:6px}.celeb-meta-item{padding:9px;font-size:.7rem}.celeb-meta-item strong{font-size:.8rem}.booking-card{padding:18px}.celeb-name{font-size:clamp(1.8rem,9vw,2.4rem)}.celeb-tabs{padding:12px}.celeb-photo-wrap{padding:8px;border-radius:18px}}
+</style>
+</head>
+<body>
+<div id="navPlaceholder"></div>
+<main>
+<div class="container" id="celebContent" style="padding:24px 20px">
+  <div class="skeleton" style="height:32px;width:200px;margin-bottom:24px"></div>
+  <div class="celeb-hero">
+    <div><div class="skeleton" style="aspect-ratio:3/4;border-radius:18px"></div></div>
+    <div><div class="skeleton" style="height:40px;margin-bottom:16px"></div><div class="skeleton" style="height:20px;width:60%;margin-bottom:24px"></div><div class="skeleton" style="height:200px"></div></div>
+  </div>
+</div>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+
+const id = new URLSearchParams(location.search).get('id');
+if (!id) { location.href = '/celebrities.html'; }
+
+async function loadCelebrity() {
+  try {
+    const r = await fetch(`/api/celebrities/${id}`);
+    if (!r.ok) throw new Error('Not found');
+    const c = await r.json();
+    document.title = `${c.name} - StarBook`;
+    document.querySelector('meta[name=description]').content = `Book ${c.name} on StarBook. ${c.category} with ${c.followers||'millions'} of followers. Starting from $${c.price?.toLocaleString()}.`;
+
+    const safeName = escapeHTML(c.name || 'Celebrity');
+    const safeCategory = escapeHTML(c.category || 'Celebrity');
+    const celebrityId = encodeURIComponent(c.id);
+    const available = c.available !== false;
+    const imageSrc = resolveImageSource(c.image, c.name, 1000);
+    const imageFallback = avatarFallback(c.name, 400);
+    const rating = Math.max(0, Math.min(5, Math.round(Number(c.rating) || 4)));
+    const stars = '★'.repeat(rating) + '☆'.repeat(5-rating);
+    const reviews = c.reviews || [];
+    const services = c.services || [];
+    const experience = c.experience || [];
+
+    document.getElementById('celebContent').innerHTML = `
+      <nav style="font-size:.82rem;color:var(--text3);margin-bottom:28px">
+        <a href="/index.html" style="color:var(--text3);text-decoration:none">Home</a> ›
+        <a href="/celebrities.html" style="color:var(--text3);text-decoration:none">Celebrities</a> ›
+        <a href="/celebrities.html?category=${encodeURIComponent(c.category)}" style="color:var(--text3);text-decoration:none">${safeCategory}s</a> ›
+        <span style="color:var(--text)">${safeName}</span>
+      </nav>
+      <div class="celeb-hero">
+        <div class="celeb-photo-wrap">
+          <img src="${escapeHTML(imageSrc)}" alt="${safeName}" class="celeb-photo" loading="eager" fetchpriority="high" onerror="this.onerror=null;this.src='${imageFallback}'">
+          <div class="celeb-photo-caption"><strong>${safeCategory}</strong><span>⭐ ${escapeHTML(c.rating||4.5)} rating</span></div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+            ${available
+              ? `<a href="/booking.html?id=${celebrityId}" class="btn btn-gold" style="width:100%;font-size:1rem;padding:14px">🎬 Book ${escapeHTML(c.name.split(' ')[0])} Now</a>`
+              : '<button type="button" class="btn btn-outline" disabled aria-disabled="true" style="width:100%;font-size:1rem;padding:14px;cursor:not-allowed;opacity:.7">Currently Unavailable</button>'}
+            <a href="/fancard.html?celebrity=${celebrityId}" class="btn btn-outline" style="width:100%;font-size:.9rem;padding:12px">🪪 Get Membership Card</a>
+          </div>
+        </div>
+        <div class="celeb-profile-info">
+          <div class="celeb-badges">
+            <span class="badge badge-gold">${safeCategory}</span>
+            ${c.verified?'<span class="badge" style="background:rgba(124,92,252,.1);color:var(--accent2);border-color:rgba(124,92,252,.2)">✓ Verified</span>':''}
+            ${c.featured?'<span class="badge badge-success">⭐ Featured</span>':''}
+            <span class="badge ${c.available!==false?'badge-success':'badge-danger'}">${c.available!==false?'✓ Available':'✗ Busy'}</span>
+          </div>
+          <h1 class="celeb-name">${safeName}</h1>
+          <div class="celeb-meta-row" aria-label="Celebrity profile details">
+            <div class="celeb-meta-item">📍 Location<strong>${escapeHTML(c.location||'Global')}</strong></div>
+            <div class="celeb-meta-item">👥 Community<strong>${escapeHTML(c.followers||'1M+')} followers</strong></div>
+            <div class="celeb-meta-item">⏱ Response time<strong>${escapeHTML(c.responseTime||'24 hours')}</strong></div>
+            <div class="celeb-meta-item">📦 Bookings<strong>${escapeHTML(c.bookingsCount||0)}</strong></div>
+          </div>
+          <div class="celeb-rating" aria-label="${rating} out of 5 stars">
+            <span class="star-rating" style="font-size:1.1rem">${stars}</span>
+            <strong>${escapeHTML(c.rating||4.5)}</strong>
+            <span style="color:var(--text3);font-size:.82rem">${reviews.length} client review${reviews.length===1?'':'s'}</span>
+          </div>
+          ${c.bio?`<p class="celeb-bio">${escapeHTML(c.bio)}</p>`:''}
+          ${c.languages?.length?`<div class="celeb-languages"><span style="font-size:.8rem;color:var(--text3)">Languages</span>${c.languages.map(l=>`<span class="celeb-language">${escapeHTML(l)}</span>`).join('')}</div>`:''}
+          ${services.length?`<h2 style="font-family:var(--font-head);font-size:1.15rem;font-weight:800;margin-bottom:14px">Ways to connect</h2><div class="celeb-services">${services.map(s=>`<div class="service-item"><span style="color:var(--gold);font-size:1.05rem">✦</span><span>${escapeHTML(s)}</span></div>`).join('')}</div>`:''}
+          <div class="booking-card">
+            <div class="booking-card-price" data-price-usd="${Number(c.price)||0}">${formatCurrency(c.price)}</div>
+            <div style="color:var(--text3);font-size:.82rem;margin-bottom:16px">Starting price per booking · final details confirmed before payment</div>
+            ${available
+              ? `<a href="/booking.html?id=${celebrityId}" class="btn btn-gold" style="width:100%;font-size:.95rem;padding:13px;margin-bottom:10px">Book ${escapeHTML(c.name.split(' ')[0])} →</a><div style="font-size:.75rem;color:var(--text3);text-align:center">✓ Secure payment · ✓ 14-day money-back guarantee</div>`
+              : '<p role="status" style="color:var(--danger);font-size:.85rem;text-align:center">This celebrity is currently not accepting bookings.</p>'}
+          </div>
+        </div>
+      </div>
+
+      <div class="celeb-tabs" data-tabs>
+        <div class="tab-bar">
+          ${experience.length?'<button class="tab-btn active" data-tab="experience">Experience</button>':''}
+          ${reviews.length?'<button class="tab-btn" data-tab="reviews">Reviews ('+reviews.length+')</button>':''}
+          ${(c.certifications||[]).length?'<button class="tab-btn" data-tab="certs">Certifications</button>':''}
+        </div>
+        ${experience.length?`<div class="tab-content active" data-tab="experience">${experience.map(e=>`<div class="exp-item"><span style="color:var(--gold);font-size:1rem">▸</span><span style="color:var(--text2)">${escapeHTML(e)}</span></div>`).join('')}</div>`:''}
+        ${reviews.length?`<div class="tab-content" data-tab="reviews">${reviews.map(r=>`<div class="review-card"><div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:8px"><strong style="font-size:.88rem">${escapeHTML(r.user||'StarBook client')}</strong><span class="star-rating" style="font-size:.85rem">${'★'.repeat(Math.max(0,Math.min(5,Number(r.rating)||5)))}</span></div><p style="color:var(--text2);font-size:.88rem;line-height:1.6">${escapeHTML(r.comment||'')}</p></div>`).join('')}</div>`:''}
+        ${(c.certifications||[]).length?`<div class="tab-content" data-tab="certs">${(c.certifications||[]).map(cert=>`<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)"><span style="color:var(--success)">✓</span><span style="color:var(--text2)">${escapeHTML(cert)}</span></div>`).join('')}</div>`:''}
+      </div>
+
+      <section style="margin-top:60px">
+        <h2 class="section-title" style="font-size:1.4rem;margin-bottom:6px">Similar Celebrities</h2>
+        <p style="color:var(--text3);font-size:.85rem;margin-bottom:20px">You might also like</p>
+        <div class="similar-grid" id="similarGrid"><div class="skeleton celeb-card" style="height:320px"></div><div class="skeleton celeb-card" style="height:320px"></div><div class="skeleton celeb-card" style="height:320px"></div><div class="skeleton celeb-card" style="height:320px"></div></div>
+      </section>`;
+
+    initTabs();
+    loadSimilar(c.category, c.id);
+  } catch(e) {
+    document.getElementById('celebContent').innerHTML = '<div style="text-align:center;padding:80px 20px"><h2>Celebrity not found</h2><a href="/celebrities.html" class="btn btn-gold" style="margin-top:20px">Browse All Stars</a></div>';
+  }
+}
+
+async function loadSimilar(cat, excludeId) {
+  try {
+    const r = await fetch(`/api/celebrities?category=${encodeURIComponent(cat)}&limit=4`);
+    const d = await r.json();
+    const list = (d.celebrities||[]).filter(c=>c.id!=excludeId).slice(0,4);
+    const grid = document.getElementById('similarGrid');
+    if (grid && list.length) grid.innerHTML = list.map(c=>renderCelebCard(c)).join('');
+  } catch {}
+}
+
+loadCelebrity();
+renderChatbot();
+</script>
+</body>
+</html>

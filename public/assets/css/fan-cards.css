@@ -1,0 +1,78 @@
+.fan-card {
+  --fc-accent: #d8ad4f;
+  --fc-ink: #fff8e8;
+  --fc-muted: rgba(255,248,232,.68);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+  min-height: 260px;
+  aspect-ratio: 1.586 / 1;
+  border: 1px solid #b58a36;
+  border-radius: 15px;
+  color: var(--fc-ink);
+  background:
+    linear-gradient(115deg,rgba(255,255,255,.035),transparent 22%,rgba(255,255,255,.018) 49%,transparent 68%),
+    repeating-linear-gradient(172deg,rgba(255,255,255,.014) 0 1px,transparent 1px 4px),
+    linear-gradient(135deg,#1a1a18 0%,#080909 48%,#17130b 100%);
+  box-shadow: 0 18px 38px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,235,175,.24),inset 0 -2px 0 rgba(0,0,0,.9);
+  transform: perspective(1100px) rotateX(var(--fc-rotate-x,0deg)) rotateY(var(--fc-rotate-y,0deg)) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 180ms ease-out,box-shadow 180ms ease-out;
+  will-change: transform;
+  backface-visibility: hidden;
+  font-family: Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.fan-card,.fan-card *{box-sizing:border-box}
+.fan-card::before{position:absolute;z-index:-1;inset:0;pointer-events:none;background:radial-gradient(ellipse at 90% 0%,rgba(227,181,78,.19),transparent 43%),linear-gradient(128deg,transparent 35%,rgba(255,255,255,.035) 50%,transparent 65%);content:""}
+.fan-card::after{position:absolute;z-index:-1;inset:7px;border:1px solid rgba(221,177,77,.42);border-radius:10px;pointer-events:none;content:""}
+.fan-card__top,.fan-card__bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px}
+.fan-card__top{min-height:48px}
+.fan-card__brand{display:flex;align-items:center;gap:8px;min-width:0;color:#e9c878;font-size:.68rem;font-weight:850;letter-spacing:.16em;text-transform:uppercase}
+.fan-card__mark{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;border:1px solid var(--fc-accent);border-radius:5px;color:var(--fc-accent);background:rgba(218,174,76,.08);font-size:.75rem;box-shadow:inset 0 0 8px rgba(218,174,76,.08)}
+.fan-card__edition{color:#c7a85f;font-size:.59rem;font-weight:750;letter-spacing:.12em;text-align:right;text-transform:uppercase}
+.fan-card__body{display:flex;align-items:center;gap:16px;flex:1;min-height:0;padding:4px 20px 12px}
+.fan-card__portrait{width:30%;max-width:118px;height:100%;min-height:106px;flex:0 0 30%;object-fit:cover;object-position:center 28%;border:1px solid rgba(224,183,85,.72);border-radius:7px;background:#171717;box-shadow:0 4px 15px rgba(0,0,0,.35)}
+.fan-card__portrait--placeholder{display:grid;place-items:center;color:#e5bd64;background:linear-gradient(145deg,#29251b,#080909 70%);font-size:2rem;font-weight:800;text-shadow:0 1px 14px rgba(222,177,74,.2)}
+.fan-card__info{min-width:0;flex:1}
+.fan-card__eyebrow{margin-bottom:6px;color:#d7b45d;font-size:.58rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase}
+.fan-card__name{margin:0;color:#fff9e9;font-size:clamp(1.1rem,3vw,1.55rem);line-height:1.05;letter-spacing:-.025em;overflow-wrap:anywhere;text-shadow:0 1px 12px rgba(0,0,0,.45)}
+.fan-card__category{margin-top:6px;color:var(--fc-muted);font-size:.72rem}
+.fan-card__member{margin-top:13px}
+.fan-card__label{display:block;margin-bottom:3px;color:#b7a578;font-size:.53rem;letter-spacing:.14em;text-transform:uppercase}
+.fan-card__member-name{display:block;color:#f4e8c8;font-size:.77rem;font-weight:750;overflow-wrap:anywhere}
+.fan-card__details{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:7px;color:rgba(255,248,232,.72);font-size:.57rem}
+.fan-card__details strong{color:rgba(255,248,232,.92);font-weight:750}
+.fan-card__status{display:inline-flex;align-items:center;gap:4px;width:max-content;margin-top:7px;padding:3px 7px;border:1px solid rgba(255,255,255,.13);border-radius:999px;color:#d8d1bf;background:rgba(255,255,255,.06);font-size:.52rem;font-weight:850;letter-spacing:.09em;text-transform:uppercase}
+.fan-card__status::before{width:5px;height:5px;border-radius:50%;background:currentColor;content:""}
+.fan-card__status--active{color:#8ee0a8;border-color:rgba(126,220,153,.3);background:rgba(46,160,80,.12)}
+.fan-card__status--pending{color:#f1ce75;border-color:rgba(241,206,117,.3);background:rgba(180,130,30,.12)}
+.fan-card__status--revoked,.fan-card__status--expired,.fan-card__status--inactive{color:#f1a1a1;border-color:rgba(241,161,161,.28);background:rgba(180,60,60,.12)}
+.fan-card__bottom{align-items:center;padding-top:9px;padding-bottom:13px;border-top:1px solid rgba(218,174,76,.24)}
+.fan-card__identifiers{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fan-card__number{color:#d1cbbb;font-size:.61rem;letter-spacing:.06em;overflow-wrap:anywhere}
+.fan-card__tier{color:var(--fc-accent);font-size:.64rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+.fan-card__qr-column{display:flex;flex:0 0 auto;flex-direction:column;align-items:center;gap:2px}
+.fan-card__qr{display:grid;place-items:center;overflow:hidden;width:48px;height:48px;flex:0 0 48px;padding:3px;border:1px solid #d8b45e;border-radius:4px;color:#111;background:#fff;font-size:.45rem;font-weight:900;line-height:1.05;text-align:center}
+.fan-card__qr-image{display:block;width:100%;height:100%;image-rendering:pixelated}
+.fan-card__qr--empty{color:#7d6026;background:repeating-linear-gradient(135deg,#fff 0 4px,#f0e5c9 4px 6px)}
+.fan-card__qr-label{margin-top:3px;color:#c5b98f;font-size:.43rem;letter-spacing:.1em;text-transform:uppercase}
+.fan-card__logo{display:block;width:20px;height:20px;flex:0 0 20px;object-fit:contain;border-radius:3px}
+.fan-card__shine{position:absolute;z-index:2;inset:-35% -55%;pointer-events:none;opacity:.42;transform:translateX(-42%) rotate(16deg);background:linear-gradient(105deg,transparent 39%,rgba(255,255,255,.025) 44%,rgba(255,226,157,.15) 49%,rgba(255,255,255,.075) 51%,transparent 58%);mix-blend-mode:screen;animation:fc-metal-sweep 7.5s ease-in-out infinite}
+.fan-card:hover,.fan-card:focus-within{box-shadow:0 24px 48px rgba(0,0,0,.43),inset 0 1px 0 rgba(255,235,175,.28),inset 0 -2px 0 rgba(0,0,0,.9)}
+.fan-card__top,.fan-card__body,.fan-card__bottom{transform:translateZ(12px)}
+.fan-card--silver{--fc-accent:#d9dce0;background:linear-gradient(115deg,rgba(255,255,255,.04),transparent 22%),repeating-linear-gradient(172deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px),linear-gradient(135deg,#202226 0%,#090a0c 48%,#17191d 100%)}
+.fan-card--silver::after{border-color:rgba(217,220,224,.42)}
+.fan-card--silver .fan-card__brand,.fan-card--silver .fan-card__eyebrow{color:#d9dce0}
+.fan-card--gold{--fc-accent:#e4bb59}
+.fan-card--vip{--fc-accent:#f1d17d}
+.fan-card--vip::after{inset:6px;border-width:1.5px;border-color:rgba(241,209,125,.7);box-shadow:0 0 16px rgba(241,209,125,.08),inset 0 0 0 1px rgba(255,255,255,.03)}
+.fan-card--vip .fan-card__mark{border-radius:50%;box-shadow:0 0 12px rgba(241,209,125,.2),inset 0 0 8px rgba(241,209,125,.12)}
+@keyframes fc-metal-sweep{0%,20%{transform:translateX(-48%) rotate(16deg);opacity:.18}52%{opacity:.68}80%,100%{transform:translateX(48%) rotate(16deg);opacity:.18}}
+@media(hover:none),(pointer:coarse){.fan-card{transition:transform 240ms ease-out,box-shadow 240ms ease-out}.fan-card__shine{animation-duration:9s;opacity:.34}}
+@media(max-width:480px){.fan-card{aspect-ratio:auto;min-height:236px}.fan-card__portrait{min-height:78px}.fan-card__details{display:none}}
+@media(max-width:380px){.fan-card{min-height:236px;border-radius:12px}.fan-card__top,.fan-card__bottom{gap:8px;padding:11px 14px}.fan-card__body{gap:10px;padding:3px 14px 9px}.fan-card__portrait{min-height:72px}.fan-card__member{margin-top:9px}.fan-card__qr{width:42px;height:42px;flex-basis:42px}.fan-card__brand{font-size:.58rem;letter-spacing:.1em}.fan-card__edition{font-size:.52rem}.fan-card__details{font-size:.52rem}.fan-card__status{margin-top:5px}}
+@media(prefers-reduced-motion:reduce){.fan-card,.fan-card__shine{animation:none!important;transition:none!important}.fan-card{transform:none!important;will-change:auto}}
+@media print{.fan-card{box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}

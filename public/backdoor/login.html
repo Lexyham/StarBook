@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Login - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0A0F;--bg2:#111118;--surface:#1A1A24;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);--gold:#F5C842;--text:#F0F0F5;--text2:rgba(240,240,245,.7);--text3:rgba(240,240,245,.4);--danger:#ef4444;--success:#22c55e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:420px}
+.brand{text-align:center;margin-bottom:32px}
+.brand-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--gold)}
+.brand-sub{font-size:.8rem;color:var(--text3);margin-top:6px;letter-spacing:.06em;text-transform:uppercase}
+.msg{padding:11px 14px;border-radius:10px;font-size:.85rem;margin-bottom:16px;display:none}
+.msg.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;display:block}
+.msg.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#4ade80;display:block}
+.form-group{margin-bottom:18px}
+label{display:block;font-size:.82rem;font-weight:600;color:var(--text2);margin-bottom:7px}
+input{width:100%;background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--text);font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:.15s}
+input:focus{border-color:var(--gold)}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:.9rem}
+.btn{width:100%;padding:13px;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:.15s;margin-top:4px}
+.btn-admin{background:linear-gradient(135deg,var(--gold) 0%,#e6a817 100%);color:#0A0A0F}
+.btn-admin:hover{filter:brightness(1.08)}
+.btn-admin:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.lockout{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:14px;text-align:center;font-size:.85rem;color:#f87171}
+.back-link{text-align:center;margin-top:20px;font-size:.82rem;color:var(--text3)}
+.back-link a{display:inline-flex;align-items:center;min-height:40px;padding:7px 12px;border:1px solid rgba(245,200,66,.25);border-radius:999px;background:rgba(245,200,66,.045);color:var(--text2);text-decoration:none;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}
+.back-link a:hover,.back-link a:focus-visible{color:var(--gold);background:rgba(245,200,66,.13);border-color:var(--gold);box-shadow:0 0 18px rgba(245,200,66,.18);transform:translateY(-1px);outline:none}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(10,10,15,.3);border-top-color:#0A0A0F;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:480px){body{padding:16px}.login-card{padding:32px 24px}}
+@media(max-width:360px){body{padding:12px}.login-card{padding:26px 18px}}
+@media(orientation:landscape) and (max-height:500px){body{align-items:flex-start;overflow-y:auto}.login-card{margin-block:12px;padding-block:24px}}
+@media(pointer:coarse){.pw-toggle{width:44px;min-width:44px;min-height:44px}}
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="brand">
+    <div class="brand-logo">⭐ StarBook</div>
+    <div class="brand-sub">🔐 Admin Access Portal</div>
+  </div>
+  <div id="adminMsg" class="msg"></div>
+  <div id="lockoutBox" style="display:none" class="lockout">
+    <div>Too many failed attempts.</div>
+    <div style="margin-top:6px;font-weight:700">Try again in <span id="countdown">60</span>s</div>
+  </div>
+  <form id="adminForm" onsubmit="doAdminLogin(event)">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="adminUser" placeholder="Username" required autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="adminPass" placeholder="Password" required autocomplete="current-password">
+        <button type="button" class="pw-toggle" onclick="togglePw()">👁</button>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-admin" id="adminBtn">Sign In to Admin Panel</button>
+  </form>
+  <p class="back-link"><a href="/index.html">← Back · Go to StarBook</a></p>
+</div>
+<script>
+const Auth = { token: () => localStorage.getItem('sb-token'), user: () => JSON.parse(localStorage.getItem('sb-user')||'null'), isAdmin: () => { const u = Auth.user(); return u?.userType==='admin'||u?.role==='admin'; }, save: (t,u) => { localStorage.setItem('sb-token',t); localStorage.setItem('sb-user',JSON.stringify(u)); }, clear: () => { localStorage.removeItem('sb-token'); localStorage.removeItem('sb-user'); } };
+
+let attempts = 0;
+let locked = false;
+
+function togglePw() { const inp = document.getElementById('adminPass'); inp.type = inp.type==='password'?'text':'password'; }
+
+function showMsg(text, type) {
+  const el = document.getElementById('adminMsg');
+  el.textContent = text;
+  el.className = 'msg ' + (type||'error');
+}
+
+function startLockout() {
+  locked = true;
+  document.getElementById('adminForm').style.opacity = '.4';
+  document.getElementById('adminBtn').disabled = true;
+  document.getElementById('lockoutBox').style.display = 'block';
+  let secs = 60;
+  const t = setInterval(() => {
+    secs--;
+    document.getElementById('countdown').textContent = secs;
+    if (secs <= 0) {
+      clearInterval(t);
+      locked = false;
+      attempts = 0;
+      document.getElementById('adminForm').style.opacity = '1';
+      document.getElementById('adminBtn').disabled = false;
+      document.getElementById('lockoutBox').style.display = 'none';
+    }
+  }, 1000);
+}
+
+async function doAdminLogin(e) {
+  e.preventDefault();
+  if (locked) return;
+  const btn = document.getElementById('adminBtn');
+  const username = document.getElementById('adminUser').value.trim();
+  const password = document.getElementById('adminPass').value;
+  btn.innerHTML = '<span class="spinner"></span>Verifying…';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/backdoor/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password }) });
+    const responseText = await r.text();
+    let d;
+    try {
+      d = JSON.parse(responseText);
+    } catch {
+      throw new Error('Login service unavailable. Please try again.');
+    }
+    if (!r.ok) throw new Error(d.message || 'Invalid username or password');
+    if (d.user?.userType !== 'admin' && d.user?.role !== 'admin') {
+      Auth.clear();
+      throw new Error('Access denied: admin privileges required');
+    }
+    if (!d.token) throw new Error('Login service returned an invalid response. Please try again.');
+    Auth.save(d.token, d.user);
+    btn.innerHTML = '✓ Access Granted';
+    setTimeout(() => { window.location.href = '/backdoor/dashboard.html'; }, 600);
+  } catch(err) {
+    attempts++;
+    showMsg(err.message || 'Login failed', 'error');
+    btn.innerHTML = 'Sign In to Admin Panel';
+    btn.disabled = false;
+    if (attempts >= 2) startLockout();
+  }
+}
+</script>
+</body>
+</html>

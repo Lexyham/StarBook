@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard - StarBook</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<style>
+:root{--sidebar-w:240px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);display:flex;min-height:100vh}
+.sidebar{box-shadow:10px 0 34px rgba(0,0,0,.16)}
+.sidebar-logo{letter-spacing:.02em}
+.nav-item{min-height:44px}
+.nav-item:focus-visible,.btn-primary:focus-visible,.btn-sm:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.topbar{backdrop-filter:blur(14px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.content-area{max-width:1680px;margin-inline:auto;width:100%}
+.panel-title{letter-spacing:-.02em}
+.stat-box,.table-wrap{box-shadow:0 12px 30px rgba(0,0,0,.12)}
+.admin-table td{line-height:1.5}
+.admin-table th{background:rgba(255,255,255,.025)}
+.support-message-content{min-width:220px;max-width:480px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-family:var(--font-body);font-size:.9rem;line-height:1.65;color:var(--text)}
+.support-reply-preview{max-width:360px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-family:var(--font-body);font-size:.86rem;line-height:1.6;color:var(--text2);margin:0 0 8px}
+.message-dialog textarea{min-height:180px;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-family:var(--font-body);font-size:.95rem}
+.message-dialog .dialog-description{color:var(--text3);font-size:.85rem;line-height:1.6;margin:-10px 0 16px}
+.sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:200;transition:.25s}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border);font-family:var(--font-head);font-size:1.1rem;font-weight:800;color:var(--gold)}
+.sidebar-logo span{color:var(--text);font-size:.75rem;display:block;font-family:var(--font-body);font-weight:400;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:.88rem;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:.15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item.active{background:rgba(245,200,66,.06);color:var(--gold);border-left-color:var(--gold)}
+.nav-item .icon{width:18px;text-align:center;flex-shrink:0}
+.main-area{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-title{font-family:var(--font-head);font-size:1.1rem;font-weight:800}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.admin-badge{background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.2);color:#a78bfa;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:20px}
+.content-area{padding:28px;flex:1;min-width:0}
+.panel{display:none}
+.panel.active{display:block}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px}
+.stat-box .num{font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--gold)}
+.stat-box .lbl{font-size:.78rem;color:var(--text3);margin-top:4px}
+.admin-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.admin-table th{text-align:left;padding:10px 14px;font-size:.74rem;font-weight:600;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.admin-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-table tr:hover td{background:rgba(255,255,255,.02)}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;overflow-x:auto;min-width:0;max-width:100%}
+.btn-sm{padding:5px 12px;font-size:.76rem;border-radius:7px;font-weight:600;cursor:pointer;border:1.5px solid;transition:.15s;font-family:var(--font-body)}
+.btn-approve{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.07);color:#4ade80}
+.btn-approve:hover{background:rgba(34,197,94,.15)}
+.btn-reject{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.07);color:#f87171}
+.btn-reject:hover{background:rgba(239,68,68,.15)}
+.btn-edit{border-color:rgba(245,200,66,.3);background:rgba(245,200,66,.07);color:var(--gold)}
+.btn-edit:hover{background:rgba(245,200,66,.15)}
+.btn-del{border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.05);color:#f87171}
+.btn-del:hover{background:rgba(239,68,68,.15)}
+.btn-ban{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.07);color:#f87171}
+.btn-unban{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.07);color:#4ade80}
+.s-pending{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.3);padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:600;white-space:nowrap}
+.s-approved{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.3);padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:600;white-space:nowrap}
+.s-rejected{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.3);padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:600;white-space:nowrap}
+.s-active{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.3);padding:2px 9px;border-radius:20px;font-size:.73rem}
+.s-banned{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.3);padding:2px 9px;border-radius:20px;font-size:.73rem}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.panel-title{font-family:var(--font-head);font-size:1.2rem;font-weight:800}
+.celeb-search{position:relative;flex:1 1 240px;max-width:360px;min-width:0}
+.celeb-search input{padding-left:40px}
+.celeb-search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text3)}
+.btn-primary{background:var(--gold);color:#0A0A0F;padding:9px 20px;border-radius:9px;border:none;font-weight:700;font-size:.88rem;cursor:pointer;font-family:var(--font-body);transition:.15s}
+.btn-primary:hover{background:#ffd85e}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:520px;max-height:90vh;max-height:90dvh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--surface);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:var(--text2);font-size:.9rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grp{margin-bottom:14px}
+.form-grp label{display:block;font-size:.78rem;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.form-grp input,.form-grp select,.form-grp textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:.87rem;font-family:var(--font-body);outline:none;transition:.15s}
+.form-grp input:focus,.form-grp select:focus,.form-grp textarea:focus{border-color:var(--gold)}
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle{width:40px;height:22px;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;cursor:pointer;position:relative;transition:.2s}
+.toggle.on{background:var(--success);border-color:var(--success)}
+.toggle::after{content:'';width:14px;height:14px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:.2s}
+.toggle.on::after{left:20px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;color:var(--text);font-size:1.4rem;padding:4px}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190}
+.sidebar-overlay.open{display:block}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-area{margin-left:0}.stat-row{grid-template-columns:repeat(2,1fr)}.hamburger-btn{display:block}.form-row{grid-template-columns:1fr}}
+@media(max-width:600px){.topbar{padding:12px 16px}.content-area{padding:18px 14px}.topbar-right{gap:8px}.admin-badge{font-size:.68rem;padding:3px 8px}.stat-row{gap:10px}.stat-box{padding:15px}.stat-box .num{font-size:1.5rem}.table-wrap{border-radius:10px}.admin-table{min-width:620px}.modal-box{padding:22px}}
+@media(max-width:600px){#panel-celebrities .celeb-search{order:3;flex-basis:100%;max-width:none}#panel-celebrities .panel-header>.btn-primary{white-space:nowrap}}
+@media(max-width:360px){.topbar{padding-inline:12px}.content-area{padding:14px 10px}.topbar-title{font-size:.95rem}.topbar-right span:last-child{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stat-row{gap:8px}.stat-box{padding:12px}.stat-box .num{font-size:1.3rem}.modal-overlay{padding:10px}.modal-box{padding:18px}}
+@media(orientation:landscape) and (max-height:500px){.sidebar{overflow-y:auto}.topbar{position:static}.content-area{padding-block:14px}}
+:root{--sidebar-w:272px;--admin-surface:rgba(255,255,255,.025);--admin-border:rgba(255,255,255,.075)}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse at 75% -18%,rgba(124,92,252,.09),transparent 42%),var(--bg);letter-spacing:.005em}
+.sidebar{background:linear-gradient(180deg,#12121b 0%,var(--bg2) 45%,#0d0d13 100%);border-right:1px solid var(--admin-border);box-shadow:14px 0 42px rgba(0,0,0,.2)}
+.sidebar-logo{padding:25px 22px 22px;border-bottom:1px solid var(--admin-border);font-size:1.18rem}
+.sidebar-logo span{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase}
+.sidebar-nav-label{padding:18px 22px 8px;color:var(--text3);font-size:.65rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+.sidebar-nav-label.secondary{padding-top:20px}
+.sidebar .nav-item{position:relative;width:calc(100% - 24px);min-height:46px;margin:3px 12px;padding:10px 13px;border:1px solid transparent;border-radius:11px;color:var(--text2);font-size:.86rem}
+.sidebar .nav-item:hover{background:rgba(255,255,255,.045);color:var(--text)}
+.sidebar .nav-item.active{background:linear-gradient(90deg,rgba(245,200,66,.14),rgba(245,200,66,.045));border-color:rgba(245,200,66,.13);color:var(--gold);box-shadow:inset 3px 0 var(--gold)}
+.sidebar .nav-item .icon{width:24px;font-size:1rem}
+.sidebar>div:last-child{padding:15px 16px!important;border-color:var(--admin-border)!important;background:rgba(0,0,0,.12)}
+.sidebar>div:last-child button{min-height:42px;border-radius:10px!important;transition:background .18s,border-color .18s}
+.sidebar>div:last-child button:hover{background:rgba(239,68,68,.14)!important;border-color:rgba(239,68,68,.35)!important}
+.main-area{background:transparent}
+.topbar{min-height:72px;padding:14px clamp(18px,3vw,38px);background:rgba(15,15,22,.88);border-color:var(--admin-border);box-shadow:0 10px 28px rgba(0,0,0,.12)}
+.topbar-title{font-size:1.18rem;letter-spacing:-.025em}
+.topbar-right{gap:12px}
+.admin-badge{padding:5px 11px;border-color:rgba(124,92,252,.27);background:rgba(124,92,252,.12);letter-spacing:.08em}
+.content-area{max-width:1720px;padding:clamp(22px,3vw,38px);margin-inline:auto}
+.panel-header{margin-bottom:22px;gap:14px}
+.panel-title{font-size:1.32rem;letter-spacing:-.035em}
+.stat-row{gap:16px;margin-bottom:30px}
+.stat-box{position:relative;overflow:hidden;min-height:112px;padding:21px 22px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),var(--bg2);border-color:var(--admin-border);border-radius:16px;box-shadow:0 14px 34px rgba(0,0,0,.15);transition:transform .18s,border-color .18s}
+.stat-box:hover{transform:translateY(-2px);border-color:rgba(245,200,66,.2)}
+.stat-box::after{position:absolute;right:-20px;bottom:-38px;width:112px;height:112px;border:1px solid rgba(245,200,66,.09);border-radius:50%;content:'';pointer-events:none}
+.stat-box .num{font-size:1.92rem;line-height:1.1;letter-spacing:-.04em}
+.stat-box .lbl{font-size:.74rem;letter-spacing:.035em}
+.table-wrap{border-color:var(--admin-border);border-radius:16px;background:rgba(17,17,25,.92);box-shadow:0 16px 38px rgba(0,0,0,.14)}
+.admin-table{font-size:.82rem}
+.admin-table th{padding:13px 15px;background:rgba(255,255,255,.025);color:var(--text3);font-size:.68rem;letter-spacing:.09em}
+.admin-table td{padding:13px 15px;border-color:rgba(255,255,255,.055);line-height:1.55}
+.admin-table tbody tr{transition:background .14s}
+.admin-table tr:hover td{background:rgba(255,255,255,.025)}
+.admin-table td:first-child{color:var(--text)}
+.s-pending,.s-approved,.s-rejected,.s-active,.s-banned{display:inline-flex;align-items:center;min-height:24px;padding:3px 10px;font-size:.69rem;font-weight:700;letter-spacing:.01em}
+.btn-primary{min-height:40px;padding:9px 16px;border-radius:10px;box-shadow:0 6px 16px rgba(245,200,66,.11)}
+.btn-primary:hover{box-shadow:0 8px 20px rgba(245,200,66,.2);transform:translateY(-1px)}
+.btn-sm{min-height:32px;border-radius:8px}
+.form-grp label{font-size:.7rem;letter-spacing:.07em}
+.form-grp input,.form-grp select,.form-grp textarea{min-height:42px;border-color:rgba(255,255,255,.09);border-radius:10px;background:rgba(255,255,255,.025)}
+.form-grp textarea{min-height:92px}
+.form-grp input:focus,.form-grp select:focus,.form-grp textarea:focus{border-color:rgba(245,200,66,.65);box-shadow:0 0 0 3px rgba(245,200,66,.09)}
+.panel-header input[type=search]{min-height:42px;border-radius:10px}
+.modal-box{border-color:var(--admin-border);border-radius:20px;box-shadow:0 26px 90px rgba(0,0,0,.48)}
+.modal-close{width:34px;height:34px;border:1px solid var(--admin-border);border-radius:10px}
+.hamburger-btn{width:42px;height:42px;border:1px solid var(--admin-border);border-radius:11px;background:rgba(255,255,255,.035);font-size:1.1rem;transition:background .15s,border-color .15s}
+.hamburger-btn:hover{background:rgba(255,255,255,.075);border-color:rgba(245,200,66,.28)}
+.sidebar-overlay{background:rgba(3,3,8,.72);backdrop-filter:blur(3px)}
+.nav-item:focus-visible,.btn-primary:focus-visible,.btn-sm:focus-visible,.hamburger-btn:focus-visible,.sidebar button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media(max-width:900px){.sidebar{box-shadow:22px 0 60px rgba(0,0,0,.35)}.sidebar.open{transform:translateX(0)}}
+@media(max-width:600px){.topbar{min-height:64px}.content-area{padding:22px 16px}.stat-row{gap:11px;margin-bottom:24px}.stat-box{min-height:98px;padding:16px}.stat-box .num{font-size:1.55rem}.panel-title{font-size:1.18rem}.table-wrap{border-radius:13px}.admin-table{min-width:660px}.panel-header{align-items:flex-start}.panel-header>.btn-primary{min-height:42px}.modal-box{border-radius:16px}}
+@media(max-width:380px){.content-area{padding-inline:12px}.stat-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat-box{padding:14px 12px}.stat-box .num{font-size:1.4rem}.topbar-right{gap:6px}.admin-badge{font-size:.62rem}.sidebar{width:min(var(--sidebar-w),88vw)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.stat-box,.btn-primary,.hamburger-btn,.sidebar,.admin-table tbody tr{transition:none}.stat-box:hover,.btn-primary:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">⭐ StarBook Admin<span>Management Console</span></div>
+  <div style="flex:1;padding:12px 0;overflow-y:auto">
+    <div class="sidebar-nav-label">Workspace</div>
+    <button class="nav-item active" data-panel="overview"><span class="icon">📊</span>Dashboard</button>
+    <button class="nav-item" data-panel="bookings"><span class="icon">📋</span>Bookings</button>
+    <button class="nav-item" data-panel="payments"><span class="icon">💳</span>Payments</button>
+    <button class="nav-item" data-panel="fancards"><span class="icon">🪪</span>Fan Cards</button>
+    <div class="sidebar-nav-label secondary">Management</div>
+    <button class="nav-item" data-panel="celebrities"><span class="icon">⭐</span>Celebrities</button>
+    <button class="nav-item" data-panel="users"><span class="icon">👥</span>Users &amp; Credentials</button>
+    <button class="nav-item" data-panel="licenses"><span class="icon">🔑</span>Licenses</button>
+    <button class="nav-item" data-panel="testimonials"><span class="icon">💬</span>Testimonials</button>
+    <button class="nav-item" data-panel="notifications"><span class="icon">🔔</span>Notifications</button>
+    <button class="nav-item" data-panel="accesslogs"><span class="icon">🔐</span>Access Logs</button>
+    <button class="nav-item" data-panel="messages"><span class="icon">💬</span>Messages</button>
+  </div>
+
+  <div class="modal-overlay" id="messageComposerModal" role="dialog" aria-modal="true" aria-labelledby="messageComposerTitle">
+    <div class="modal-box message-dialog">
+      <button type="button" class="modal-close" onclick="closeMessageComposer()" aria-label="Close">✕</button>
+      <h3 id="messageComposerTitle" style="font-family:var(--font-head);font-size:1.1rem;font-weight:800;margin-bottom:14px">Compose message</h3>
+      <p id="messageComposerDescription" class="dialog-description"></p>
+      <div id="messageComposerError" class="msg" role="alert"></div>
+      <form id="messageComposerForm" onsubmit="submitMessageComposer(event)">
+        <label for="messageComposerText" style="display:block;font-size:.78rem;font-weight:600;color:var(--text3);margin-bottom:6px">Message</label>
+        <textarea id="messageComposerText" maxlength="2000" required></textarea>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;flex-wrap:wrap">
+          <button type="button" class="btn-sm btn-edit" onclick="closeMessageComposer()">Cancel</button>
+          <button type="submit" class="btn-primary" id="messageComposerSubmit">Save message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div style="padding:16px 20px;border-top:1px solid var(--border)">
+    <button onclick="doLogout()" style="width:100%;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;border-radius:8px;padding:9px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:var(--font-body)">Sign Out</button>
+  </div>
+</nav>
+<div class="main-area">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hamburger-btn" onclick="toggleSidebar(true)">☰</button>
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+    </div>
+    <div class="topbar-right">
+      <span class="admin-badge">ADMIN</span>
+      <span style="font-size:.85rem;color:var(--text2)" id="adminUsername">-</span>
+    </div>
+  </div>
+  <div class="content-area">
+    <div id="toastEl" style="position:fixed;top:20px;right:20px;z-index:999;display:none;padding:12px 20px;border-radius:10px;font-size:.88rem;font-weight:600;max-width:300px"></div>
+
+    <div class="panel active" id="panel-overview">
+      <div class="stat-row" id="overviewStats">
+        <div class="stat-box skeleton" style="height:82px"></div>
+        <div class="stat-box skeleton" style="height:82px"></div>
+        <div class="stat-box skeleton" style="height:82px"></div>
+        <div class="stat-box skeleton" style="height:82px"></div>
+      </div>
+      <h2 style="font-size:1rem;font-weight:700;margin-bottom:14px">Recent Activities</h2>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>User</th><th>Celebrity</th><th>Type</th><th>Date</th><th>Status</th></tr></thead><tbody id="recentBk"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="panel-bookings">
+      <div class="panel-header"><h2 class="panel-title">Bookings</h2></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>ID</th><th>User</th><th>Celebrity</th><th>Event</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bkTbody"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="panel-payments">
+      <div class="panel-header"><h2 class="panel-title">Payment Proofs</h2></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Booking ID</th><th>User</th><th>Method</th><th>Amount</th><th>Proof</th><th>Status</th><th>Actions</th></tr></thead><tbody id="payTbody"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="panel-fancards">
+      <div class="panel-header"><h2 class="panel-title">Fan Cards</h2></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>User</th><th>Celebrity</th><th>Tier</th><th>Total</th><th>Card image</th><th>Status</th><th>Actions</th></tr></thead><tbody id="fcTbody"></tbody></table></div>
+      <input type="file" id="fcImageFile" accept="image/*" hidden>
+    </div>
+
+    <div class="panel" id="panel-celebrities">
+      <div class="panel-header">
+        <h2 class="panel-title">Celebrities</h2>
+        <label class="celeb-search">
+          <span class="celeb-search-icon" aria-hidden="true">🔍</span>
+          <input type="search" id="celebSearch" placeholder="Search celebrities…" autocomplete="off" aria-label="Search celebrities">
+        </label>
+        <button class="btn-primary" onclick="openCelebModal()">+ Add Celebrity</button>
+      </div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Available</th><th>Actions</th></tr></thead><tbody id="celTbody"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="panel-users">
+      <div class="panel-header"><div><h2 class="panel-title">Users &amp; Credentials</h2><small style="color:var(--text3)">Passwords are never displayed; stored credentials remain hashed.</small></div><input id="userSearch" type="search" placeholder="Search users…" aria-label="Search users"></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Date Joined</th><th>Last Login</th><th>License Key</th><th>Status</th><th>Actions</th></tr></thead><tbody id="userTbody"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="panel-testimonials">
+      <div class="panel-header"><h2 class="panel-title">Testimonials</h2></div>
+      <form id="testimonialForm" onsubmit="saveTestimonial(event)" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+        <h3 style="font-size:.95rem;font-weight:700;margin-bottom:14px">Add a published testimonial</h3>
+        <div class="form-row">
+          <div class="form-grp"><label for="testName">Name</label><input id="testName" maxlength="100" required></div>
+          <div class="form-grp"><label for="testLocation">Location</label><input id="testLocation" maxlength="100" placeholder="City, country"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-grp"><label for="testRating">Rating</label><select id="testRating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div>
+          <div class="form-grp"><label for="testComment">Review</label><textarea id="testComment" rows="3" maxlength="2000" required placeholder="Share the client's experience…"></textarea></div>
+        </div>
+        <button class="btn-primary" id="testSaveBtn" type="submit">Add Testimonial</button>
+      </form>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>User</th><th>Message</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead><tbody id="testTbody"></tbody></table></div>
+    </div>
+    <div class="panel" id="panel-accesslogs">
+      <div class="panel-header"><h2 class="panel-title">🔐 Access Logs</h2><input id="accessLogSearch" type="search" placeholder="Search logs…" aria-label="Search access logs"><button class="btn-primary" onclick="loadAccessLogs()">Refresh</button></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Date / Time</th><th>User</th><th>Email</th><th>Action</th><th>Outcome</th><th>IP</th></tr></thead><tbody id="accessLogsTbody"></tbody></table></div>
+    </div>
+    <div class="panel" id="panel-messages">
+      <div class="panel-header"><h2 class="panel-title">💬 Support Messages</h2><input id="supportSearch" type="search" placeholder="Search messages…" aria-label="Search support messages"><button class="btn-primary" onclick="loadSupportMessages()">Refresh</button></div>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>Sender</th><th>Subject</th><th>Status</th><th>Message</th><th>Reply</th></tr></thead><tbody id="supportMessagesTbody"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="panel-licenses">
+      <div class="panel-header"><h2 class="panel-title">License Management</h2></div>
+      <form id="licenseForm" onsubmit="createLicense(event)" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+        <h3 style="font-size:.95rem;font-weight:700;margin-bottom:14px">Create a license key</h3>
+        <div class="form-row">
+          <div class="form-grp"><label for="licenseType">Access type</label><select id="licenseType"><option value="premium">Premium</option><option value="vip">VIP</option><option value="standard">Standard</option></select></div>
+          <div class="form-grp"><label for="licenseExpires">Expires on</label><input type="date" id="licenseExpires"></div>
+        </div>
+        <div class="form-grp"><label for="licenseKey">Custom license key (optional)</label><input id="licenseKey" maxlength="64" autocomplete="off" placeholder="Leave blank to generate a secure key"></div>
+        <div class="form-grp"><label for="licenseDescription">Description</label><input id="licenseDescription" maxlength="160" placeholder="Optional note about this key"></div>
+        <button class="btn-primary" id="licenseCreateBtn" type="submit">Generate License</button>
+        <div id="licenseCreated" role="status" style="margin-top:12px;overflow-wrap:anywhere"></div>
+      </form>
+      <div class="table-wrap"><table class="admin-table"><thead><tr><th>License Key</th><th>Type</th><th>Used By</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead><tbody id="licenseTbody"></tbody></table></div>
+    </div>
+
+    <div class="panel" id="panel-notifications">
+      <div class="panel-header"><h2 class="panel-title">Send Notification</h2></div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:560px">
+        <div id="ntfMsg" class="msg"></div>
+        <div class="form-grp"><label>Recipient</label>
+          <select id="ntfTarget"><option value="all">All Users</option><option value="email">Specific User (by email)</option></select>
+        </div>
+        <div class="form-grp" id="emailTargetWrap" style="display:none"><label>User Email</label><input type="email" id="ntfEmail" placeholder="user@example.com"></div>
+        <div class="form-grp"><label>Message</label><textarea id="ntfMsg2" rows="4" placeholder="Enter notification message…"></textarea></div>
+        <button class="btn-primary" onclick="sendNotification()">Send Notification</button>
+      </div>
+      <div class="panel-header" style="margin-top:28px"><h2 class="panel-title">Sent Notifications</h2></div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Recipient</th><th>Message</th><th>Sent</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="ntfHistoryTbody"><tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">Open Notifications to load messages.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="celebModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCelebModal()">✕</button>
+    <h3 style="font-family:var(--font-head);font-size:1.1rem;font-weight:800;margin-bottom:20px" id="celebModalTitle">Add Celebrity</h3>
+    <div id="celebModalMsg" class="msg"></div>
+    <form id="celebForm" onsubmit="saveCeleb(event)">
+      <input type="hidden" id="celebId">
+      <div class="form-row">
+        <div class="form-grp"><label>Full Name</label><input type="text" id="cName" required></div>
+        <div class="form-grp"><label>Category</label>
+          <select id="cCategory">
+            <option>Musician</option><option>Actor</option><option>Footballer</option><option>Athlete</option><option>Comedian</option><option>TV Host</option><option>Influencer</option><option>DJ</option><option>Model</option><option>YouTuber</option><option>Podcaster</option><option>Streamer</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-grp"><label>Price (USD)</label><input type="number" id="cPrice" min="1"></div>
+        <div class="form-grp"><label>Location</label><input type="text" id="cLocation" list="countryOptions" placeholder="Type a country"></div>
+      </div>
+      <div class="form-grp">
+        <label>Celebrity Image</label>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="position:relative;flex:1">
+            <input type="url" id="cImage" placeholder="Paste image URL…" oninput="celebImgData=null;previewCelebImg(this.value)">
+            <div style="margin-top:6px;font-size:.75rem;color:var(--text3)">Upload to compress automatically, or place as ID_name.ext in the celebrities folder.</div>
+            <input type="file" id="cImageFile" accept="image/*" style="margin-top:4px;font-size:.8rem;color:var(--text2)" onchange="handleCelebImgUpload(event)">
+          </div>
+          <div id="celebImgPreview" style="width:72px;height:72px;border-radius:10px;border:1px solid var(--border);background:var(--surface);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.75rem">Preview</div>
+        </div>
+      </div>
+      <div class="form-grp"><label>Bio</label><textarea id="cBio" rows="3"></textarea></div>
+      <div class="form-grp"><label>Services (comma-separated)</label><textarea id="cServices" rows="2" placeholder="Video message, Shoutout, Live call…"></textarea></div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button type="submit" class="btn-primary" id="celebSaveBtn">Save Celebrity</button>
+        <button type="button" onclick="closeCelebModal()" style="padding:9px 20px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text2);cursor:pointer;font-family:var(--font-body)">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+<datalist id="countryOptions"></datalist>
+
+<div class="modal-overlay" id="proofModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('proofModal').classList.remove('open')">✕</button>
+    <h3 id="proofModalTitle" style="font-family:var(--font-head);font-size:1.1rem;font-weight:800;margin-bottom:16px">Payment Proof</h3>
+    <div id="proofGallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px"></div>
+  </div>
+</div>
+
+<script src="/assets/js/core.js"></script>
+<script>
+requireAdmin();
+const user = Auth.user();
+document.getElementById('adminUsername').textContent = user?.fullName||user?.username||'Admin';
+
+function showToast(msg, type) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg;
+  el.style.background = type==='success'?'#166534':type==='error'?'#7f1d1d':'#1e3a5f';
+  el.style.color = type==='success'?'#4ade80':type==='error'?'#f87171':'#93c5fd';
+  el.style.border = `1px solid ${type==='success'?'rgba(34,197,94,.3)':type==='error'?'rgba(239,68,68,.3)':'rgba(59,130,246,.3)'}`;
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.display='none'; }, 3000);
+}
+
+function openMessageComposer({ title, description, initialValue = '', submitLabel, onSubmit }) {
+  messageComposerAction = onSubmit;
+  messageComposerSubmitLabel = submitLabel;
+  document.getElementById('messageComposerTitle').textContent = title;
+  document.getElementById('messageComposerDescription').textContent = description;
+  document.getElementById('messageComposerText').value = initialValue;
+  document.getElementById('messageComposerSubmit').textContent = submitLabel;
+  const error = document.getElementById('messageComposerError');
+  error.textContent = '';
+  error.className = 'msg';
+  document.getElementById('messageComposerModal').classList.add('open');
+  document.getElementById('messageComposerText').focus();
+}
+
+function closeMessageComposer() {
+  document.getElementById('messageComposerModal').classList.remove('open');
+  messageComposerAction = null;
+}
+
+async function submitMessageComposer(event) {
+  event.preventDefault();
+  const button = document.getElementById('messageComposerSubmit');
+  const message = document.getElementById('messageComposerText').value.trim();
+  if (!message) return;
+  if (!messageComposerAction) {
+    showToast('Message action is no longer available. Reopen the composer and try again.', 'error');
+    return;
+  }
+  button.disabled = true;
+  button.textContent = 'Saving…';
+  try {
+    await messageComposerAction(message);
+    closeMessageComposer();
+  } catch (error) {
+    const messageError = document.getElementById('messageComposerError');
+    messageError.textContent = error.message || 'Could not save this message.';
+    messageError.className = 'msg msg-error';
+  } finally {
+    button.disabled = false;
+    button.textContent = messageComposerSubmitLabel;
+  }
+}
+
+function toggleSidebar(open) {
+  document.getElementById('sidebar').classList.toggle('open', open);
+  document.getElementById('sidebarOverlay').classList.toggle('open', open);
+}
+
+const panels = { overview:'Dashboard', bookings:'Bookings', payments:'Payments', fancards:'Fan Cards', celebrities:'Celebrities', users:'Users & Credentials', licenses:'Licenses', testimonials:'Testimonials', notifications:'Notifications', accesslogs:'Access Logs', messages:'Messages' };
+document.querySelectorAll('.nav-item[data-panel]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.panel).classList.add('active');
+    document.getElementById('topbarTitle').textContent = panels[btn.dataset.panel]||'';
+    loadPanel(btn.dataset.panel);
+    toggleSidebar(false);
+  });
+});
+
+document.getElementById('ntfTarget').addEventListener('change', e => {
+  document.getElementById('emailTargetWrap').style.display = e.target.value==='email'?'block':'none';
+});
+
+const loaded = {};
+const adminFanCards = new Map();
+const adminPayments = new Map();
+let adminSupportMessages = [];
+let adminUsers = [];
+let messageComposerAction = null;
+let messageComposerSubmitLabel = 'Save message';
+let adminSearchTimer;
+document.getElementById('userSearch').addEventListener('input', () => {
+  clearTimeout(adminSearchTimer);
+  adminSearchTimer = setTimeout(loadUsers, 200);
+});
+document.getElementById('accessLogSearch').addEventListener('input', () => {
+  clearTimeout(adminSearchTimer);
+  adminSearchTimer = setTimeout(loadAccessLogs, 200);
+});
+document.getElementById('supportSearch').addEventListener('input', () => {
+  clearTimeout(adminSearchTimer);
+  adminSearchTimer = setTimeout(loadSupportMessages, 200);
+});
+const countryNames = 'Afghanistan|Albania|Algeria|Andorra|Angola|Argentina|Armenia|Australia|Austria|Azerbaijan|Bahamas|Bahrain|Bangladesh|Barbados|Belgium|Belize|Benin|Bhutan|Bolivia|Bosnia and Herzegovina|Botswana|Brazil|Brunei|Bulgaria|Burkina Faso|Cambodia|Cameroon|Canada|Cape Verde|Central African Republic|Chad|Chile|China|Colombia|Comoros|Costa Rica|Croatia|Cuba|Cyprus|Czechia|Denmark|Dominican Republic|Ecuador|Egypt|El Salvador|Estonia|Ethiopia|Fiji|Finland|France|Gabon|Georgia|Germany|Ghana|Greece|Guatemala|Guinea|Haiti|Honduras|Hungary|Iceland|India|Indonesia|Iran|Iraq|Ireland|Israel|Italy|Jamaica|Japan|Jordan|Kazakhstan|Kenya|Kuwait|Latvia|Lebanon|Liberia|Libya|Lithuania|Luxembourg|Madagascar|Malawi|Malaysia|Maldives|Mali|Malta|Mauritius|Mexico|Moldova|Monaco|Mongolia|Montenegro|Morocco|Mozambique|Myanmar|Namibia|Nepal|Netherlands|New Zealand|Nicaragua|Niger|Nigeria|North Korea|North Macedonia|Norway|Oman|Pakistan|Panama|Papua New Guinea|Paraguay|Peru|Philippines|Poland|Portugal|Qatar|Romania|Russia|Rwanda|Saudi Arabia|Senegal|Serbia|Seychelles|Sierra Leone|Singapore|Slovakia|Slovenia|Somalia|South Africa|South Korea|South Sudan|Spain|Sri Lanka|Sudan|Sweden|Switzerland|Syria|Taiwan|Tanzania|Thailand|The Gambia|Togo|Trinidad and Tobago|Tunisia|Turkey|Uganda|Ukraine|United Arab Emirates|United Kingdom|United States|Uruguay|Uzbekistan|Venezuela|Vietnam|Yemen|Zambia|Zimbabwe'.split('|');
+document.getElementById('countryOptions').innerHTML = countryNames.map(name => `<option value="${escapeHTML(name)}"></option>`).join('');
+document.getElementById('fcImageFile').addEventListener('change', handleFanCardImageUpload);
+let celebSearchTimer;
+let celebSearchRequest = 0;
+document.getElementById('celebSearch').addEventListener('input', () => {
+  clearTimeout(celebSearchTimer);
+  celebSearchTimer = setTimeout(loadCelebrities, 250);
+});
+async function loadPanel(name) {
+  if (name==='notifications') {
+    loaded[name] = true;
+    return loadNotificationsAdmin();
+  }
+  if (loaded[name]) return;
+  loaded[name] = true;
+  if (name==='overview') loadOverview();
+  else if (name==='bookings') loadBookings();
+  else if (name==='payments') loadPayments();
+  else if (name==='fancards') loadFancards();
+  else if (name==='celebrities') loadCelebrities();
+  else if (name==='users') loadUsers();
+  else if (name==='licenses') loadLicenses();
+  else if (name==='testimonials') loadTestimonials();
+  else if (name==='notifications') loadNotificationsAdmin();
+  else if (name==='accesslogs') loadAccessLogs();
+  else if (name==='messages') loadSupportMessages();
+}
+
+function statusBadge(s) {
+  const map = {
+    approved:['s-approved','Approved'],
+    confirmed:['s-approved','Confirmed'],
+    rejected:['s-rejected','Rejected'],
+    pending:['s-pending','Pending'],
+    payment_submitted:['s-pending','Payment Submitted'],
+    active:['s-active','Active'],
+    banned:['s-banned','Banned']
+  };
+  const [cls, lbl] = map[s]||['s-pending','Pending'];
+  return `<span class="${cls}">${lbl}</span>`;
+}
+
+function formatPaymentAmount(value) {
+  const amount = Number(value);
+  return Number.isFinite(amount)
+    ? `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '-';
+}
+
+function formatPaymentQuote(value, currency) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount) || typeof currency !== 'string') return '-';
+  try {
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+  } catch {
+    return `${amount.toLocaleString()} ${currency}`;
+  }
+}
+
+function renderPaymentAmounts(record) {
+  const source = record.totalAmount !== null && record.totalAmount !== undefined
+    ? formatPaymentAmount(record.totalAmount)
+    : '-';
+  const quote = record.convertedTotalAmount !== null && record.convertedTotalAmount !== undefined
+    ? `<br><small style="color:var(--text3)">Quote: ${escapeHTML(formatPaymentQuote(record.convertedTotalAmount, record.currency || 'USD'))}</small>`
+    : '';
+  return `${source}${quote}`;
+}
+
+function newestFirst(items) {
+  return [...items]
+    .map((item, index) => ({
+      item,
+      index,
+      timestamp: Date.parse(item.createdAt || item.created_at || item.submittedAt || '')
+    }))
+    .sort((left, right) => {
+      const leftTime = Number.isFinite(left.timestamp) ? left.timestamp : Number.NEGATIVE_INFINITY;
+      const rightTime = Number.isFinite(right.timestamp) ? right.timestamp : Number.NEGATIVE_INFINITY;
+      return rightTime - leftTime || right.index - left.index;
+    })
+    .map(entry => entry.item);
+}
+
+
+async function loadOverview() {
+  try {
+    const [bk, us, fc] = await Promise.all([
+      Auth.fetch('/api/backdoor/bookings').then(r=>r.json()),
+      Auth.fetch('/api/backdoor/users').then(r=>r.json()),
+      Auth.fetch('/api/backdoor/fancards').then(r=>r.json())
+    ]);
+    const bkArr = newestFirst(Array.isArray(bk)?bk:(bk.bookings||[]));
+    const usArr = newestFirst(Array.isArray(us)?us:(us.users||[]));
+    const fcArr = newestFirst(Array.isArray(fc)?fc:(fc.fancards||[]));
+    const pending = bkArr.filter(b=>['pending','payment_submitted'].includes(b.status)).length;
+    document.getElementById('overviewStats').innerHTML = `
+      <div class="stat-box"><div class="num">${usArr.length}</div><div class="lbl">Total Users</div></div>
+      <div class="stat-box"><div class="num">${bkArr.length}</div><div class="lbl">Total Bookings</div></div>
+      <div class="stat-box"><div class="num">${pending}</div><div class="lbl">Pending Approvals</div></div>
+      <div class="stat-box"><div class="num">${fcArr.length}</div><div class="lbl">Fan Cards</div></div>`;
+    const activities = [
+      ...bkArr.map(booking => ({
+        createdAt: booking.createdAt || booking.eventDate,
+        user: booking.userName || booking.userEmail || booking.userId || '-',
+        celebrity: booking.celebrityName || '-',
+        type: `Booking · ${booking.eventType || 'Request'}`,
+        status: booking.status
+      })),
+      ...fcArr.map(card => ({
+        createdAt: card.createdAt || card.submittedAt,
+        user: card.userName || card.userEmail || card.userId || '-',
+        celebrity: card.celebrityName || card.celebName || '-',
+        type: `Fan Card · ${card.membershipLevel || card.tier || 'Application'}`,
+        status: card.status
+      }))
+    ];
+    const tbody = document.getElementById('recentBk');
+    tbody.innerHTML = newestFirst(activities).slice(0,10).map(activity => {
+      const timestamp = Date.parse(activity.createdAt || '');
+      const date = Number.isFinite(timestamp) ? new Date(timestamp).toLocaleString() : '-';
+      return `<tr><td>${escapeHTML(activity.user)}</td><td>${escapeHTML(activity.celebrity)}</td><td>${escapeHTML(activity.type)}</td><td>${date}</td><td>${statusBadge(String(activity.status || 'pending').toLowerCase())}</td></tr>`;
+    }).join('') || '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">No recent activity</td></tr>';
+  } catch(e) { document.getElementById('overviewStats').innerHTML = '<div class="stat-box"><div class="lbl" style="color:var(--danger)">Failed to load</div></div>'; }
+}
+
+async function loadBookings() {
+  const tbody = document.getElementById('bkTbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">Loading…</td></tr>';
+  try {
+    const r = await Auth.fetch('/api/backdoor/bookings'); const d = await r.json();
+    const arr = newestFirst(Array.isArray(d)?d:(d.bookings||[]));
+    tbody.innerHTML = arr.map(b=>`<tr>
+      <td style="font-size:.75rem;color:var(--text3)">${(b.id||b._id||'').slice(-6)}</td>
+      <td>${b.userEmail||b.userId||'-'}</td>
+      <td>${b.celebrityName||'-'}</td>
+      <td>${b.eventType||'-'}</td>
+      <td>${escapeHTML(formatPaymentMethod(b.paymentMethod))}</td>
+      <td>${statusBadge(b.status)}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        ${['pending','payment_submitted'].includes(b.status)?`<button class="btn-sm btn-approve" onclick="patchBooking('${escapeHTML(b.id||b._id)}','approve')">Confirm</button><button class="btn-sm btn-reject" onclick="patchBooking('${escapeHTML(b.id||b._id)}','reject')">Reject</button>`:''}
+        ${b.paymentProof?`<button class="btn-sm btn-edit" onclick="viewProof('${b.paymentProof}')">Proof</button>`:''}
+        <button type="button" class="btn-sm btn-del" data-booking-delete="${escapeHTML(b.id||b._id||'')}">Delete</button>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">No bookings</td></tr>';
+  } catch { tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--danger)">Failed to load</td></tr>'; }
+}
+
+document.getElementById('bkTbody').addEventListener('click', async event => {
+  const button = event.target.closest('[data-booking-delete]');
+  if (!button) return;
+  const id = button.dataset.bookingDelete;
+  if (!id || !confirm('Permanently delete this booking? Any payment-proof records linked to it will also be deleted.')) return;
+  button.disabled = true;
+  try {
+    const response = await Auth.fetch(`/api/backdoor/bookings/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (!response) throw new Error('Your admin session has expired. Sign in again and retry.');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Booking deletion failed');
+    showToast(result.message||'Booking deleted', 'success');
+    delete loaded.bookings;
+    delete loaded.overview;
+    delete loaded.payments;
+    loadBookings();
+    loadOverview();
+  } catch (error) {
+    showToast(error.message||'Booking deletion failed', 'error');
+    button.disabled = false;
+  }
+});
+
+async function patchBooking(id, action) {
+  try {
+    const r = await Auth.fetch(`/api/backdoor/bookings/${encodeURIComponent(id)}`, { method:'PATCH', body: JSON.stringify({ action }) });
+    const result = await r.json();
+    if (!r.ok) throw new Error(result.message||'Booking update failed');
+    showToast(action === 'approve' ? 'Booking confirmed' : 'Booking rejected', 'success');
+    delete loaded.bookings;
+    delete loaded.overview;
+    loadBookings();
+    loadOverview();
+  } catch (error) { showToast(error.message||'Booking update failed', 'error'); }
+}
+
+async function loadPayments() {
+  const tbody = document.getElementById('payTbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">Loading…</td></tr>';
+  try {
+    const r = await Auth.fetch('/api/backdoor/payments');
+    if (!r?.ok) {
+      const error = await r?.json().catch(() => ({}));
+      throw new Error(error.message || 'Could not load payment proofs');
+    }
+    const d = await r.json();
+    const arr = newestFirst(Array.isArray(d) ? d : []);
+    adminPayments.clear();
+    arr.forEach(payment => adminPayments.set(String(payment.id || payment._id), payment));
+    tbody.innerHTML = arr.map(p=>`<tr>
+      <td style="font-size:.75rem">${escapeHTML(String(p.bookingReference||p.bookingId||p.id||p._id||'').slice(-6))}</td>
+      <td>${escapeHTML(p.userName||p.userEmail||'-')}</td><td>${escapeHTML(formatPaymentMethod(p.method)||'-')}</td>
+      <td>${renderPaymentAmounts(p)}</td>
+      <td>${(p.proofFiles||p.paymentProofFiles||p.paymentProofImages||p.cryptoImages||p.giftCardImages||[]).length||p.receiptBase64?`<button type="button" class="btn-sm btn-edit" data-payment-proof="${escapeHTML(p.id||p._id||'')}">View Proof</button>`:'<span style="color:var(--text3)">None</span>'}</td>
+      <td>${statusBadge(p.status)}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        ${['pending','payment_submitted','submitted','awaiting_review'].includes(String(p.status||'').toLowerCase())?`<button class="btn-sm btn-approve" onclick="approvePayment('${escapeHTML(p.id||p._id)}')">Approve</button> <button class="btn-sm btn-reject" onclick="rejectPayment('${escapeHTML(p.id||p._id)}')">Reject</button>`:''}
+        <button type="button" class="btn-sm btn-edit" data-payment-details="${escapeHTML(p.id||p._id||'')}">Details</button>
+        <button type="button" class="btn-sm btn-del" data-payment-delete="${escapeHTML(p.id||p._id||'')}">Delete</button>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">No payment records</td></tr>';
+  } catch (error) { tbody.innerHTML = `<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--danger)">${escapeHTML(error.message||'Failed to load payments')}</td></tr>`; }
+}
+
+document.getElementById('payTbody').addEventListener('click', async event => {
+  const proofButton = event.target.closest('[data-payment-proof]');
+  if (proofButton) {
+    viewPaymentProofs(proofButton.dataset.paymentProof);
+    return;
+  }
+  const detailsButton = event.target.closest('[data-payment-details]');
+  if (detailsButton) {
+    viewPaymentDetails(detailsButton.dataset.paymentDetails);
+    return;
+  }
+  const button = event.target.closest('[data-payment-delete]');
+  if (!button) return;
+  const id = button.dataset.paymentDelete;
+  if (!id || !confirm('Permanently delete this payment proof? The booking, if any, will be kept and detached.')) return;
+  button.disabled = true;
+  try {
+    const response = await Auth.fetch(`/api/backdoor/payments/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (!response) throw new Error('Your admin session has expired. Sign in again and retry.');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Payment proof deletion failed');
+    showToast(result.message||'Payment proof deleted', 'success');
+    delete loaded.payments;
+    loadPayments();
+  } catch (error) {
+    showToast(error.message||'Payment proof deletion failed', 'error');
+    button.disabled = false;
+  }
+});
+
+function viewPaymentProofs(id) {
+  const payment = adminPayments.get(id);
+  if (!payment) return showToast('Payment proof is no longer available. Refresh the Payments panel.', 'error');
+  const files = [payment.proofFiles, payment.paymentProofFiles, payment.paymentProofImages,
+    payment.cryptoImages, payment.giftCardImages].find(value => Array.isArray(value) && value.length) ||
+    (payment.receiptBase64 ? [payment.receiptBase64] : []);
+  if (!Array.isArray(files) || !files.length) return showToast('No proof files were submitted', 'info');
+  const gallery = document.getElementById('proofGallery');
+  gallery.replaceChildren();
+  document.getElementById('proofModalTitle').textContent = 'Payment Proof';
+  files.forEach((file, index) => {
+    if (typeof file !== 'string') return;
+    if (/^data:application\/pdf;base64,/i.test(file)) {
+      const frame = document.createElement('iframe');
+      frame.src = file;
+      frame.title = `Payment proof PDF ${index + 1}`;
+      frame.style.cssText = 'display:block;width:100%;height:min(70vh,760px);margin-bottom:12px;border:1px solid var(--border);border-radius:10px;background:#fff';
+      gallery.appendChild(frame);
+      const download = document.createElement('a');
+      download.href = file;
+      download.download = `payment-proof-${index + 1}.pdf`;
+      download.className = 'btn-sm btn-edit';
+      download.textContent = `Download PDF ${index + 1}`;
+      gallery.appendChild(download);
+      return;
+    }
+    if (!/^(?:data:image\/[a-z0-9.+-]+;base64,|https?:\/\/|\/)/i.test(file)) return;
+    const image = document.createElement('img');
+    image.src = file;
+    image.alt = `Payment proof ${index + 1}`;
+    image.style.cssText = 'display:block;width:100%;max-height:70vh;object-fit:contain;margin-bottom:12px;border-radius:10px;border:1px solid var(--border)';
+    gallery.appendChild(image);
+  });
+  document.getElementById('proofModal').classList.add('open');
+}
+
+function viewPaymentDetails(id) {
+  const payment = adminPayments.get(id);
+  if (!payment) return showToast('Payment details are no longer available. Refresh the Payments panel.', 'error');
+  const details = [
+    ['Payment method', formatPaymentMethod(payment.method) || '-'],
+    ['Booking reference', payment.bookingReference || payment.bookingId || '-'],
+  ['Amount submitted (USD)', payment.totalAmount !== null && payment.totalAmount !== undefined ? formatPaymentAmount(payment.totalAmount) : '-'],
+  ['Selected-currency quote', payment.convertedTotalAmount !== null && payment.convertedTotalAmount !== undefined
+    ? formatPaymentQuote(payment.convertedTotalAmount, payment.currency || 'USD') : '-'],
+    ['Cryptocurrency', payment.cryptoCurrency || '-'],
+    ['Wallet address', payment.walletAddress || '-'],
+    ['Gift card brand', payment.giftCardBrand || '-'],
+    ['Gift card code(s)', (payment.giftCardCodes || (payment.giftCardCode ? [payment.giftCardCode] : [])).join('\n') || '-'],
+    [`Gift card value (${payment.currency || 'USD'})`, payment.giftCardValue !== null && payment.giftCardValue !== undefined
+      ? formatPaymentQuote(payment.giftCardValue, payment.currency || 'USD') : '-'],
+    ['Submitted', payment.createdAt ? new Date(payment.createdAt).toLocaleString() : '-']
+  ];
+  const gallery = document.getElementById('proofGallery');
+  gallery.replaceChildren();
+  document.getElementById('proofModalTitle').textContent = 'Payment Details';
+  details.forEach(([label, value]) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:minmax(120px,.8fr) minmax(0,1.2fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--border)';
+    const name = document.createElement('strong');
+    name.textContent = label;
+    const text = document.createElement('span');
+    text.textContent = value;
+    text.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text2)';
+    row.append(name, text);
+    gallery.appendChild(row);
+  });
+  document.getElementById('proofModal').classList.add('open');
+}
+
+async function approvePayment(id) {
+  try {
+    const r = await Auth.fetch(`/api/backdoor/payments/${encodeURIComponent(id)}`, { method:'PATCH', body: JSON.stringify({ status: 'approved' }) });
+    const result = await r.json();
+    if (!r.ok) throw new Error(result.message||'Payment approval failed');
+    showToast('Payment approved', 'success');
+    delete loaded.payments;
+    delete loaded.bookings;
+    delete loaded.overview;
+    loadPayments();
+    loadBookings();
+    loadOverview();
+  } catch (error) { showToast(error.message||'Payment approval failed', 'error'); }
+}
+
+async function rejectPayment(id) {
+  openMessageComposer({
+    title: 'Reject payment proof',
+    description: 'Add an optional reason. The decision is recorded and the user receives an in-app notification.',
+    submitLabel: 'Reject payment',
+    onSubmit: async reason => {
+    const r = await Auth.fetch(`/api/backdoor/payments/${encodeURIComponent(id)}`, { method:'PATCH', body: JSON.stringify({ status: 'rejected', rejectionReason: reason }) });
+    const result = await r.json();
+    if (!r.ok) throw new Error(result.message||'Payment rejection failed');
+    showToast('Payment rejected', 'success');
+    delete loaded.payments; loadPayments();
+    }
+  });
+}
+
+function viewProof(url) {
+  const gallery = document.getElementById('proofGallery');
+  gallery.innerHTML = '';
+  document.getElementById('proofModalTitle').textContent = 'Payment Proof';
+  const image = document.createElement('img');
+  image.src = url;
+  image.alt = 'Payment proof';
+  image.style.cssText = 'max-width:100%;width:100%;border-radius:10px;border:1px solid var(--border)';
+  gallery.appendChild(image);
+  document.getElementById('proofModal').classList.add('open');
+}
+
+function viewFanCardImage(id) {
+  const card = adminFanCards.get(id);
+  const source = card?.adminCardUrl || card?.adminCardBase64;
+  if (!source) return showToast('This fan card has no uploaded image', 'info');
+  const image = document.createElement('img');
+  image.src = resolveImageSource(source, card.celebrityName || card.celebName || 'Fan card', 1200);
+  image.alt = `Uploaded physical ${card.membershipLevel || card.tier || 'fan'} card`;
+  image.style.cssText = 'max-width:100%;width:100%;max-height:75vh;object-fit:contain;border-radius:10px;border:1px solid var(--border)';
+  image.addEventListener('error', () => showToast('The uploaded fan card image could not be loaded', 'error'), { once: true });
+  document.getElementById('proofModalTitle').textContent = 'Uploaded Physical Fan Card';
+  document.getElementById('proofGallery').replaceChildren(image);
+  document.getElementById('proofModal').classList.add('open');
+}
+
+function viewFanCardProofs(id) {
+  const card = adminFanCards.get(id);
+  const proofs = Array.isArray(card?.paymentProofImages) ? card.paymentProofImages : [];
+  if (!proofs.length) return showToast('No payment proof images were submitted', 'info');
+  const gallery = document.getElementById('proofGallery');
+  gallery.innerHTML = '';
+  proofs.forEach((url, index) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    const image = document.createElement('img');
+    image.src = url;
+    image.alt = `Payment proof ${index + 1}`;
+    image.style.cssText = 'width:100%;max-height:70vh;object-fit:contain;border-radius:10px;border:1px solid var(--border)';
+    link.appendChild(image);
+    gallery.appendChild(link);
+  });
+  document.getElementById('proofModal').classList.add('open');
+}
+
+async function loadFancards() {
+  const tbody = document.getElementById('fcTbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">Loading…</td></tr>';
+  try {
+    const r = await Auth.fetch('/api/backdoor/fancards');
+    if (!r?.ok) throw new Error('Could not load fan cards');
+    const d = await r.json();
+    const arr = newestFirst(Array.isArray(d)?d:(d.fancards||[]));
+    adminFanCards.clear();
+    arr.forEach(fc => adminFanCards.set(String(fc.id||fc._id), fc));
+    tbody.innerHTML = arr.map(fc=>{
+      const id = String(fc.id||fc._id||'');
+      const status = fc.status||'pending';
+      const tier = fc.membershipLevel||fc.tier||'Silver';
+      const proofs = Array.isArray(fc.paymentProofImages) ? fc.paymentProofImages.length : 0;
+      const cardImage = fc.adminCardUrl || fc.adminCardBase64;
+      return `<tr>
+        <td>${escapeHTML(fc.userName||fc.userEmail||fc.userId||'-')}<br><small>${escapeHTML(fc.userEmail||'')}</small></td>
+        <td>${escapeHTML(fc.celebrityName||fc.celebName||'-')}</td>
+        <td><span class="${tier==='VIP'?'s-pending':tier==='Gold'?'s-approved':'s-active'}">${escapeHTML(tier)}</span></td>
+        <td>${formatPaymentAmount(fc.totalAmount!==undefined?fc.totalAmount:fc.price)}${fc.convertedTotalAmount!==undefined?`<br><small style="color:var(--text3)">Quote: ${escapeHTML(formatPaymentQuote(fc.convertedTotalAmount,fc.currency||'USD'))}</small>`:''}</td>
+        <td>${cardImage?`<button type="button" class="btn-sm btn-edit" style="padding:3px" aria-label="View uploaded physical fan card" onclick="viewFanCardImage('${escapeHTML(id)}')"><img src="${escapeHTML(resolveImageSource(cardImage,fc.celebrityName||fc.celebName||'Fan card',96))}" alt="" style="display:block;width:64px;height:44px;object-fit:cover;border-radius:5px"></button>`:'<span style="color:var(--text3)">No image</span>'}</td>
+        <td>${statusBadge(status)}</td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap">
+          ${proofs?`<button type="button" class="btn-sm btn-edit" onclick="viewFanCardProofs('${escapeHTML(id)}')">Proofs (${proofs})</button>`:'<span style="color:var(--text3)">No proof</span>'}
+          ${status==='pending'?`<button type="button" class="btn-sm btn-approve" onclick="patchFancard('${escapeHTML(id)}','approved')">Approve</button><button type="button" class="btn-sm btn-reject" onclick="patchFancard('${escapeHTML(id)}','rejected')">Reject</button>`:''}
+          ${status==='approved'?`<button type="button" class="btn-sm btn-edit" onclick="chooseFanCardUpload('${escapeHTML(id)}')">${cardImage?'Replace card image':'Upload card image'}</button>${cardImage?`<button type="button" class="btn-sm btn-del" data-card-image-delete="${escapeHTML(id)}">Delete image</button>`:''}`:''}
+          <button type="button" class="btn-sm btn-del" data-fancard-delete="${escapeHTML(id)}">Delete</button>
+        </td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--text3)">No fan card orders</td></tr>';
+  } catch (error) { tbody.innerHTML = `<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--danger)">${escapeHTML(error.message||'Failed to load fan cards')}</td></tr>`; }
+}
+
+document.getElementById('fcTbody').addEventListener('click', async event => {
+  const imageButton = event.target.closest('[data-card-image-delete]');
+  if (imageButton) {
+    await deleteFanCardImage(imageButton.dataset.cardImageDelete, imageButton);
+    return;
+  }
+  const button = event.target.closest('[data-fancard-delete]');
+  if (!button) return;
+  const id = button.dataset.fancardDelete;
+  if (!id || !confirm('Permanently delete this fan card record? Any uploaded physical card image will also be deleted.')) return;
+  button.disabled = true;
+  try {
+    const response = await Auth.fetch(`/api/backdoor/fancards/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (!response) throw new Error('Your admin session has expired. Sign in again and retry.');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Fan card deletion failed');
+    adminFanCards.delete(id);
+    showToast(result.message||'Fan card deleted', result.warning ? 'info' : 'success');
+    delete loaded.fancards;
+    delete loaded.overview;
+    loadFancards();
+    loadOverview();
+  } catch (error) {
+    showToast(error.message||'Fan card deletion failed', 'error');
+    button.disabled = false;
+  }
+});
+
+async function patchFancard(id, status) {
+  const action = status === 'approved' ? 'approve' : 'reject';
+  const update = async rejectionReason => {
+    const r = await Auth.fetch(`/api/backdoor/fancards/${encodeURIComponent(id)}`, { method:'PATCH', body: JSON.stringify({ action, rejectionReason }) });
+    const result = await r.json();
+    if (!r.ok) throw new Error(result.message||'Fan card update failed');
+    showToast(`Fan card ${status}`, 'success');
+    delete loaded.fancards; loadFancards();
+  };
+  if (status === 'rejected') {
+    openMessageComposer({
+      title: 'Reject Fan Card application',
+      description: 'Add an optional reason. The decision is recorded and the applicant receives an in-app notification.',
+      submitLabel: 'Reject application',
+      onSubmit: update
+    });
+    return;
+  }
+  try { await update(''); }
+  catch (error) { showToast(error.message||'Action failed', 'error'); }
+}
+
+function chooseFanCardUpload(id) {
+  const input = document.getElementById('fcImageFile');
+  input.dataset.cardId = id;
+  input.value = '';
+  input.click();
+}
+
+async function handleFanCardImageUpload(event) {
+  const input = event.currentTarget;
+  const file = input.files?.[0];
+  const id = input.dataset.cardId;
+  if (!file || !id) return;
+  try {
+    const adminCardBase64 = await compressCelebrityImage(file);
+    const response = await Auth.fetch(`/api/backdoor/fancards/${encodeURIComponent(id)}/upload-card`, {
+      method: 'PATCH',
+      body: JSON.stringify({ adminCardBase64 })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Card image upload failed');
+    showToast(result.message || 'Fan card image uploaded and user notified', result.warning ? 'info' : 'success');
+    delete loaded.fancards;
+    loadFancards();
+  } catch (error) {
+    showToast(error.message||'Card image upload failed', 'error');
+  } finally {
+    input.value = '';
+    delete input.dataset.cardId;
+  }
+}
+
+async function deleteFanCardImage(id, button) {
+  if (!confirm('Delete this uploaded fan card image? The user will no longer see it.')) return;
+  button.disabled = true;
+  try {
+    const response = await Auth.fetch(`/api/backdoor/fancards/${encodeURIComponent(id)}/card-image`, { method: 'DELETE' });
+    if (!response) throw new Error('Your admin session has expired. Sign in again and retry.');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Card image deletion failed');
+    showToast(result.message || 'Card image deleted', result.warning ? 'info' : 'success');
+    delete loaded.fancards;
+    loadFancards();
+  } catch (error) {
+    showToast(error.message || 'Card image deletion failed', 'error');
+    button.disabled = false;
+  }
+}
+
+async function loadCelebrities() {
+  const tbody = document.getElementById('celTbody');
+  const requestId = ++celebSearchRequest;
+  const search = document.getElementById('celebSearch').value.trim();
+  tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">Loading…</td></tr>';
+  try {
+    const params = new URLSearchParams({ limit: '500', sort: 'name' });
+    if (search) params.set('search', search);
+    const r = await Auth.fetch(`/api/celebrities?${params}`);
+    if (!r?.ok) throw new Error('Could not load celebrities');
+    const d = await r.json();
+    if (requestId !== celebSearchRequest) return;
+    const arr = newestFirst(Array.isArray(d)?d:(d.celebrities||[]));
+    tbody.innerHTML = arr.map(c=>`<tr>
+      <td><strong>${escapeHTML(c.name||'')}</strong></td>
+      <td>${escapeHTML(c.category||'-')}</td>
+      <td>$${(c.price||0).toLocaleString()}</td>
+      <td><div class="toggle-wrap"><div class="toggle ${c.available!==false?'on':''}" id="avail-${c.id||c._id}" onclick="toggleAvail('${c.id||c._id}',${c.available!==false})"></div><span style="font-size:.8rem;color:var(--text3)">${c.available!==false?'Available':'Busy'}</span></div></td>
+      <td style="display:flex;gap:6px">
+        <button class="btn-sm btn-edit" onclick='openCelebModal(${JSON.stringify(c)})'>Edit</button>
+        <button class="btn-sm btn-del" onclick="deleteCeleb('${c.id||c._id}','${c.name}')">Delete</button>
+      </td>
+    </tr>`).join('')||`<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">${search?`No celebrities match “${escapeHTML(search)}”`:'No celebrities'}</td></tr>`;
+  } catch (error) {
+    if (requestId !== celebSearchRequest) return;
+    tbody.innerHTML = `<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--danger)">${escapeHTML(error.message||'Failed to load celebrities')}</td></tr>`;
+  }
+}
+
+async function toggleAvail(id, current) {
+  try {
+    const response = await Auth.fetch(`/api/backdoor/celebrities/${id}`, {
+      method:'PATCH', body: JSON.stringify({ available: !current })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Availability update failed');
+    const available = result.celebrity?.available !== false;
+    const el = document.getElementById('avail-'+id);
+    if (el) {
+      el.classList.toggle('on', available);
+      el.nextElementSibling.textContent = available ? 'Available' : 'Busy';
+      el.onclick = () => toggleAvail(id, available);
+    }
+    showToast('Availability updated', 'success');
+  } catch (error) { showToast(error.message||'Update failed', 'error'); }
+}
+
+let editCelebData = null;
+let celebImgData = null;
+
+function previewCelebImg(url) {
+  celebImgData = null;
+  const el = document.getElementById('celebImgPreview');
+  if (!url) { el.innerHTML = '<span style="font-size:.75rem;color:var(--text3)">Preview</span>'; return; }
+  const src = resolveImageSource(url, document.getElementById('cName').value || 'Celebrity', 80);
+  el.replaceChildren();
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = 'Celebrity preview';
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+  img.addEventListener('error', () => { el.innerHTML = '<span style="font-size:.7rem;color:var(--danger)">Invalid</span>'; }, { once: true });
+  el.appendChild(img);
+}
+
+async function compressCelebrityImage(file) {
+  if (file.size > 40 * 1024 * 1024) throw new Error('Choose an image smaller than 40 MB.');
+  if (!file.type.startsWith('image/')) throw new Error('Choose an image file.');
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1400 / bitmap.width, 1800 / bitmap.height);
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const context = canvas.getContext('2d');
+  if (!context) {
+    bitmap.close();
+    throw new Error('Your browser could not prepare this image.');
+  }
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(result => result ? resolve(result) : reject(new Error('Could not compress this image.')), 'image/webp', .82);
+  });
+  if (blob.size > 8 * 1024 * 1024) throw new Error('Compressed image exceeds the 8 MB upload limit.');
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Could not read the compressed image.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function handleCelebImgUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    celebImgData = await compressCelebrityImage(file);
+    const preview = document.getElementById('celebImgPreview');
+    preview.replaceChildren();
+    const img = document.createElement('img');
+    img.src = celebImgData;
+    img.alt = 'Compressed celebrity preview';
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+    preview.appendChild(img);
+    document.getElementById('cImage').value = '';
+    showToast(`Image compressed to ${(file.size / 1024).toFixed(0)} KB source · ${(new Blob([Uint8Array.from(atob(celebImgData.split(',')[1]), c => c.charCodeAt(0))]).size / 1024).toFixed(0)} KB WebP`, 'success');
+  } catch (error) {
+    celebImgData = null;
+    showToast(error.message || 'Image compression failed.', 'error');
+  }
+}
+
+function openCelebModal(c) {
+  editCelebData = c||null;
+  celebImgData = null;
+  document.getElementById('celebModalTitle').textContent = c ? 'Edit Celebrity' : 'Add Celebrity';
+  document.getElementById('celebId').value = c?.id||c?._id||'';
+  document.getElementById('cName').value = c?.name||'';
+  document.getElementById('cCategory').value = c?.category||'Musician';
+  document.getElementById('cPrice').value = c?.price||'';
+  document.getElementById('cLocation').value = c?.location||'';
+  document.getElementById('cImage').value = c?.image||'';
+  document.getElementById('cBio').value = c?.bio||'';
+  document.getElementById('cServices').value = (c?.services||[]).join(', ');
+  document.getElementById('cImageFile').value = '';
+  previewCelebImg(c?.image||'');
+  document.getElementById('celebModalMsg').className='msg';
+  document.getElementById('celebModal').classList.add('open');
+}
+
+function closeCelebModal() { document.getElementById('celebModal').classList.remove('open'); }
+
+async function saveCeleb(e) {
+  e.preventDefault();
+  const id = document.getElementById('celebId').value;
+  const payload = {
+    name: document.getElementById('cName').value.trim(),
+    category: document.getElementById('cCategory').value,
+    price: parseFloat(document.getElementById('cPrice').value)||0,
+    location: document.getElementById('cLocation').value.trim(),
+    image: celebImgData || document.getElementById('cImage').value.trim(),
+    bio: document.getElementById('cBio').value.trim(),
+    services: document.getElementById('cServices').value.split(',').map(s=>s.trim()).filter(Boolean)
+  };
+  const btn = document.getElementById('celebSaveBtn');
+  btn.textContent = 'Saving…'; btn.disabled=true;
+  try {
+    const r = await Auth.fetch(id?`/api/backdoor/celebrities/${id}`:'/api/backdoor/celebrities', { method: id?'PATCH':'POST', body: JSON.stringify(payload) });
+    if (!r.ok) { const d=await r.json(); throw new Error(d.message||'Save failed'); }
+    showToast(id?'Celebrity updated':'Celebrity added', 'success');
+    closeCelebModal();
+    delete loaded.celebrities; loadCelebrities();
+  } catch(err) {
+    showMsg(document.getElementById('celebModalMsg'), err.message, 'error');
+  } finally { btn.textContent='Save Celebrity'; btn.disabled=false; }
+}
+
+async function deleteCeleb(id, name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    const r = await Auth.fetch(`/api/backdoor/celebrities/${id}`, { method:'DELETE' });
+    if (!r.ok) throw new Error();
+    showToast(`"${name}" deleted`, 'success');
+    delete loaded.celebrities; loadCelebrities();
+  } catch { showToast('Delete failed', 'error'); }
+}
+
+async function loadAccessLogs() {
+  const tbody = document.getElementById('accessLogsTbody');
+  tbody.innerHTML = '<tr><td colspan="6" style="padding:18px">Loading logs…</td></tr>';
+  try {
+    const response = await Auth.fetch('/api/backdoor/access-logs');
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Could not load logs');
+    const query = document.getElementById('accessLogSearch').value.trim().toLowerCase();
+    const filtered = data.filter(item => !query || [item.username,item.email,item.action,item.outcome,item.ip].some(value => String(value || '').toLowerCase().includes(query)));
+    tbody.innerHTML = filtered.map(item => `<tr><td>${item.createdAt?new Date(item.createdAt).toLocaleString():'-'}</td><td>${escapeHTML(item.username||'-')}</td><td>${escapeHTML(item.email||'-')}</td><td>${escapeHTML(item.action||'-')}</td><td>${escapeHTML(item.outcome||'success')}</td><td>${escapeHTML(item.ip||'-')}</td></tr>`).join('') || '<tr><td colspan="6">No matching access events.</td></tr>';
+  } catch (error) { tbody.innerHTML = `<tr><td colspan="6">${escapeHTML(error.message)}</td></tr>`; }
+}
+async function loadSupportMessages() {
+  const tbody = document.getElementById('supportMessagesTbody');
+  tbody.innerHTML = '<tr><td colspan="6" style="padding:18px">Loading messages…</td></tr>';
+  try {
+    const response = await Auth.fetch('/api/backdoor/messages');
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Could not load messages');
+    adminSupportMessages = data;
+    const query = document.getElementById('supportSearch').value.trim().toLowerCase();
+    const filtered = data.filter(item => !query || [item.name,item.email,item.subject,item.message,item.status].some(value => String(value || '').toLowerCase().includes(query)));
+    tbody.innerHTML = filtered.map(item => `<tr>
+      <td>${item.createdAt?new Date(item.createdAt).toLocaleString():'-'}</td>
+      <td>${escapeHTML(item.name||'-')}<br><small>${escapeHTML(item.email||'')}</small></td>
+      <td>${escapeHTML(item.subject||'General')}</td>
+      <td><span class="${item.reply?'s-approved':item.read?'s-active':'s-pending'}">${item.reply?'Replied':item.read?'Read':'Unread'}</span><br>
+        <button class="btn-sm btn-edit" style="margin-top:7px" onclick="setSupportMessageRead('${escapeHTML(item.id)}',${!item.read})">Mark ${item.read?'unread':'read'}</button></td>
+      <td class="support-message-content">${escapeHTML(item.message||'')}</td>
+      <td><p class="support-reply-preview">${escapeHTML(item.reply||'No reply yet.')}</p>
+        <button class="btn-sm btn-edit" onclick="replySupportMessage('${escapeHTML(item.id)}')">${item.reply?'Edit reply':'Reply'}</button></td>
+    </tr>`).join('') || '<tr><td colspan="6">No matching support messages.</td></tr>';
+  } catch (error) { tbody.innerHTML = `<tr><td colspan="6">${escapeHTML(error.message)}</td></tr>`; }
+}
+async function setSupportMessageRead(id, read) {
+  try {
+    const response = await Auth.fetch(`/api/backdoor/messages/${encodeURIComponent(id)}/read`, {
+      method:'PATCH', body:JSON.stringify({ read })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Could not update message status');
+    await loadSupportMessages();
+  } catch (error) { showToast(error.message || 'Could not update message status', 'error'); }
+}
+async function replySupportMessage(id) {
+  const item = adminSupportMessages.find(message => message.id === id);
+  openMessageComposer({
+    title: item?.reply ? 'Edit support reply' : 'Reply to support message',
+    description: 'This reply is saved and delivered as an in-app notification. It is not emailed to the sender.',
+    initialValue: item?.reply || '',
+    submitLabel: 'Save reply',
+    onSubmit: async message => {
+      const response = await Auth.fetch(`/api/backdoor/messages/${encodeURIComponent(id)}/reply`, {
+        method:'POST', body:JSON.stringify({message})
+      });
+      if (!response) throw new Error('Your admin session has expired. Sign in again.');
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || 'Reply could not be saved.');
+      showToast(result.message || 'In-app reply saved.', 'success');
+      delete loaded.supportMessages;
+      await loadSupportMessages();
+    }
+  });
+}
+
+async function loadUsers() {
+  const tbody = document.getElementById('userTbody');
+  tbody.innerHTML = '<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text3)">Loading…</td></tr>';
+  try {
+    const r = await Auth.fetch('/api/backdoor/users'); const d = await r.json();
+    const query = document.getElementById('userSearch').value.trim().toLowerCase();
+    adminUsers = newestFirst(Array.isArray(d)?d:(d.users||[]));
+    const arr = adminUsers.filter(user => !query ||
+      [user.fullName,user.username,user.email,user.licenseKey,user.userType,user.banned?'disabled':'active']
+        .some(value => String(value || '').toLowerCase().includes(query)));
+    tbody.innerHTML = arr.map(u=>`<tr>
+      <td><strong>${escapeHTML(u.fullName||u.username||'-')}</strong></td>
+      <td>${escapeHTML(u.username||'-')}</td>
+      <td>${escapeHTML(u.email||'-')}</td>
+      <td>${u.createdAt?new Date(u.createdAt).toLocaleString():'-'}</td>
+      <td>${u.lastLogin?new Date(u.lastLogin).toLocaleString():'Never'}</td>
+      <td>${escapeHTML(u.licenseKey||'-')}</td>
+      <td>${statusBadge(u.banned?'banned':'active')}</td>
+      <td>${u.userType!=='admin'?`<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn-sm ${u.banned?'btn-unban':'btn-ban'}" onclick="banUser('${escapeHTML(u.id||u._id)}',${!!u.banned})">${u.banned?'Unban':'Disable'}</button><button type="button" class="btn-sm btn-edit" onclick="sendUserNotice('${escapeHTML(u.id||u._id)}')">💬 Notify</button><button type="button" class="btn-sm btn-del" data-user-delete="${escapeHTML(u.id||u._id)}">Delete</button></div>`:'-'}</td>
+    </tr>`).join('')||'<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text3)">No users</td></tr>';
+  } catch { tbody.innerHTML = '<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--danger)">Failed to load</td></tr>'; }
+}
+async function sendUserNotice(userId) {
+  const target = adminUsers.find(user => user.id === userId);
+  openMessageComposer({
+    title: 'Send in-app notification',
+    description: `This message will appear in ${target?.fullName || target?.username || 'the user'}’s StarBook notifications. It will not be emailed.`,
+    submitLabel: 'Send notification',
+    onSubmit: async message => {
+      const response = await Auth.fetch('/api/backdoor/notify', {
+        method:'POST', body:JSON.stringify({userId, message})
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || 'Notification could not be sent.');
+      showToast(result.message || 'In-app notification sent.', 'success');
+    }
+  });
+}
+
+document.getElementById('userTbody').addEventListener('click', async event => {
+  const button = event.target.closest('[data-user-delete]');
+  if (!button) return;
+  const id = button.dataset.userDelete;
+  if (!confirm('Permanently delete this user? Users with linked bookings, payments, fan cards, licenses, or support messages cannot be deleted.')) return;
+  button.disabled = true;
+  try {
+    const response = await Auth.fetch(`/api/backdoor/users/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'User deletion failed');
+    showToast('User deleted', 'success');
+    delete loaded.users;
+    delete loaded.overview;
+    loadUsers();
+    loadOverview();
+  } catch (error) {
+    showToast(error.message||'User deletion failed', 'error');
+    button.disabled = false;
+  }
+});
+
+async function banUser(id, isBanned) {
+  if (!confirm(isBanned?'Unban this user?':'Ban this user?')) return;
+  try {
+    const r = await Auth.fetch(`/api/backdoor/users/${id}`, { method:'PATCH', body: JSON.stringify({ banned: !isBanned }) });
+    const result = await r.json();
+    if (!r.ok) throw new Error(result.message||'User moderation failed');
+    showToast(isBanned?'User unbanned':'User banned', 'success');
+    delete loaded.users; loadUsers();
+  } catch (error) { showToast(error.message||'Action failed', 'error'); }
+}
+
+function licenseIsCurrentlyActive(license) {
+  if (license.active === false) return false;
+  if (!license.expiresAt) return true;
+  const expiry = Date.parse(license.expiresAt);
+  if (!Number.isFinite(expiry)) return false;
+  return (String(license.expiresAt).length === 10 ? expiry + 86400000 : expiry) > Date.now();
+}
+
+async function loadLicenses() {
+  const tbody = document.getElementById('licenseTbody');
+  tbody.innerHTML = '<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--text3)">Loading…</td></tr>';
+  try {
+    const response = await Auth.fetch('/api/backdoor/licenses');
+    if (!response?.ok) throw new Error('Could not load licenses');
+    const licenses = newestFirst(await response.json());
+    tbody.innerHTML = licenses.map(license => {
+      const active = licenseIsCurrentlyActive(license);
+      const status = !active ? '<span class="s-rejected">Inactive / expired</span>'
+        : license.used ? '<span class="s-pending">Used</span>' : '<span class="s-active">Ready</span>';
+      const key = escapeHTML(license.key||'');
+      return `<tr>
+        <td><code style="color:var(--gold);overflow-wrap:anywhere">${key}</code><br><small>${escapeHTML(license.description||'')}</small></td>
+        <td>${escapeHTML(license.type||'premium')}</td>
+        <td>${escapeHTML(license.usedBy||'-')}</td>
+        <td><div style="display:flex;gap:6px;align-items:center;min-width:190px">
+          <input type="date" data-license-date value="${escapeHTML(String(license.expiresAt||'').slice(0,10))}" aria-label="License expiration">
+          <button type="button" class="btn-sm btn-edit" data-license-save="${key}">Save</button>
+        </div></td>
+        <td>${status}</td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap">
+          <button type="button" class="btn-sm ${license.active===false?'btn-approve':'btn-ban'}" data-license-toggle="${key}" data-active="${license.active!==false}">${license.active===false?'Activate':'Deactivate'}</button>
+          <button type="button" class="btn-sm btn-del" data-license-delete="${key}" ${license.used?'disabled title="Used licenses cannot be deleted; deactivate instead"':''}>Delete</button>
+        </td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--text3)">No licenses yet</td></tr>';
+  } catch (error) {
+    tbody.innerHTML = `<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--danger)">${escapeHTML(error.message||'Failed to load licenses')}</td></tr>`;
+  }
+}
+
+document.getElementById('licenseTbody').addEventListener('click', async event => {
+  const toggleButton = event.target.closest('[data-license-toggle]');
+  const saveButton = event.target.closest('[data-license-save]');
+  const deleteButton = event.target.closest('[data-license-delete]');
+  if (toggleButton) {
+    const key = toggleButton.dataset.licenseToggle;
+    const active = toggleButton.dataset.active !== 'true';
+    try {
+      const response = await Auth.fetch(`/api/backdoor/licenses/${encodeURIComponent(key)}`, {
+        method: 'PATCH', body: JSON.stringify({ active })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message||'License update failed');
+      showToast(`License ${active?'activated':'deactivated'}`, 'success');
+      delete loaded.licenses; loadLicenses();
+    } catch (error) { showToast(error.message||'License update failed', 'error'); }
+  } else if (saveButton) {
+    const key = saveButton.dataset.licenseSave;
+    const expiresAt = saveButton.closest('tr').querySelector('[data-license-date]').value;
+    try {
+      const response = await Auth.fetch(`/api/backdoor/licenses/${encodeURIComponent(key)}`, {
+        method: 'PATCH', body: JSON.stringify({ expiresAt })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message||'Expiration update failed');
+      showToast('License expiration updated', 'success');
+      delete loaded.licenses; loadLicenses();
+    } catch (error) { showToast(error.message||'Expiration update failed', 'error'); }
+  } else if (deleteButton) {
+    const key = deleteButton.dataset.licenseDelete;
+    if (!confirm('Permanently delete this unused license key? This cannot be undone.')) return;
+    deleteButton.disabled = true;
+    try {
+      const response = await Auth.fetch(`/api/backdoor/licenses/${encodeURIComponent(key)}`, { method: 'DELETE' });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message||'License deletion failed');
+      showToast('License deleted', 'success');
+      delete loaded.licenses;
+      loadLicenses();
+    } catch (error) {
+      showToast(error.message||'License deletion failed', 'error');
+      deleteButton.disabled = false;
+    }
+  }
+});
+
+async function createLicense(event) {
+  event.preventDefault();
+  const button = document.getElementById('licenseCreateBtn');
+  const created = document.getElementById('licenseCreated');
+  button.disabled = true; button.textContent = 'Generating…';
+  created.textContent = '';
+  try {
+    const response = await Auth.fetch('/api/backdoor/licenses', {
+      method: 'POST',
+      body: JSON.stringify({
+        key: document.getElementById('licenseKey').value.trim(),
+        type: document.getElementById('licenseType').value,
+        expiresAt: document.getElementById('licenseExpires').value,
+        description: document.getElementById('licenseDescription').value.trim()
+      })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'License creation failed');
+    created.innerHTML = `New key: <code style="color:var(--gold)">${escapeHTML(result.license.key)}</code> <button type="button" class="btn-sm btn-edit" onclick="copyLicenseKey('${escapeHTML(result.license.key)}')">Copy</button>`;
+    document.getElementById('licenseForm').reset();
+    delete loaded.licenses; loadLicenses();
+    showToast('License created', 'success');
+  } catch (error) {
+    created.textContent = error.message||'License creation failed';
+    created.style.color = 'var(--danger)';
+  } finally {
+    button.disabled = false; button.textContent = 'Generate License';
+  }
+}
+
+async function copyLicenseKey(key) {
+  try {
+    await copyToClipboard(key);
+    showToast('License key copied', 'success');
+  } catch (error) {
+    showToast('Could not copy license key', 'error');
+  }
+}
+
+async function loadTestimonials() {
+  const tbody = document.getElementById('testTbody');
+  tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">Loading…</td></tr>';
+  try {
+    const r = await Auth.fetch('/api/backdoor/testimonials');
+    if (!r?.ok) throw new Error('Could not load testimonials');
+    const d = await r.json();
+    const arr = newestFirst(Array.isArray(d)?d:(d.testimonials||[]));
+    tbody.innerHTML = arr.map(t=>`<tr>
+      <td>${escapeHTML(t.name||t.user||t.author||'-')}<br><small>${escapeHTML(t.location||'')}</small></td>
+      <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(t.comment||t.message||'-')}</td>
+      <td>${'★'.repeat(t.rating||5)}</td>
+      <td>${statusBadge(t.approved?'approved':'pending')}</td>
+      <td style="display:flex;gap:6px">
+        ${!t.approved?`<button class="btn-sm btn-approve" onclick="approveTestimonial('${escapeHTML(t.id||t._id)}')">Approve</button>`:''}
+        <button type="button" class="btn-sm btn-del" data-testimonial-delete="${escapeHTML(t.id||t._id)}">Delete</button>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">No testimonials</td></tr>';
+  } catch { tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--danger)">Failed to load</td></tr>'; }
+}
+
+async function approveTestimonial(id) {
+  try {
+    const response = await Auth.fetch(`/api/backdoor/testimonials/${encodeURIComponent(id)}`, { method:'PATCH', body: JSON.stringify({ action:'approve' }) });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Approval failed');
+    showToast('Testimonial approved', 'success');
+    delete loaded.testimonials; loadTestimonials();
+  } catch (error) { showToast(error.message||'Action failed', 'error'); }
+}
+
+document.getElementById('testTbody').addEventListener('click', async event => {
+  const button = event.target.closest('[data-testimonial-delete]');
+  if (!button) return;
+  const id = button.dataset.testimonialDelete;
+  if (!confirm('Delete this testimonial? It will no longer appear on the homepage.')) return;
+  button.disabled = true;
+  try {
+    const response = await Auth.fetch(`/api/backdoor/testimonials/${encodeURIComponent(id)}`, { method:'DELETE' });
+    if (!response) throw new Error('Your admin session has expired. Sign in again and retry.');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Delete failed');
+    showToast('Testimonial deleted', 'success');
+    delete loaded.testimonials; loadTestimonials();
+  } catch (error) {
+    showToast(error.message||'Delete failed', 'error');
+    button.disabled = false;
+  }
+});
+
+async function saveTestimonial(event) {
+  event.preventDefault();
+  const button = document.getElementById('testSaveBtn');
+  button.disabled = true; button.textContent = 'Publishing…';
+  try {
+    const response = await Auth.fetch('/api/backdoor/testimonials/add', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: document.getElementById('testName').value.trim(),
+        location: document.getElementById('testLocation').value.trim(),
+        rating: Number(document.getElementById('testRating').value),
+        comment: document.getElementById('testComment').value.trim()
+      })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message||'Could not publish testimonial');
+    document.getElementById('testimonialForm').reset();
+    showToast('Testimonial published on the home page', 'success');
+    delete loaded.testimonials; loadTestimonials();
+  } catch (error) { showToast(error.message||'Could not publish testimonial', 'error'); }
+  finally { button.disabled = false; button.textContent = 'Add Testimonial'; }
+}
+
+async function sendNotification() {
+  const target = document.getElementById('ntfTarget').value;
+  const message = document.getElementById('ntfMsg2').value.trim();
+  const el = document.getElementById('ntfMsg');
+  if (!message) { showMsg(el, 'Please enter a message.', 'error'); return; }
+  try {
+    const payload = { message, target };
+    if (target==='email') payload.email = document.getElementById('ntfEmail').value.trim();
+    const r = await Auth.fetch('/api/backdoor/notifications', { method:'POST', body: JSON.stringify(payload) });
+    const result = await r.json();
+    if (!r.ok) throw new Error(result.message||'Failed to send notification');
+    showMsg(el, `✓ ${result.message}`, 'success');
+    document.getElementById('ntfMsg2').value='';
+    await loadNotificationsAdmin();
+  } catch (error) { showMsg(el, error.message||'Failed to send.', 'error'); }
+}
+
+async function loadNotificationsAdmin() {
+  const tbody = document.getElementById('ntfHistoryTbody');
+  tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text3)">Loading notifications…</td></tr>';
+  try {
+    const response = await Auth.fetch('/api/backdoor/notifications');
+    if (!response) throw new Error('Your admin session has expired. Sign in again.');
+    const notifications = newestFirst(await response.json());
+    if (!response.ok) throw new Error(notifications.message || 'Could not load notifications.');
+    if (!Array.isArray(notifications)) throw new Error('Notification history response was invalid.');
+    tbody.replaceChildren();
+    if (!notifications.length) {
+      const row = tbody.insertRow();
+      const cell = row.insertCell();
+      cell.colSpan = 5;
+      cell.textContent = 'No notifications have been sent.';
+      cell.style.cssText = 'padding:20px;text-align:center;color:var(--text3)';
+      return;
+    }
+    notifications.forEach(notification => {
+      const row = tbody.insertRow();
+      const recipient = row.insertCell();
+      recipient.textContent = `${notification.userName || 'User'} (${notification.userEmail || 'no email'})`;
+      const message = row.insertCell();
+      message.textContent = notification.message || '';
+      message.style.cssText = 'max-width:420px;white-space:pre-wrap;overflow-wrap:anywhere';
+      const sent = row.insertCell();
+      const timestamp = Date.parse(notification.createdAt || '');
+      sent.textContent = Number.isFinite(timestamp) ? new Date(timestamp).toLocaleString() : 'Unknown';
+      const status = row.insertCell();
+      status.textContent = notification.read ? 'Read' : 'Unread';
+      const actions = row.insertCell();
+      actions.style.cssText = 'white-space:nowrap';
+      const editButton = document.createElement('button');
+      editButton.type = 'button';
+      editButton.className = 'btn-sm btn-edit';
+      editButton.textContent = 'Edit';
+      editButton.dataset.notificationEdit = 'true';
+      editButton.dataset.userId = String(notification.userId || '');
+      editButton.dataset.notificationId = String(notification.id || '');
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'btn-sm btn-del';
+      deleteButton.textContent = 'Delete';
+      deleteButton.dataset.notificationDelete = 'true';
+      deleteButton.dataset.userId = String(notification.userId || '');
+      deleteButton.dataset.notificationId = String(notification.id || '');
+      actions.append(editButton, deleteButton);
+    });
+  } catch (error) {
+    tbody.replaceChildren();
+    const row = tbody.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 5;
+    cell.textContent = error.message || 'Could not load notification history.';
+    cell.style.cssText = 'padding:20px;text-align:center;color:var(--danger)';
+  }
+}
+
+document.getElementById('ntfHistoryTbody').addEventListener('click', async event => {
+  const button = event.target.closest('[data-notification-edit], [data-notification-delete]');
+  if (!button) return;
+  const userId = button.dataset.userId;
+  const notificationId = button.dataset.notificationId;
+  if (!userId || !notificationId) {
+    showToast('This notification is missing its recipient or ID.', 'error');
+    return;
+  }
+  const url = `/api/backdoor/notifications/${encodeURIComponent(userId)}/${encodeURIComponent(notificationId)}`;
+  button.disabled = true;
+  try {
+    let response;
+    if (button.hasAttribute('data-notification-edit')) {
+      const currentMessage = button.closest('tr').cells[1].textContent;
+      openMessageComposer({
+        title: 'Edit in-app notification',
+        description: 'The updated text will appear in the recipient’s StarBook notifications. It will not be emailed.',
+        initialValue: currentMessage,
+        submitLabel: 'Save notification',
+        onSubmit: async message => {
+          const updateResponse = await Auth.fetch(url, {
+            method: 'PATCH', body: JSON.stringify({ message })
+          });
+          if (!updateResponse) throw new Error('Your admin session has expired. Sign in again.');
+          const result = await updateResponse.json();
+          if (!updateResponse.ok) throw new Error(result.message || 'Notification update failed.');
+          showToast(result.message || 'Notification updated.', 'success');
+          await loadNotificationsAdmin();
+        }
+      });
+      return;
+    } else {
+      if (!confirm('Delete this notification for its recipient?')) return;
+      response = await Auth.fetch(url, { method: 'DELETE' });
+    }
+    if (!response) throw new Error('Your admin session has expired. Sign in again.');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Notification action failed.');
+    showToast(result.message || 'Notification updated.', 'success');
+    await loadNotificationsAdmin();
+  } catch (error) {
+    showToast(error.message || 'Notification action failed.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => {
+    if (e.target !== o) return;
+    if (o.id === 'messageComposerModal') closeMessageComposer();
+    else o.classList.remove('open');
+  });
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.getElementById('messageComposerModal').classList.contains('open'))
+    closeMessageComposer();
+});
+
+function doLogout() {
+  Auth.clear();
+  fetch('/api/backdoor/logout', { method: 'POST' }).finally(() => { window.location.href = '/index.html'; });
+}
+
+loadOverview();
+</script>
+</body>
+</html>

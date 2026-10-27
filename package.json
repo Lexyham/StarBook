@@ -1,0 +1,40 @@
+{
+  "name": "starbook",
+  "version": "2.0.0",
+  "description": "StarBook - Celebrity Booking Platform",
+  "main": "server/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "setup-admin": "node server/setup-admin.js",
+    "migrate": "node scripts/migrate-json-to-mongodb.js",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose up -d --build",
+    "docker:logs": "docker compose logs -f app",
+    "check": "node --check server/server.js && node --check services/mongoService.js && node --check services/brevoMailService.js && node --check services/emailDeliveryService.js && node --check services/starBotService.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@getbrevo/brevo": "^2.0.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14",
+    "puppeteer-core": "^22.0.0",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.5",
+    "socket.io": "^4.7.5",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

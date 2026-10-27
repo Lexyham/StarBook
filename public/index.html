@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="StarBook - Browse celebrity profiles for birthdays, events, shoutouts, and live performances. Crypto and gift card payments accepted.">
+<meta name="theme-color" content="#0A0A0F">
+<meta property="og:title" content="StarBook - Premier Celebrity Booking Platform">
+<meta property="og:description" content="Connect with celebrity profiles worldwide. Book musicians, actors, athletes and more.">
+<title>StarBook - Book Your Favorite Stars</title>
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/global.css">
+<link rel="stylesheet" href="/assets/css/navbar.css">
+<link rel="stylesheet" href="/assets/css/footer.css">
+<link rel="stylesheet" href="/assets/css/home.css">
+</head>
+<body class="home-page">
+<div id="navPlaceholder"></div>
+<main>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div>
+        <div class="hero-tag">✨ Premier Celebrity Booking Platform</div>
+        <h1 class="hero-title">Book Your <span class="highlight">Favorite Stars</span> For Any Occasion</h1>
+        <p class="hero-sub">Explore celebrity profiles worldwide. From personalized video messages to live performances - find the right experience for your occasion.</p>
+        <div class="hero-actions">
+          <a href="/celebrities.html" class="btn btn-gold" style="font-size:1rem;padding:14px 32px">Browse Celebrities →</a>
+          <a href="/register.html" class="btn btn-outline" id="homeAccountCta" style="font-size:1rem;padding:14px 32px">Join Free Today</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <span class="hero-stat-val count-anim" data-stat="celebrities" aria-label="Loading celebrity profile count">-</span>
+            <span class="hero-stat-lbl">Celebrity Profiles</span>
+          </div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-val" aria-label="Illustrative membership milestone, not a verified live total">50K+</span>
+            <span class="hero-stat-lbl">Members</span>
+          </div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-val" aria-label="Illustrative booking milestone, not a verified live total">29K+</span>
+            <span class="hero-stat-lbl">Bookings</span>
+          </div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-val">24/7</span>
+            <span class="hero-stat-lbl">Support</span>
+            <span class="hero-stat-live"><span class="hero-stat-live-dot" aria-hidden="true"></span>Always online</span>
+          </div>
+        </div>
+        <p class="hero-stat-note" style="margin-top:10px;color:var(--text3);font-size:.72rem">50K+ and 29K+ are illustrative milestones, not audited live totals.</p>
+        <p class="hero-stats-status" id="heroStatsStatus" role="status" hidden></p>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-grid" id="heroGrid">
+          <div class="hero-celeb-card skeleton" style="height:100%"></div>
+          <div class="hero-celeb-card skeleton"></div>
+          <div class="hero-celeb-card skeleton"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust-strip">
+  <div class="trust-inner" id="trustInner">
+    <div class="trust-item">✓ <strong>Verified Celebrities</strong></div>
+    <div class="trust-item">🔒 <strong>Secure Payments</strong></div>
+    <div class="trust-item">⚡ <strong>24-Hour Delivery</strong></div>
+    <div class="trust-item">💎 <strong>Premium Quality</strong></div>
+    <div class="trust-item">🌍 <strong>Worldwide Directory</strong></div>
+    <div class="trust-item">🎭 <strong>Celebrity Profiles</strong></div>
+    <div class="trust-item">⭐ <strong>Membership Options</strong></div>
+    <div class="trust-item">🛡 <strong>Money-Back Guarantee</strong></div>
+    <div class="trust-item">✓ <strong>Verified Celebrities</strong></div>
+    <div class="trust-item">🔒 <strong>Secure Payments</strong></div>
+    <div class="trust-item">⚡ <strong>24-Hour Delivery</strong></div>
+    <div class="trust-item">💎 <strong>Premium Quality</strong></div>
+    <div class="trust-item">🌍 <strong>Worldwide Directory</strong></div>
+    <div class="trust-item">🎭 <strong>Celebrity Profiles</strong></div>
+    <div class="trust-item">⭐ <strong>Membership Options</strong></div>
+    <div class="trust-item">🛡 <strong>Money-Back Guarantee</strong></div>
+  </div>
+</div>
+
+<section class="section-pad">
+  <div class="container">
+    <div class="home-section-intro" style="text-align:center">
+      <h2 class="section-title">Browse by Category</h2>
+      <p class="section-sub">Find the perfect celebrity for your event</p>
+    </div>
+    <div class="categories-grid" id="categoriesGrid">
+      <a href="/celebrities.html?category=Musician" class="cat-tile" data-category="Musician"><div class="cat-icon">🎵</div><div class="cat-name">Musicians</div><div class="cat-count">-</div></a>
+      <a href="/celebrities.html?category=Actor" class="cat-tile" data-category="Actor"><div class="cat-icon">🎬</div><div class="cat-name">Actors</div><div class="cat-count">-</div></a>
+      <a href="/celebrities.html?category=Footballer" class="cat-tile" data-category="Footballer"><div class="cat-icon">⚽</div><div class="cat-name">Footballers</div><div class="cat-count">-</div></a>
+      <a href="/celebrities.html?category=Athlete" class="cat-tile" data-category="Athlete"><div class="cat-icon">🏅</div><div class="cat-name">Athletes</div><div class="cat-count">-</div></a>
+      <a href="/celebrities.html?category=Comedian" class="cat-tile" data-category="Comedian"><div class="cat-icon">😂</div><div class="cat-name">Comedians</div><div class="cat-count">-</div></a>
+      <a href="/celebrities.html?category=TV Host" class="cat-tile" data-category="TV Host"><div class="cat-icon">📺</div><div class="cat-name">TV Hosts</div><div class="cat-count">-</div></a>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">⭐ Featured Celebrities</h2>
+        <p style="color:var(--text2)">Handpicked top performers</p>
+      </div>
+      <a href="/celebrities.html?featured=true" class="btn btn-outline">View All →</a>
+    </div>
+    <div class="celeb-grid" id="featuredGrid">
+      <div class="celeb-card skeleton"></div>
+      <div class="celeb-card skeleton"></div>
+      <div class="celeb-card skeleton"></div>
+      <div class="celeb-card skeleton"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad">
+  <div class="container">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title">🔥 Trending Now</h2>
+        <p style="color:var(--text2)">Most booked this week</p>
+      </div>
+      <a href="/celebrities.html?sort=bookings" class="btn btn-outline">See More →</a>
+    </div>
+    <div class="celeb-grid" id="trendingGrid">
+      <div class="celeb-card skeleton"></div>
+      <div class="celeb-card skeleton"></div>
+      <div class="celeb-card skeleton"></div>
+      <div class="celeb-card skeleton"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="home-section-intro" style="text-align:center">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-sub">Book your favourite celebrity in 4 simple steps</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card"><div class="how-num">1</div><div class="how-icon">🔍</div><h3 class="how-title">Browse & Discover</h3><p class="how-text">Explore celebrity profiles across available categories. Filter by price, location, and availability.</p></div>
+      <div class="how-card"><div class="how-num">2</div><div class="how-icon">🎬</div><h3 class="how-title">Choose Your Star</h3><p class="how-text">View full profiles, service menus, reviews, and response times. Find the perfect match.</p></div>
+      <div class="how-card"><div class="how-num">3</div><div class="how-icon">💳</div><h3 class="how-title">Book & Pay</h3><p class="how-text">Pay securely with crypto (BTC, ETH, USDT) or gift cards (Razer, iTunes, Google Play).</p></div>
+      <div class="how-card"><div class="how-num">4</div><div class="how-icon">🎁</div><h3 class="how-title">Receive & Enjoy</h3><p class="how-text">Get your personalized content within 24–72 hours. 100% money-back guarantee.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad">
+  <div class="container">
+    <div class="home-section-intro" style="text-align:center">
+      <h2 class="section-title">What Clients Say</h2>
+      <p class="section-sub">Real experiences from real bookings</p>
+    </div>
+    <div class="testimonials-wrap" aria-label="Customer testimonials">
+      <div class="testimonials-track" id="testiGrid" aria-live="off">
+        <div class="testimonials-set"><div class="testi-card skeleton"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="cta-section">
+      <div class="cta-card">
+        <div style="font-size:3rem;margin-bottom:16px">🌟</div>
+        <h2 class="section-title" style="margin-bottom:12px">Book a Celebrity</h2>
+        <p style="color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:28px">Get a personalised video message, live shoutout, or exclusive experience from your favourite star. Browse current profiles and availability.</p>
+        <a href="/celebrities.html" class="btn btn-gold" style="font-size:1rem;padding:14px 36px">Browse Celebrities →</a>
+      </div>
+      <div class="cta-card">
+        <div style="font-size:3rem;margin-bottom:16px">🃏</div>
+        <h2 class="section-title" style="margin-bottom:12px">Get a Fan Card</h2>
+        <p style="color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:28px">Own a verified digital collectible of your star. Gold, Platinum & Diamond tiers - each with exclusive perks and a unique serial number.</p>
+        <a href="/fancards.html" class="btn btn-outline" style="font-size:1rem;padding:14px 36px">Explore Fan Cards →</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<div id="footerPlaceholder"></div>
+<script src="/assets/js/core.js"></script>
+<script src="/assets/js/components.js"></script>
+<script>
+document.getElementById('navPlaceholder').innerHTML = renderNavbar();
+document.getElementById('footerPlaceholder').innerHTML = renderFooter();
+if (Auth.isLoggedIn()) {
+  const accountCta = document.getElementById('homeAccountCta');
+  accountCta.href = '/dashboard.html';
+  accountCta.textContent = 'Explore Booking';
+}
+
+let featuredCandidates = [];
+let trendingCandidates = [];
+let highlightRotation = 0;
+let highlightTimersStarted = false;
+
+function getRotatingWindow(items, count) {
+  if (!items.length) return [];
+  const start = highlightRotation % items.length;
+  return Array.from({ length: Math.min(count, items.length) }, (_, index) =>
+    items[(start + index) % items.length]
+  );
+}
+
+function renderCelebrityHighlights() {
+  const featured = getRotatingWindow(featuredCandidates, 4);
+  const trending = getRotatingWindow(trendingCandidates, 4);
+  document.getElementById('featuredGrid').innerHTML = featured.length
+    ? featured.map(celebrity => renderCelebCard(celebrity)).join('')
+    : '<p style="color:var(--text3);grid-column:1/-1;text-align:center">No featured celebrities yet.</p>';
+  document.getElementById('trendingGrid').innerHTML = trending.length
+    ? trending.map(celebrity => renderCelebCard(celebrity)).join('')
+    : '<p style="color:var(--text3);grid-column:1/-1;text-align:center">No trending celebrities yet.</p>';
+
+  const heroCelebrities = featured.slice(0, 3);
+  if (heroCelebrities.length < 3) return;
+  document.getElementById('heroGrid').innerHTML = heroCelebrities.map((celebrity, index) => {
+    const size = index === 0 ? 400 : 200;
+    const name = String(celebrity.name || 'Celebrity');
+    const image = escapeHTML(resolveImageSource(celebrity.image, name, size));
+    return `<a class="hero-celeb-card" href="/celebrity.html?id=${encodeURIComponent(celebrity.id)}" style="display:block;color:inherit;text-decoration:none;${index === 0 ? 'grid-row:1/3' : ''}">
+      <img src="${image}" alt="${escapeHTML(name)}" loading="lazy">
+      <div class="hero-celeb-info"><div style="font-size:.7rem;color:var(--gold);font-weight:700">${escapeHTML(celebrity.category || 'Celebrity')}</div><div style="font-weight:700">${escapeHTML(name)}</div></div>
+    </a>`;
+  }).join('');
+}
+
+async function refreshCelebrityCandidates() {
+  const [featuredResponse, trendingResponse] = await Promise.all([
+    fetch('/api/celebrities/featured', { cache: 'no-store' }),
+    fetch('/api/celebrities/trending', { cache: 'no-store' })
+  ]);
+  if (!featuredResponse.ok || !trendingResponse.ok)
+    throw new Error('Homepage celebrity rotations are temporarily unavailable.');
+  const [featured, trending] = await Promise.all([featuredResponse.json(), trendingResponse.json()]);
+  if (!Array.isArray(featured) || !Array.isArray(trending))
+    throw new Error('Homepage celebrity rotation data was invalid.');
+
+  if (featured.length < 4) {
+    const fallbackResponse = await fetch('/api/celebrities?limit=100&sort=rating', { cache: 'no-store' });
+    if (!fallbackResponse.ok) throw new Error('The featured celebrity fallback could not be loaded.');
+    const fallback = await fallbackResponse.json();
+    const candidates = Array.isArray(fallback.celebrities) ? fallback.celebrities : [];
+    const seen = new Set(featured.map(celebrity => String(celebrity.id)));
+    featuredCandidates = [...featured, ...candidates.filter(celebrity => !seen.has(String(celebrity.id)))];
+  } else {
+    featuredCandidates = featured;
+  }
+  trendingCandidates = trending;
+  renderCelebrityHighlights();
+}
+
+function startCelebrityRotation() {
+  if (highlightTimersStarted) return;
+  highlightTimersStarted = true;
+  window.setInterval(() => {
+    if (document.hidden) return;
+    highlightRotation += 1;
+    renderCelebrityHighlights();
+  }, 20000);
+  window.setInterval(() => {
+    if (document.hidden) return;
+    refreshCelebrityCandidates().catch(error => console.error('Could not refresh homepage celebrity rotations:', error));
+  }, 120000);
+}
+
+async function loadPage() {
+  try {
+    const [featRes, trendRes, testiRes] = await Promise.all([
+      fetch('/api/celebrities/featured'),
+      fetch('/api/celebrities/trending'),
+      fetch('/api/testimonials')
+    ]);
+    if (!featRes.ok || !trendRes.ok || !testiRes.ok)
+      throw new Error('A homepage feed could not be loaded.');
+    const featData = await featRes.json();
+    const trendData = await trendRes.json();
+    const testiData = await testiRes.json();
+    const featured = Array.isArray(featData) ? featData : [];
+    const trending = Array.isArray(trendData) ? trendData : [];
+    if (!trending.length)
+      throw new Error('Homepage celebrity feeds are empty or invalid.');
+    featuredCandidates = featured;
+    trendingCandidates = trending;
+    if (featuredCandidates.length < 4) {
+      const fallbackResponse = await fetch('/api/celebrities?limit=100&sort=rating', { cache: 'no-store' });
+      if (!fallbackResponse.ok) throw new Error('The featured celebrity fallback could not be loaded.');
+      const fallback = await fallbackResponse.json();
+      const candidates = Array.isArray(fallback.celebrities) ? fallback.celebrities : [];
+      const seen = new Set(featuredCandidates.map(celebrity => String(celebrity.id)));
+      featuredCandidates = [...featuredCandidates, ...candidates.filter(celebrity => !seen.has(String(celebrity.id)))];
+    }
+    const apiTestis = Array.isArray(testiData) ? testiData : (testiData.testimonials || []);
+    const testis = apiTestis;
+
+    renderCelebrityHighlights();
+    startCelebrityRotation();
+
+    const testiItems = testis
+      .map((review, index) => {
+        const ageSeconds = Number(review.ageSeconds);
+        const dateTimestamp = Date.parse(review.date || review.createdAt || '');
+        const timestamp = Number.isFinite(ageSeconds) && ageSeconds >= 0
+          ? Date.now() - ageSeconds * 1000
+          : dateTimestamp;
+        return { review, index, timestamp: Number.isFinite(timestamp) ? timestamp : -Infinity };
+      })
+      .filter(item => item.review && (item.review.comment || item.review.text))
+      .sort((a, b) => b.timestamp - a.timestamp || a.index - b.index)
+      .map(item => item.review);
+    const escapeReviewText = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    })[char]);
+    function relativeDate(review) {
+      const timestamp = Number.isFinite(review.ageSeconds)
+        ? Date.now() - review.ageSeconds * 1000
+        : Date.parse(review.date || review.createdAt || '');
+      if (!Number.isFinite(timestamp)) return 'Date unavailable';
+      const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+      if (seconds < 60) return `${seconds} sec ago`;
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes} min ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours} hr ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 60) return `${days} days ago`;
+      const months = Math.floor(days / 30);
+      if (months < 12) return `${months}mo ago`;
+      return `${Math.floor(months / 12)}y ago`;
+    }
+    function renderTesti(t){
+      const user = typeof t.user === 'object' && t.user ? t.user : {};
+      const auth = escapeReviewText(t.name || user.fullName || (typeof t.user === 'string' ? t.user : '') || t.author || 'Customer');
+      const location = escapeReviewText(t.location || user.location || user.country || 'Location not provided');
+      const text = escapeReviewText(t.comment || t.text);
+      const rating = Math.min(5, Math.max(1, Number(t.rating) || 5));
+      const date = relativeDate(t);
+      return `<article class="testi-card"><p class="testi-text">${text}</p><div class="testi-rating" aria-label="${rating} out of 5 stars">${'★'.repeat(rating)}${'☆'.repeat(5-rating)}</div><div class="testi-author"><span class="avatar-fallback testi-avatar" aria-hidden="true">${auth.charAt(0)}</span><div class="testi-details"><strong>${auth}</strong><span>${location}</span><time>${date}</time></div></div></article>`;
+    }
+    const testiTrack = document.getElementById('testiGrid');
+    if (testiItems.length) {
+      const slides = [];
+      for (let index = 0; index < testiItems.length; index += 2) {
+        slides.push(`<div class="testimonials-set">${testiItems.slice(index, index + 2).map(renderTesti).join('')}</div>`);
+      }
+      const repeatingSlide = slides.length > 1
+        ? slides[0].replace('class="testimonials-set"', 'class="testimonials-set" aria-hidden="true"')
+        : '';
+      testiTrack.innerHTML = slides.join('') + repeatingSlide;
+
+      if (slides.length > 1) {
+        const slideElements = [...testiTrack.querySelectorAll('.testimonials-set')];
+        slideElements.forEach((slide, index) => slide.setAttribute('aria-hidden', String(index !== 0)));
+        let currentSlide = 0;
+        let slideTimer;
+        let isVisible = false;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const pauseOnInteraction = () => {
+          window.clearTimeout(slideTimer);
+          slideTimer = undefined;
+        };
+        const scheduleNextSlide = () => {
+          pauseOnInteraction();
+          if (!isVisible || document.hidden || reducedMotion.matches) return;
+          slideTimer = window.setTimeout(() => {
+            currentSlide += 1;
+            testiTrack.classList.add('is-transitioning');
+            testiTrack.style.transform = `translateY(-${currentSlide * 100}%)`;
+            slideElements.forEach((slide, index) => {
+              slide.setAttribute('aria-hidden', String(index !== currentSlide || currentSlide === slides.length));
+            });
+            if (currentSlide === slides.length) {
+              testiTrack.addEventListener('transitionend', () => {
+                testiTrack.classList.remove('is-transitioning');
+                testiTrack.style.transform = 'translateY(0)';
+                currentSlide = 0;
+                slideElements.forEach((slide, index) => slide.setAttribute('aria-hidden', String(index !== 0)));
+              }, { once: true });
+            }
+            scheduleNextSlide();
+          }, 8000 + Math.random() * 2000);
+        };
+        const testimonialObserver = new IntersectionObserver(([entry]) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible) scheduleNextSlide();
+          else pauseOnInteraction();
+        }, { threshold: 0.15 });
+        testimonialObserver.observe(testiTrack.parentElement);
+        testiTrack.parentElement.addEventListener('mouseenter', pauseOnInteraction);
+        testiTrack.parentElement.addEventListener('mouseleave', scheduleNextSlide);
+        testiTrack.parentElement.addEventListener('focusin', pauseOnInteraction);
+        testiTrack.parentElement.addEventListener('focusout', scheduleNextSlide);
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) pauseOnInteraction();
+          else scheduleNextSlide();
+        });
+        reducedMotion.addEventListener('change', () => {
+          if (reducedMotion.matches) {
+            pauseOnInteraction();
+            currentSlide = 0;
+            testiTrack.classList.remove('is-transitioning');
+            testiTrack.style.transform = 'translateY(0)';
+          } else {
+            scheduleNextSlide();
+          }
+        });
+      }
+    } else {
+      testiTrack.innerHTML = '<p class="testimonials-empty">Client reviews will appear here.</p>';
+    }
+  } catch(e) {
+    console.error('Page load error', e);
+    document.getElementById('featuredGrid').innerHTML = '<p style="color:var(--text3);grid-column:1/-1;text-align:center">Celebrity profiles are temporarily unavailable.</p>';
+    document.getElementById('trendingGrid').innerHTML = '<p style="color:var(--text3);grid-column:1/-1;text-align:center">Trending profiles are temporarily unavailable.</p>';
+    document.getElementById('testiGrid').innerHTML = '<p class="testimonials-empty">Reviews are temporarily unavailable.</p>';
+  }
+}
+
+async function loadStats() {
+  const response = await fetch('/api/stats');
+  if (!response.ok) throw new Error(`Homepage statistics request failed (${response.status}).`);
+  const stats = await response.json();
+  if (!stats || typeof stats !== 'object' || Array.isArray(stats))
+    throw new Error('Homepage statistics response was invalid.');
+
+  const labels = { celebrities: 'celebrity profiles', clients: 'members', bookings: 'bookings' };
+  const unavailableStats = [];
+  Object.keys(labels).forEach(key => {
+    const value = Number(stats[key]);
+    const elements = document.querySelectorAll(`[data-stat="${key}"]`);
+    if (!Number.isSafeInteger(value) || value < 0) {
+      unavailableStats.push(key);
+      elements.forEach(element => {
+        element.textContent = '-';
+        element.setAttribute('aria-label', `${labels[key]} count unavailable`);
+      });
+      return;
+    }
+    elements.forEach(element => {
+      element.dataset.target = String(value);
+      element.setAttribute('aria-label', `Loading ${labels[key]} count`);
+    });
+  });
+
+  const status = document.getElementById('heroStatsStatus');
+  status.hidden = unavailableStats.length === 0;
+  status.textContent = unavailableStats.length ? 'Some live statistics are temporarily unavailable.' : '';
+
+  const categoryCounts = Object.fromEntries(
+    Object.entries(stats.categoryCounts && typeof stats.categoryCounts === 'object' && !Array.isArray(stats.categoryCounts)
+      ? stats.categoryCounts
+      : {}).map(([category, count]) => [category.toLowerCase(), Number(count)])
+  );
+  document.querySelectorAll('.cat-tile[data-category]').forEach(tile => {
+    const count = categoryCounts[tile.dataset.category.toLowerCase()];
+    if (!Number.isSafeInteger(count) || count < 0) return;
+    const label = tile.querySelector('.cat-count');
+    if (label) label.textContent = `${count} ${count === 1 ? 'star' : 'stars'}`;
+  });
+}
+
+function formatStatCount(value) {
+  const display = value >= 1000
+    ? new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(value)
+    : value.toLocaleString('en-US');
+  return `${display}+`;
+}
+
+function animateCounters() {
+  const els = document.querySelectorAll('.count-anim[data-target]');
+  const prefersReducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const animate = el => {
+    const target = Number(el.dataset.target);
+    if (!Number.isSafeInteger(target) || target < 0) return;
+    const key = el.dataset.stat;
+    const labels = { celebrities: 'celebrity profiles', clients: 'members', bookings: 'bookings' };
+    const showCount = value => {
+      el.textContent = formatStatCount(value);
+      el.setAttribute('aria-label', `${formatStatCount(target)} ${labels[key] || 'total'}`);
+    };
+    if (prefersReducedMotion) {
+      showCount(target);
+      return;
+    }
+    let current = 0;
+    const step = Math.max(1, Math.ceil(target / 60));
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      showCount(current);
+      if (current >= target) clearInterval(timer);
+    }, 25);
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(animate);
+    return;
+  }
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      animate(entry.target);
+      observer.unobserve(entry.target);
+    });
+  });
+  els.forEach(el => observer.observe(el));
+}
+
+loadPage();
+loadStats().then(animateCounters).catch(error => {
+  console.error('Could not load homepage statistics:', error);
+  document.querySelectorAll('.count-anim[data-stat]').forEach(element => {
+    element.textContent = '-';
+    element.setAttribute('aria-label', `${element.dataset.stat} count unavailable`);
+    delete element.dataset.target;
+  });
+  const status = document.getElementById('heroStatsStatus');
+  status.textContent = 'Live statistics are temporarily unavailable.';
+  status.hidden = false;
+});
+renderLiveNotification();
+renderChatbot();
+</script>
+
+<script>
+(function animateHeroStats(){
+  const values = Array.from(document.querySelectorAll('.hero-stat-val'));
+  if (!values.length) return;
+  const targets = new Map();
+  values.forEach(el => {
+    const text = el.textContent.trim();
+    if (text === '50K+') targets.set(el, 50000);
+    else if (text === '29K+') targets.set(el, 29000);
+  });
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  targets.forEach((target, el) => {
+    const duration = 1800, started = performance.now();
+    el.textContent = '1';
+    function tick(now) {
+      const progress = Math.min(1, (now - started) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.max(1, Math.floor(target * eased));
+      el.textContent = progress >= 1 ? (target === 50000 ? '50K+' : '29K+') : value.toLocaleString();
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+})();
+</script>
+</body>
+</html>

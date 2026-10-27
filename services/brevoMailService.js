@@ -42,7 +42,8 @@ async function send({ to, toName, subject, html, replyTo }) {
     return true;
   } catch (error) {
     const status = error?.response?.status || error?.status || 'unknown';
-    console.error(`[Brevo] Transactional email failed (HTTP ${status}); trying SMTP fallback.`);
+    const reason = typeof error?.message === 'string' ? error.message.slice(0, 300) : 'No provider error details';
+    console.error(`[Brevo] Transactional email failed (HTTP ${status}): ${reason}; trying SMTP fallback.`);
     return false;
   }
 }

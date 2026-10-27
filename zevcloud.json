@@ -5,11 +5,11 @@
   "nodeVersion": "20",
   "buildCommand": "npm ci --omit=dev",
   "startCommand": "node server/server.js",
-  "port": 6543,
+  "port": 3000,
   "staticDir": "public",
   "env": {
     "NODE_ENV": "production",
-    "PORT": "6543",
+    "PORT": "3000",
     "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
   },
   "envSecrets": [

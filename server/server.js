@@ -581,9 +581,16 @@ async function sendOptimizedCelebrityImage(req, res, imageDirectory, cacheScope)
   if (filename.includes('/') || filename.includes('\\') || path.basename(filename) !== filename ||
       !/\.(?:jpe?g|png|webp|gif|tiff?|avif)$/i.test(filename))
     return res.status(400).send('Invalid celebrity image path.');
-  const source = path.join(imageDirectory, filename);
+  let source = path.join(imageDirectory, filename);
   try {
-    const sourceStats = await fs.promises.stat(source);
+    let sourceStats;
+    try {
+      sourceStats = await fs.promises.stat(source);
+    } catch (error) {
+      if (error.code !== 'ENOENT' || !/\.png$/i.test(filename)) throw error;
+      source = path.join(imageDirectory, `${filename.slice(0, -4)}.webp`);
+      sourceStats = await fs.promises.stat(source);
+    }
     if (!sourceStats.isFile()) return res.status(404).send('Celebrity image not found.');
     if (sourceStats.size > 100 * 1024 * 1024)
       return res.status(413).send('Celebrity image exceeds the 100 MB optimization limit.');

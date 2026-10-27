@@ -8,9 +8,13 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
+const sharp = require('sharp');
 
 const DB_PATH = path.join(__dirname, '../db/database.json');
 const IMG_DIR = path.join(__dirname, '../public/images/celebrities');
+const MAX_IMAGE_WIDTH = 1400;
+const MAX_IMAGE_HEIGHT = 1800;
+const LEGACY_IMAGE_EXTENSION = '.png';
 
 // Ensure image directory exists
 if (!fs.existsSync(IMG_DIR)) fs.mkdirSync(IMG_DIR, { recursive: true });
@@ -46,12 +50,20 @@ async function fetchJson(url, opts = {}) {
   return JSON.parse(res.body.toString());
 }
 
+async function saveOptimizedImage(input, filepath) {
+  await sharp(input)
+    .rotate()
+    .resize({ width: MAX_IMAGE_WIDTH, height: MAX_IMAGE_HEIGHT, fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 80, effort: 4 })
+    .toFile(filepath);
+}
+
 async function downloadImage(url, filepath, headers = {}) {
   const res = await fetchUrl(url, { headers });
   if (res.status !== 200) throw new Error(`HTTP ${res.status}`);
   const ct = res.headers['content-type'] || '';
   if (!ct.startsWith('image/')) throw new Error(`Not an image: ${ct}`);
-  fs.writeFileSync(filepath, res.body);
+  await saveOptimizedImage(res.body, filepath);
   return filepath;
 }
 
@@ -198,12 +210,16 @@ function buildImagePrompt(name) {
 // ── Local path for a celebrity ───────────────────────────
 function localPath(id, name) {
   const safe = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-  return path.join(IMG_DIR, `${id}_${safe}.png`);
+  return path.join(IMG_DIR, `${id}_${safe}.webp`);
 }
 
 function localUrl(id, name) {
   const safe = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-  return `/images/celebrities/${id}_${safe}.png`;
+  return `/images/celebrities/${id}_${safe}.webp`;
+}
+
+function legacyLocalPath(id, name) {
+  return localPath(id, name).replace(/\.webp$/, LEGACY_IMAGE_EXTENSION);
 }
 
 // ── Main fetch for one celebrity ─────────────────────────
@@ -212,6 +228,13 @@ async function fetchImageForCeleb(celeb) {
 
   // Already cached locally - skip
   if (fs.existsSync(lp)) {
+    return localUrl(celeb.id, celeb.name);
+  }
+
+  const legacyPath = legacyLocalPath(celeb.id, celeb.name);
+  if (fs.existsSync(legacyPath)) {
+    await saveOptimizedImage(legacyPath, lp);
+    await fs.promises.unlink(legacyPath);
     return localUrl(celeb.id, celeb.name);
   }
 
@@ -249,7 +272,7 @@ async function fetchImageForCeleb(celeb) {
     },
     async () => {
       const hfBinary = await generateWithHuggingFace(celeb.name);
-      fs.writeFileSync(lp, hfBinary);
+      await saveOptimizedImage(hfBinary, lp);
       return localUrl(celeb.id, celeb.name);
     }
   ];
@@ -283,7 +306,7 @@ async function fetchAllImages(batchSize = 5, delayMs = 500) {
       const lp = localPath(celeb.id, celeb.name);
       // Skip if already local
       if (fs.existsSync(lp)) {
-        if (!celeb.image.startsWith('/images/')) {
+        if (celeb.image !== localUrl(celeb.id, celeb.name)) {
           celeb.image = localUrl(celeb.id, celeb.name);
           updated++;
         }

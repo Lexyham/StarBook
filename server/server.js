@@ -3048,8 +3048,8 @@ app.get('*', (req, res) => {
 // ── Start ─────────────────────────────────────────────────────
 if (require.main === module) {
   connectMongo().then(() => {
-    httpServer.listen(PORT, () => {
-      console.log(`\n🚀 StarBook running at http://localhost:${PORT}`);
+    httpServer.listen(PORT, '0.0.0.0', () => {
+      console.log(`\n🚀 StarBook listening on 0.0.0.0:${PORT}`);
       console.log(`🔐 Admin panel: /backdoor`);
       console.log(`🗄  DB: ${isConnected() ? 'MongoDB ✅' : 'JSON fallback ⚠️'}`);
       console.log(`🔌 Socket.IO: enabled`);
